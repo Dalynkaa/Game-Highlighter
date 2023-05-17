@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "id": "otsolist",
+  "version": "${version}",
+  "name": "OtsoList",
+  "description": "",
+  "authors": [],
+  "contact": {
+    "repo": "https://github.com/Dalynkaa/OtsoList"
+  },
+  "license": "MIT",
+  "icon": "assets/OtsoList/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "com.otsosity.otsolist.client.OtsoListClient"
+    ],
+    "main": [
+      "com.otsosity.otsolist.OtsoList"
+    ],
+    "modmenu": [
+      "com.otsosity.otsolist.utils.ModMenuIntegration"
+    ]
+  },
+  "mixins": [
+    "OtsoList.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric": "*",
+    "minecraft": "${minecraft_version}"
+  }
+}
