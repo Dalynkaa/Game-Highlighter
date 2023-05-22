@@ -1,12 +1,10 @@
-package com.otsosity.otsolist.mixin.Accessors;
+package com.otsosity.otsolist.utils;
 
 import net.minecraft.client.network.PlayerListEntry;
 
 import java.util.List;
 
 public interface PlayerListAccersor {
-    default List<PlayerListEntry> collectPlayerEntries() {
-        return null;
-    }
+    List<PlayerListEntry> collectPlayerEntries();
 
 }

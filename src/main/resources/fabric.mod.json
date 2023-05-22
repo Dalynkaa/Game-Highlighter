@@ -9,7 +9,7 @@
     "repo": "https://github.com/Dalynkaa/OtsoList"
   },
   "license": "MIT",
-  "icon": "assets/OtsoList/icon.png",
+  "icon": "assets/otsolist/icon.png",
   "environment": "client",
   "entrypoints": {
     "client": [

@@ -4,8 +4,11 @@
   "package": "com.otsosity.otsolist.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
+    "PlayerListMixin"
   ],
   "client": [
+    "EntityRenderDispatcherMixin",
+    "PlayerEntryMixin"
   ],
   "injectors": {
     "defaultRequire": 1
