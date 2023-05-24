@@ -1,9 +1,9 @@
-package com.otsosity.otsolist.mixin;
+package fun.dalynkaa.gamehighlighter.mixin;
 
 import com.google.common.collect.ImmutableList;
-import com.otsosity.otsolist.client.OtsoListClient;
-import com.otsosity.otsolist.utils.HiglightConfig;
+import fun.dalynkaa.gamehighlighter.client.GameHighlighterClient;
 import net.minecraft.client.gui.Element;
+import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.TexturedButtonWidget;
 import net.minecraft.client.network.SocialInteractionsManager;
@@ -26,7 +26,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -60,10 +59,12 @@ public abstract class PlayerEntryMixin {
     @Shadow public abstract boolean isOffline();
 
     private List<ClickableWidget> customButtons;
-    private static Identifier HIGLIGHT_ICON = new Identifier("otsolist","textures/gui/icons.png");
-
+    private static Identifier HIGHLIGHT_ICON = new Identifier("game_highlighter","textures/gui/icons.png");
+    private static final Text HIGHLIGHTED_TOOLTIP = Text.translatable("gui.socialInteractions.tooltip.highlighted");
+    private static final Text UN_HIGHLIGHTED_TOOLTIP = Text.translatable("gui.socialInteractions.tooltip.un_highlighted");
 
     private static final Text HIDDEN = (Text.translatable("gui.socialInteractions.status_hidden")).formatted(Formatting.ITALIC);
+    private static final Text HIGHLIGHTED = (Text.translatable("gui.game_highlighter.highlighted")).formatted(Formatting.ITALIC);
     private static final Text BLOCKED = (Text.translatable("gui.socialInteractions.status_blocked")).formatted(Formatting.ITALIC);
     private static final Text OFFLINE = (Text.translatable("gui.socialInteractions.status_offline")).formatted(Formatting.ITALIC);
     private static final Text HIDDEN_OFFLINE = (Text.translatable("gui.socialInteractions.status_hidden_offline")).formatted(Formatting.ITALIC);
@@ -78,23 +79,24 @@ public abstract class PlayerEntryMixin {
         if (!client.player.getUuid().equals(uuid) &&
                 !socialInteractionsManager.isPlayerBlocked(uuid)) {
 
-            this.muteShowButton = new TexturedButtonWidget(0, 0, 20, 20, 0, 32, 20, HIGLIGHT_ICON, 256, 256,button -> {
+            this.muteShowButton = new TexturedButtonWidget(0, 0, 20, 20, 0, 32, 20, HIGHLIGHT_ICON, 256, 256,button -> {
                 // действие
-                OtsoListClient.clientConfig.unhighlight(uuid);
-                client.player.sendMessage(Text.literal("1"));
+                GameHighlighterClient.clientConfig.unhighlight(uuid);
                 setHiglightButtonVisible(false);
-            },Text.translatable("gui.socialInteractions.show"));
-
-            this.muteHideButton = new TexturedButtonWidget(0, 0, 20, 20, 20, 32, 20, HIGLIGHT_ICON, 256, 256,button -> {
+            },Text.translatable("gui.game_highlighter.un_highlighted"));
+            this.muteShowButton.setTooltip(Tooltip.of(UN_HIGHLIGHTED_TOOLTIP, UN_HIGHLIGHTED_TOOLTIP));
+            this.muteShowButton.setTooltipDelay(10);
+            this.muteHideButton = new TexturedButtonWidget(0, 0, 20, 20, 20, 32, 20, HIGHLIGHT_ICON, 256, 256,button -> {
                 // действие
-                OtsoListClient.clientConfig.highlight(uuid);
-                client.player.sendMessage(Text.literal("0"));
+                GameHighlighterClient.clientConfig.highlight(uuid);
                 setHiglightButtonVisible(true);
-            },Text.translatable("gui.socialInteractions.hide"));
+            },Text.translatable("gui.game_highlighter.highlighted"));
+            this.muteHideButton.setTooltip(Tooltip.of(HIGHLIGHTED_TOOLTIP, HIGHLIGHTED_TOOLTIP));
+            this.muteHideButton.setTooltipDelay(10);
             this.customButtons = new ArrayList<ClickableWidget>();
             this.customButtons.add(this.muteHideButton);
             this.customButtons.add(this.muteShowButton);
-            setHiglightButtonVisible(OtsoListClient.clientConfig.isHighlighted(uuid));
+            setHiglightButtonVisible(GameHighlighterClient.clientConfig.isHighlighted(uuid));
         }else {
             this.customButtons = ImmutableList.of();
         }
@@ -116,9 +118,9 @@ public abstract class PlayerEntryMixin {
     }}
     @Inject(method = "getStatusText", at = @At(value = "RETURN"), cancellable = true)
     private void getStatusText(CallbackInfoReturnable<Text> cir) {
-        boolean bl = this.client.getSocialInteractionsManager().isPlayerHidden(this.uuid) ||
-                OtsoListClient.clientConfig.isHighlighted(uuid);
+        boolean bl = this.client.getSocialInteractionsManager().isPlayerHidden(this.uuid);
         boolean bl2 = this.client.getSocialInteractionsManager().isPlayerBlocked(this.uuid);
+        boolean bl3 = GameHighlighterClient.clientConfig.isHighlighted(uuid);
         if (bl2 && this.isOffline()) {
             cir.setReturnValue(BLOCKED_OFFLINE);
         } else if (bl && this.isOffline()) {
@@ -127,6 +129,8 @@ public abstract class PlayerEntryMixin {
             cir.setReturnValue(BLOCKED);
         } else if (bl) {
             cir.setReturnValue(HIDDEN);
+        }else if (bl3) {
+            cir.setReturnValue(HIGHLIGHTED);
         } else {
             if (this.isOffline()) {
                 cir.setReturnValue(OFFLINE);
