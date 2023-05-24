@@ -1,4 +1,4 @@
-package com.otsosity.otsolist.utils;
+package fun.dalynkaa.gamehighlighter.utils;
 
 import com.terraformersmc.modmenu.api.ConfigScreenFactory;
 import com.terraformersmc.modmenu.api.ModMenuApi;

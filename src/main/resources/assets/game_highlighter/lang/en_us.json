@@ -1,0 +1,23 @@
+{
+  "text.autoconfig.game_highlighter.title": "GameHighlighter",
+  "text.autoconfig.game_highlighter.option.tab_enabled": "Список игроков включен",
+  "text.autoconfig.game_highlighter.option.player_hider": "Скрывать игроков включено",
+  "text.autoconfig.game_highlighter.option.tab_settings": "Список игроков",
+  "text.autoconfig.game_highlighter.option.tab_settings.prefix": "Префикс",
+  "text.autoconfig.game_highlighter.option.tab_settings.hex_color_prefix": "Цвет префикса",
+  "text.autoconfig.game_highlighter.option.tab_settings.hex_color_display_name": "Цвет ника",
+  "text.autoconfig.game_highlighter.option.playerHider_setttings": "Скрытие игроков",
+  "text.autoconfig.game_highlighter.option.playerHider_setttings.url": "Ссылка на онлайн список",
+  "text.autoconfig.game_highlighter.option.playerHider_setttings.hideType": "Тип скрытия",
+  "text.autoconfig.game_highlighter.option.playerHider_setttings.radius": "Радиус",
+
+  "key.category.GameHighlighter": "GameHighlighter",
+  "key.game_highlighter.togglehide": "Toggle player hider",
+  "key.game_highlighter.hide": "Hide player",
+  "key.game_highlighter.hidetype": "Change HideType",
+
+  "gui.game_highlighter.highlighted": "highlighted",
+  "gui.game_highlighter.un_highlighted": "",
+  "gui.socialInteractions.tooltip.highlighted": "highlight",
+  "gui.socialInteractions.tooltip.un_highlighted": "un highlight"
+}

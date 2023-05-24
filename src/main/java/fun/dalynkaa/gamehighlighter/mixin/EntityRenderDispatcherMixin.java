@@ -1,6 +1,6 @@
-package com.otsosity.otsolist.mixin;
+package fun.dalynkaa.gamehighlighter.mixin;
 
-import com.otsosity.otsolist.utils.ModConfig;
+import fun.dalynkaa.gamehighlighter.utils.ModConfig;
 import me.shedaniel.autoconfig.AutoConfig;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -19,7 +19,7 @@ public class EntityRenderDispatcherMixin {
     @Inject(method = "render", at = @At("HEAD"), cancellable = true)
     private <E extends Entity> void render(E entity, double x, double y, double z, float yaw, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, CallbackInfo ci) {
         if (config.playerHider_setttings.hideType.equals(ModConfig.HideType.RADIUS)){
-            if(entity instanceof PlayerEntity player && !player.isMainPlayer() && config.hasPlayerHiderEnable() && MinecraftClient.getInstance().player.squaredDistanceTo(player) > config.playerHider_setttings.radius) {
+            if(entity instanceof PlayerEntity player && !player.isMainPlayer() && config.hasPlayerHiderEnable() && MinecraftClient.getInstance().player.distanceTo(player) > config.playerHider_setttings.radius) {
                 ci.cancel();
             }
         }else if (config.playerHider_setttings.hideType.equals(ModConfig.HideType.ALL)){
@@ -27,13 +27,6 @@ public class EntityRenderDispatcherMixin {
                 ci.cancel();
             }
         }else if (config.playerHider_setttings.hideType.equals(ModConfig.HideType.HIDEN)){
-            if(entity instanceof PlayerEntity player && !player.isMainPlayer() && config.hasPlayerHiderEnable()) {
-                if (MinecraftClient.getInstance().getSocialInteractionsManager().isPlayerHidden(player.getUuid())){
-                    ci.cancel();
-                }
-
-            }
-        }else if (config.playerHider_setttings.hideType.equals(ModConfig.HideType.ONLINE)){
             if(entity instanceof PlayerEntity player && !player.isMainPlayer() && config.hasPlayerHiderEnable()) {
                 if (MinecraftClient.getInstance().getSocialInteractionsManager().isPlayerHidden(player.getUuid())){
                     ci.cancel();
