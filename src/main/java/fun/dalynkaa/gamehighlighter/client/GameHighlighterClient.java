@@ -16,8 +16,10 @@ import net.minecraft.client.util.InputUtil;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.*;
+import net.minecraft.util.Util;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
+
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
@@ -70,10 +72,10 @@ public class GameHighlighterClient implements ClientModInitializer {
             while (TOGGLEHIDE_KEYBIND.wasPressed()) {
                 if (config.player_hider){
                     config.player_hider = false;
-                    client.player.sendMessage(Text.literal("Скрытие игроков выключено"));
+                    client.player.sendMessage(Text.translatable("messages.game_highlighter.player_hider.disabled"),true);
                 }else {
                     config.player_hider = true;
-                    client.player.sendMessage(Text.literal("Скрытие игроков включено"));
+                    client.player.sendMessage(Text.translatable("messages.game_highlighter.player_hider.enabled"),true);
                 }
 
             }
@@ -82,13 +84,13 @@ public class GameHighlighterClient implements ClientModInitializer {
             while (HIDETYPE_KEYBIND.wasPressed()) {
                 if (config.playerHider_setttings.hideType == ModConfig.HideType.ALL){
                     config.playerHider_setttings.hideType = ModConfig.HideType.HIDEN;
-                    client.player.sendMessage(Text.literal("Режим скрытия Майнкрафт"));
+                    client.player.sendMessage(Text.translatable("messages.game_highlighter.player_hider.type").append(Text.translatable("messages.game_highlighter.player_hider.type.minecraft")), true);
                 }else if (config.playerHider_setttings.hideType == ModConfig.HideType.HIDEN){
                     config.playerHider_setttings.hideType = ModConfig.HideType.RADIUS;
-                    client.player.sendMessage(Text.literal("Режим скрытия Радиус"));
+                    client.player.sendMessage(Text.translatable("messages.game_highlighter.player_hider.type").append(Text.translatable("messages.game_highlighter.player_hider.type.radius")), true);
                 }else if (config.playerHider_setttings.hideType == ModConfig.HideType.RADIUS){
                     config.playerHider_setttings.hideType = ModConfig.HideType.ALL;
-                    client.player.sendMessage(Text.literal("Режим скрытия Все"));
+                    client.player.sendMessage(Text.translatable("messages.game_highlighter.player_hider.type").append(Text.translatable("messages.game_highlighter.player_hider.type.all")),true);
                 }
 
             }
@@ -102,11 +104,11 @@ public class GameHighlighterClient implements ClientModInitializer {
                     if (entity instanceof PlayerEntity) {
                         PlayerEntity player = (PlayerEntity) entity;
                         MinecraftClient.getInstance().getSocialInteractionsManager().hidePlayer(player.getUuid());
-                        MutableText mutableText = Text.literal("[GameHighlighter] ").styled(style -> style.withColor(TextColor.parse("#6c5ce7")));
-                        mutableText.append("Игрок ").styled(style -> style.withColor(TextColor.parse("#00b894")));
+                        MutableText mutableText = Text.literal("");
+                        mutableText.append("Player ").styled(style -> style.withColor(TextColor.parse("#00b894")));
                         mutableText.append(player.getDisplayName()).styled(style -> style.withColor(TextColor.parse("#55efc4")));
-                        mutableText.append(" скрыт").styled(style -> style.withColor(TextColor.parse("#00b894")));
-                        client.player.sendMessage(mutableText);
+                        mutableText.append(" hided").styled(style -> style.withColor(TextColor.parse("#00b894")));
+                        client.player.sendMessage(mutableText,true);
 
 
                     }

@@ -19,5 +19,15 @@
   "gui.game_highlighter.highlighted": "Выделен",
   "gui.game_highlighter.un_highlighted": "",
   "gui.socialInteractions.tooltip.highlighted": "Выделить",
-  "gui.socialInteractions.tooltip.un_highlighted": "Снять выделение"
+  "gui.socialInteractions.tooltip.un_highlighted": "Снять выделение",
+
+  "messages.game_highlighter.player_hider.enabled": "Скрытие игроков включено",
+  "messages.game_highlighter.player_hider.disabled": "Скрытие игроков выключено",
+
+
+  "messages.game_highlighter.player_hider.type": "Тип скрытия переключен на ",
+  "messages.game_highlighter.player_hider.type.minecraft": "Социальное Меню",
+  "messages.game_highlighter.player_hider.type.radius": "Радиус",
+  "messages.game_highlighter.player_hider.type.all": "Все",
+  "messages.game_highlighter.player_hider.playerHided": "Игрок &p скрыт"
 }
