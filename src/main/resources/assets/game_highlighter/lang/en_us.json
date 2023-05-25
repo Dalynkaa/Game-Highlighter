@@ -19,5 +19,15 @@
   "gui.game_highlighter.highlighted": "highlighted",
   "gui.game_highlighter.un_highlighted": "",
   "gui.socialInteractions.tooltip.highlighted": "highlight",
-  "gui.socialInteractions.tooltip.un_highlighted": "un highlight"
+  "gui.socialInteractions.tooltip.un_highlighted": "un highlight",
+
+  "messages.game_highlighter.player_hider.enabled": "Hide players enabled",
+  "messages.game_highlighter.player_hider.disabled": "Hide players disabled",
+
+
+  "messages.game_highlighter.player_hider.type": "Change hide type to ",
+  "messages.game_highlighter.player_hider.type.minecraft": "Social Menu",
+  "messages.game_highlighter.player_hider.type.radius": "Radius",
+  "messages.game_highlighter.player_hider.type.all": "All",
+  "messages.game_highlighter.player_hider.playerHided": "Player &p hided"
 }
