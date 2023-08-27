@@ -29,6 +29,6 @@
     "fabricloader": ">=${loader_version}",
     "fabric": "*",
     "minecraft": "${minecraft_version}",
-    "cloth-config": "<=10.0.96"
+    "cloth-config": "<=${cloth_config_version}"
   }
 }

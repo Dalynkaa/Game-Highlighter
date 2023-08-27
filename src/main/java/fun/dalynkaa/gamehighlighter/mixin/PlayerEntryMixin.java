@@ -2,6 +2,7 @@ package fun.dalynkaa.gamehighlighter.mixin;
 
 import com.google.common.collect.ImmutableList;
 import fun.dalynkaa.gamehighlighter.client.GameHighlighterClient;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ClickableWidget;
@@ -105,16 +106,15 @@ public abstract class PlayerEntryMixin {
 
 
     @Inject(method = "render", at = @At(value = "TAIL"))
-    public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX,
-                       int mouseY, boolean hovered, float tickDelta, CallbackInfo ci) {
+    public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta, CallbackInfo ci) {
         if (this.muteHideButton != null && this.muteShowButton != null) {
             this.muteHideButton.setX(x + (entryWidth - this.muteHideButton.getWidth() - 52));
             this.muteHideButton.setY(y + (entryHeight - this.muteHideButton.getHeight()) / 2);
-            this.muteHideButton.render(matrices, mouseX, mouseY, tickDelta);
+            this.muteHideButton.render(context, mouseX, mouseY, tickDelta);
 
             this.muteShowButton.setX(x + (entryWidth - this.muteShowButton.getWidth() - 52));
             this.muteShowButton.setY(y + (entryHeight - this.muteShowButton.getHeight()) / 2);
-            this.muteShowButton.render(matrices, mouseX, mouseY, tickDelta);
+            this.muteShowButton.render(context, mouseX, mouseY, tickDelta);
     }}
     @Inject(method = "getStatusText", at = @At(value = "RETURN"), cancellable = true)
     private void getStatusText(CallbackInfoReturnable<Text> cir) {
