@@ -2,8 +2,12 @@ package fun.dalynkaa.gamehighlighter.mixin;
 
 import com.google.common.collect.ImmutableList;
 import fun.dalynkaa.gamehighlighter.client.GameHighlighterClient;
+import fun.dalynkaa.gamehighlighter.gui.PlayerEditScreen;
+import fun.dalynkaa.gamehighlighter.utils.data.HighlightPlayer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Element;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.multiplayer.SocialInteractionsScreen;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.TexturedButtonWidget;
@@ -29,6 +33,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -44,6 +49,13 @@ public abstract class PlayerEntryMixin {
     private UUID uuid;
 
     @Shadow
+    @Final
+    private String name;
+    @Shadow
+    @Final
+    private Supplier<Identifier> skinTexture;
+
+    @Shadow
     protected abstract Text getStatusText();
 
     @Shadow
@@ -52,7 +64,7 @@ public abstract class PlayerEntryMixin {
     @Final
     private List<ClickableWidget> buttons;
     private ButtonWidget muteShowButton;
-    private ButtonWidget muteHideButton;
+    //private ButtonWidget muteHideButton;
 
     @Shadow
     abstract MutableText getNarrationMessage(MutableText text);
@@ -74,28 +86,16 @@ public abstract class PlayerEntryMixin {
 
 
     @Inject(method = "<init>*", at = @At("RETURN"))
-    private void onConstructed(CallbackInfo ci) {
+    private void onConstructed(MinecraftClient client, SocialInteractionsScreen parent, UUID uuid, String name, Supplier<Identifier> skinTexture, boolean reportable,CallbackInfo ci) {
         SocialInteractionsManager socialInteractionsManager = client.getSocialInteractionsManager();
 
         if (!client.player.getUuid().equals(uuid) &&
                 !socialInteractionsManager.isPlayerBlocked(uuid)) {
 
             this.muteShowButton = new TexturedButtonWidget(0, 0, 20, 20, 0, 32, 20, HIGHLIGHT_ICON, 256, 256,button -> {
-                // действие
-                GameHighlighterClient.clientConfig.unhighlight(uuid);
-                setHiglightButtonVisible(false);
+                client.setScreen(new PlayerEditScreen(Text.literal("123"), new HighlightPlayer(uuid, name, skinTexture), parent));
             },Text.translatable("gui.game_highlighter.un_highlighted"));
-            this.muteShowButton.setTooltip(Tooltip.of(UN_HIGHLIGHTED_TOOLTIP, UN_HIGHLIGHTED_TOOLTIP));
-            this.muteShowButton.setTooltipDelay(10);
-            this.muteHideButton = new TexturedButtonWidget(0, 0, 20, 20, 20, 32, 20, HIGHLIGHT_ICON, 256, 256,button -> {
-                // действие
-                GameHighlighterClient.clientConfig.highlight(uuid);
-                setHiglightButtonVisible(true);
-            },Text.translatable("gui.game_highlighter.highlighted"));
-            this.muteHideButton.setTooltip(Tooltip.of(HIGHLIGHTED_TOOLTIP, HIGHLIGHTED_TOOLTIP));
-            this.muteHideButton.setTooltipDelay(10);
             this.customButtons = new ArrayList<ClickableWidget>();
-            this.customButtons.add(this.muteHideButton);
             this.customButtons.add(this.muteShowButton);
             setHiglightButtonVisible(GameHighlighterClient.clientConfig.isHighlighted(uuid));
         }else {
@@ -107,15 +107,12 @@ public abstract class PlayerEntryMixin {
 
     @Inject(method = "render", at = @At(value = "TAIL"))
     public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta, CallbackInfo ci) {
-        if (this.muteHideButton != null && this.muteShowButton != null) {
-            this.muteHideButton.setX(x + (entryWidth - this.muteHideButton.getWidth() - 52));
-            this.muteHideButton.setY(y + (entryHeight - this.muteHideButton.getHeight()) / 2);
-            this.muteHideButton.render(context, mouseX, mouseY, tickDelta);
-
+        if (this.muteShowButton != null) {
             this.muteShowButton.setX(x + (entryWidth - this.muteShowButton.getWidth() - 52));
             this.muteShowButton.setY(y + (entryHeight - this.muteShowButton.getHeight()) / 2);
             this.muteShowButton.render(context, mouseX, mouseY, tickDelta);
-    }}
+    }
+}
     @Inject(method = "getStatusText", at = @At(value = "RETURN"), cancellable = true)
     private void getStatusText(CallbackInfoReturnable<Text> cir) {
         boolean bl = this.client.getSocialInteractionsManager().isPlayerHidden(this.uuid);
@@ -143,9 +140,9 @@ public abstract class PlayerEntryMixin {
 
 
     private void setHiglightButtonVisible(boolean showButtonVisible) {
-        this.muteShowButton.visible = showButtonVisible;
-        this.muteHideButton.visible = !showButtonVisible;
-        this.customButtons.set(0, showButtonVisible ?  this.muteShowButton:this.muteHideButton);
+
+        this.muteShowButton.visible = true;
+        this.customButtons.set(0, this.muteShowButton);
     }
 
 

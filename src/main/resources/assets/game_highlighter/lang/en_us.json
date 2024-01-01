@@ -15,11 +15,27 @@
   "key.game_highlighter.togglehide": "Toggle player hider",
   "key.game_highlighter.hide": "Hide player",
   "key.game_highlighter.hidetype": "Change HideType",
+  "key.game_highlighter.tabkey": "Show highlighted tab",
 
   "gui.game_highlighter.highlighted": "highlighted",
   "gui.game_highlighter.un_highlighted": "",
   "gui.socialInteractions.tooltip.highlighted": "highlight",
   "gui.socialInteractions.tooltip.un_highlighted": "un highlight",
+
+  "gui.playerEdit.title": "Edit - %d",
+  "gui.playerEdit.label.highlight": "Highlight...",
+  "gui.playerEdit.dropdown.removeHighlight": "Remove highlight",
+  "gui.playerEdit.button.newPrefix": "Create new prefix",
+  "gui.playerEdit.button.edit": "Edit",
+
+  "gui.prefixEdit.titleNew": "New prefix",
+  "gui.prefixEdit.titleEdit": "Edit - %d",
+  "gui.prefixEdit.button.edit": "Save",
+  "gui.prefixEdit.button.create": "Create",
+  "gui.prefixEdit.label.tag": "Name",
+  "gui.prefixEdit.label.symbol": "Chat symbol",
+  "gui.prefixEdit.label.nameColor": "Player name color",
+  "gui.prefixEdit.label.prefixColor": "Prefix color",
 
   "messages.game_highlighter.player_hider.enabled": "Hide players enabled",
   "messages.game_highlighter.player_hider.disabled": "Hide players disabled",

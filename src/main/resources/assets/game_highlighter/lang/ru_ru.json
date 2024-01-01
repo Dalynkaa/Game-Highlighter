@@ -15,11 +15,27 @@
   "key.game_highlighter.togglehide": "Переключить скрытие",
   "key.game_highlighter.hide": "Скрыть игрока на прицеле",
   "key.game_highlighter.hidetype": "Изменить тип скрытия",
+  "key.game_highlighter.tabkey": "Показать выделеных игроков",
 
   "gui.game_highlighter.highlighted": "Выделен",
   "gui.game_highlighter.un_highlighted": "",
   "gui.socialInteractions.tooltip.highlighted": "Выделить",
   "gui.socialInteractions.tooltip.un_highlighted": "Снять выделение",
+
+  "gui.playerEdit.title": "Редактирование - %d",
+  "gui.playerEdit.label.highlight": "Выделить...",
+  "gui.playerEdit.dropdown.removeHighlight": "Убрать выделение",
+  "gui.playerEdit.button.newPrefix": "Новый префикс",
+  "gui.playerEdit.button.edit": "Измен.",
+
+  "gui.prefixEdit.titleNew": "Создание префикса",
+  "gui.prefixEdit.titleEdit": "Редактирование - %d",
+  "gui.prefixEdit.button.edit": "Сохранить",
+  "gui.prefixEdit.button.create": "Создать",
+  "gui.prefixEdit.label.tag": "Название",
+  "gui.prefixEdit.label.symbol": "Символ",
+  "gui.prefixEdit.label.nameColor": "Цвет имени игрока",
+  "gui.prefixEdit.label.prefixColor": "Цвет префикса",
 
   "messages.game_highlighter.player_hider.enabled": "Скрытие игроков включено",
   "messages.game_highlighter.player_hider.disabled": "Скрытие игроков выключено",

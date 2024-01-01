@@ -1,6 +1,7 @@
 package fun.dalynkaa.gamehighlighter.client;
 
 import fun.dalynkaa.gamehighlighter.utils.HiglightConfig;
+import fun.dalynkaa.gamehighlighter.utils.data.HighlitedPlayer;
 import lombok.Getter;
 import fun.dalynkaa.gamehighlighter.utils.ModConfig;
 import me.shedaniel.autoconfig.AutoConfig;
@@ -21,6 +22,9 @@ import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -30,14 +34,13 @@ public class GameHighlighterClient implements ClientModInitializer {
     /**
      * Runs the mod initializer on the client environment.
      */
-    @Getter
     public static HiglightConfig clientConfig;
 
     public static ModConfig config;
     private static final KeyBinding TOGGLEHIDE_KEYBIND = new KeyBinding(
             "key.game_highlighter.togglehide",
             InputUtil.Type.KEYSYM,
-            InputUtil.UNKNOWN_KEY.getCode(),
+            InputUtil.GLFW_KEY_H,
             "key.category.GameHighlighter"
     );
     private static final KeyBinding HIDE_KEYBIND = new KeyBinding(
@@ -49,7 +52,13 @@ public class GameHighlighterClient implements ClientModInitializer {
     private static final KeyBinding HIDETYPE_KEYBIND = new KeyBinding(
             "key.game_highlighter.hidetype",
             InputUtil.Type.KEYSYM,
-            InputUtil.UNKNOWN_KEY.getCode(),
+            InputUtil.GLFW_KEY_T,
+            "key.category.GameHighlighter"
+    );
+    public static final KeyBinding TABKEY_KEYBIND = new KeyBinding(
+            "key.game_highlighter.tabkey",
+            InputUtil.Type.KEYSYM,
+            InputUtil.GLFW_KEY_J,
             "key.category.GameHighlighter"
     );
     @Override
@@ -66,7 +75,7 @@ public class GameHighlighterClient implements ClientModInitializer {
         KeyBindingHelper.registerKeyBinding(TOGGLEHIDE_KEYBIND);
         KeyBindingHelper.registerKeyBinding(HIDE_KEYBIND);
         KeyBindingHelper.registerKeyBinding(HIDETYPE_KEYBIND);
-
+        KeyBindingHelper.registerKeyBinding(TABKEY_KEYBIND);
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             while (TOGGLEHIDE_KEYBIND.wasPressed()) {
@@ -116,5 +125,9 @@ public class GameHighlighterClient implements ClientModInitializer {
             }
         });
 
+
+    }
+    public static HiglightConfig getClientConfig() {
+        return clientConfig;
     }
 }
