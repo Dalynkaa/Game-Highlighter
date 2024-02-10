@@ -17,11 +17,7 @@ public class ModConfig implements ConfigData {
     PlayerHider playerHider_setttings = new PlayerHider();
 
     public static class TabSettings {
-        @ConfigEntry.ColorPicker
-        public int hex_color_prefix = 0x00cec9;
-        @ConfigEntry.ColorPicker
-        public int hex_color_display_name = 0x81ecec;
-        public String prefix = "✦";
+        public boolean useExtendedTab = false;
 
     }
     public static class PlayerHider {

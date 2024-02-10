@@ -13,6 +13,7 @@ import net.fabricmc.loader.api.FabricLoader;
 import org.spongepowered.asm.mixin.struct.SourceMap;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashSet;
@@ -49,6 +50,12 @@ public class HiglightConfig {
                 addPrefix(new Prefix(UUID.fromString("b4c9349b-2bf1-4af6-b8b7-a585797d56a4"), "Example prefix", "* ", "#e84393", "#fd79a8"));
             }
         }
+        if (Objects.equals(version, "1.4")){
+            this.version = "1.5";
+            if (getPrefix(UUID.fromString("b4c9349b-2bf1-4af6-b8b7-a585797d56a4"))!=null){
+                setPrefix(new Prefix(UUID.fromString("b4c9349b-2bf1-4af6-b8b7-a585797d56a4"), "Example prefix", "* ", "#e84393", "#fd79a8"));
+            }
+        }
     }
     public static HiglightConfig read() {
         Gson gson = new Gson();
@@ -56,7 +63,7 @@ public class HiglightConfig {
         File configFile = saveDir.resolve("HighlightMod").resolve("data.json").toFile();
         if (configFile.exists()) {
             try {
-                JsonReader reader = new JsonReader(new FileReader(configFile));
+                JsonReader reader = new JsonReader(new InputStreamReader(new FileInputStream(configFile), StandardCharsets.UTF_8));
                 try {
                     HiglightConfig co = gson.fromJson(reader, HiglightConfig.class);
                     co.migration();
@@ -84,7 +91,7 @@ public class HiglightConfig {
                 e.printStackTrace();
             }
         }
-        try (FileWriter writer = new FileWriter(configFile)){
+        try (OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(configFile), StandardCharsets.UTF_8)){
             writer.write(gson.toJson(this));
             System.out.println("[Configuration] Saved New File!");
         } catch (Exception e1) {

@@ -31,7 +31,8 @@ import static fun.dalynkaa.gamehighlighter.client.GameHighlighterClient.TABKEY_K
 
 @Mixin(PlayerListHud.class)
 public class PlayerListMixin {
-
+    @Unique
+    ModConfig config = AutoConfig.getConfigHolder(ModConfig.class).getConfig();
     @Unique
     private static final Logger LOGGER = LoggerFactory.getLogger("otsohelper");
     @Unique
@@ -51,6 +52,7 @@ public class PlayerListMixin {
     }
     @Inject(method = "collectPlayerEntries", at = @At("RETURN"), cancellable = true)
     public void collect(CallbackInfoReturnable<List<PlayerListEntry>> cir){
+        long PLAYER_LIST_ENTRY_LIMIT = config.tab_settings.useExtendedTab ? 200L : 80L;
         List<PlayerListEntry> entries = this.client.player.networkHandler.getListedPlayerListEntries().stream().sorted(ENTRY_ORDERING).toList();
         List<UUID> need = GameHighlighterClient.clientConfig.getAllHighlitedUUID().stream().toList();
         List<PlayerListEntry> entries1 = new ArrayList<>();
@@ -61,10 +63,10 @@ public class PlayerListMixin {
                     entries1.add(entry);
                 }
             }
-            cir.setReturnValue(entries1.stream().limit(80L).toList());
+            cir.setReturnValue(entries1.stream().limit(PLAYER_LIST_ENTRY_LIMIT).toList());
             return;
         }
-        cir.setReturnValue(entries.stream().sorted(customComparator).limit(80L).toList());
+        cir.setReturnValue(entries.stream().sorted(customComparator).limit(PLAYER_LIST_ENTRY_LIMIT).toList());
     }
 
 }

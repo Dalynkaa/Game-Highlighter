@@ -68,9 +68,6 @@ public class GameHighlighterClient implements ClientModInitializer {
         config = AutoConfig.getConfigHolder(ModConfig.class).getConfig();
         clientConfig = HiglightConfig.read();
 
-        System.out.println(config.tab_settings.prefix);
-        System.out.println(config.tab_settings.hex_color_prefix);
-        System.out.println(config.tab_settings.hex_color_display_name);
 
         KeyBindingHelper.registerKeyBinding(TOGGLEHIDE_KEYBIND);
         KeyBindingHelper.registerKeyBinding(HIDE_KEYBIND);
