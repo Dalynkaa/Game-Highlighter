@@ -1,0 +1,47 @@
+{
+  "text.autoconfig.game_highlighter.title": "GameHighlighter",
+  "text.autoconfig.game_highlighter.option.tab_enabled": "Player list enabled",
+  "text.autoconfig.game_highlighter.option.player_hider": "Player hider enabled",
+  "text.autoconfig.game_highlighter.option.tab_settings": "Player list",
+  "text.autoconfig.game_highlighter.option.tab_settings.useExtendedTab": "Extended tab",
+  "text.autoconfig.game_highlighter.option.playerHider_setttings": "Player hider settings",
+  "text.autoconfig.game_highlighter.option.playerHider_setttings.url": "Url for online blacklist",
+  "text.autoconfig.game_highlighter.option.playerHider_setttings.hideType": "Hide type",
+  "text.autoconfig.game_highlighter.option.playerHider_setttings.radius": "Radius",
+
+  "key.category.GameHighlighter": "GameHighlighter",
+  "key.game_highlighter.togglehide": "Toggle player hider",
+  "key.game_highlighter.hide": "Hide player",
+  "key.game_highlighter.hidetype": "Change HideType",
+  "key.game_highlighter.tabkey": "Show highlighted tab",
+
+  "gui.game_highlighter.highlighted": "highlighted",
+  "gui.game_highlighter.un_highlighted": "",
+  "gui.socialInteractions.tooltip.highlighted": "highlight",
+  "gui.socialInteractions.tooltip.un_highlighted": "un highlight",
+
+  "gui.playerEdit.title": "Edit - %d",
+  "gui.playerEdit.label.highlight": "Highlight...",
+  "gui.playerEdit.dropdown.removeHighlight": "Remove highlight",
+  "gui.playerEdit.button.newPrefix": "Create new prefix",
+  "gui.playerEdit.button.edit": "Edit",
+
+  "gui.prefixEdit.titleNew": "New prefix",
+  "gui.prefixEdit.titleEdit": "Edit - %d",
+  "gui.prefixEdit.button.edit": "Save",
+  "gui.prefixEdit.button.create": "Create",
+  "gui.prefixEdit.label.tag": "Name",
+  "gui.prefixEdit.label.symbol": "Chat symbol",
+  "gui.prefixEdit.label.nameColor": "Player name color",
+  "gui.prefixEdit.label.prefixColor": "Prefix color",
+
+  "messages.game_highlighter.player_hider.enabled": "Hide players enabled",
+  "messages.game_highlighter.player_hider.disabled": "Hide players disabled",
+
+
+  "messages.game_highlighter.player_hider.type": "Change hide type to ",
+  "messages.game_highlighter.player_hider.type.minecraft": "Social Menu",
+  "messages.game_highlighter.player_hider.type.radius": "Radius",
+  "messages.game_highlighter.player_hider.type.all": "All",
+  "messages.game_highlighter.player_hider.playerHided": "Player &p hided"
+}

@@ -1,0 +1,47 @@
+{
+  "text.autoconfig.game_highlighter.title": "GameHighlighter",
+  "text.autoconfig.game_highlighter.option.tab_enabled": "Список игроков включен",
+  "text.autoconfig.game_highlighter.option.player_hider": "Скрывать игроков включено",
+  "text.autoconfig.game_highlighter.option.tab_settings": "Список игроков",
+  "text.autoconfig.game_highlighter.option.tab_settings.useExtendedTab": "Уведиченый список игроков",
+  "text.autoconfig.game_highlighter.option.playerHider_setttings": "Скрытие игроков",
+  "text.autoconfig.game_highlighter.option.playerHider_setttings.url": "Ссылка на онлайн список",
+  "text.autoconfig.game_highlighter.option.playerHider_setttings.hideType": "Тип скрытия",
+  "text.autoconfig.game_highlighter.option.playerHider_setttings.radius": "Радиус",
+
+  "key.category.GameHighlighter": "GameHighlighter",
+  "key.game_highlighter.togglehide": "Переключить скрытие",
+  "key.game_highlighter.hide": "Скрыть игрока на прицеле",
+  "key.game_highlighter.hidetype": "Изменить тип скрытия",
+  "key.game_highlighter.tabkey": "Показать выделеных игроков",
+
+  "gui.game_highlighter.highlighted": "Выделен",
+  "gui.game_highlighter.un_highlighted": "",
+  "gui.socialInteractions.tooltip.highlighted": "Выделить",
+  "gui.socialInteractions.tooltip.un_highlighted": "Снять выделение",
+
+  "gui.playerEdit.title": "Редактирование - %d",
+  "gui.playerEdit.label.highlight": "Выделить...",
+  "gui.playerEdit.dropdown.removeHighlight": "Убрать выделение",
+  "gui.playerEdit.button.newPrefix": "Новый префикс",
+  "gui.playerEdit.button.edit": "Измен.",
+
+  "gui.prefixEdit.titleNew": "Создание префикса",
+  "gui.prefixEdit.titleEdit": "Редактирование - %d",
+  "gui.prefixEdit.button.edit": "Сохранить",
+  "gui.prefixEdit.button.create": "Создать",
+  "gui.prefixEdit.label.tag": "Название",
+  "gui.prefixEdit.label.symbol": "Символ",
+  "gui.prefixEdit.label.nameColor": "Цвет имени игрока",
+  "gui.prefixEdit.label.prefixColor": "Цвет префикса",
+
+  "messages.game_highlighter.player_hider.enabled": "Скрытие игроков включено",
+  "messages.game_highlighter.player_hider.disabled": "Скрытие игроков выключено",
+
+
+  "messages.game_highlighter.player_hider.type": "Тип скрытия переключен на ",
+  "messages.game_highlighter.player_hider.type.minecraft": "Социальное Меню",
+  "messages.game_highlighter.player_hider.type.radius": "Радиус",
+  "messages.game_highlighter.player_hider.type.all": "Все",
+  "messages.game_highlighter.player_hider.playerHided": "Игрок &p скрыт"
+}

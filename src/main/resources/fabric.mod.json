@@ -1,0 +1,45 @@
+{
+	"schemaVersion": 1,
+	"id": "gamehighlighter",
+	"version": "${version}",
+	"name": "GameHighlighter",
+	"description": "This is an example description! Tell everyone what your mod is about!",
+	"authors": [
+		"Me!"
+	],
+	"contact": {
+		"homepage": "https://fabricmc.net/",
+		"sources": "https://github.com/FabricMC/fabric-example-mod"
+	},
+	"license": "CC0-1.0",
+	"icon": "assets/gamehighlighter/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"com.dalynkaa.GameHighlighter"
+		],
+		"client": [
+			"com.dalynkaa.GameHighlighterClient"
+		],
+		"modmenu": [
+			"com.dalynkaa.utilities.ModMenuIntegration"
+		]
+	},
+	"mixins": [
+		"gamehighlighter.mixins.json",
+		{
+			"config": "gamehighlighter.client.mixins.json",
+			"environment": "client"
+		}
+	],
+	"depends": {
+		"fabricloader": ">=${loader_version}",
+		"fabric": "*",
+		"minecraft": "${minecraft_version}",
+		"cloth-config": ">=${cloth_config_version}",
+		"owo-lib": ">=${owo_version}"
+	},
+	"suggests": {
+		"another-mod": "*"
+	}
+}
