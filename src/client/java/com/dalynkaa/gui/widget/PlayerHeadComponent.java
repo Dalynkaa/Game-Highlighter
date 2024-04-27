@@ -1,6 +1,5 @@
 package com.dalynkaa.gui.widget;
 
-import com.dalynkaa.utilities.data.HighlightPlayer;
 import io.wispforest.owo.ui.component.Components;
 import io.wispforest.owo.ui.component.TextureComponent;
 import io.wispforest.owo.ui.container.FlowLayout;
