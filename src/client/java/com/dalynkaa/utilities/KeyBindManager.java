@@ -17,31 +17,31 @@ import net.minecraft.util.hit.HitResult;
 
 public class KeyBindManager {
     public static final KeyBinding TOGGLEHIDE_KEYBIND = new KeyBinding(
-            "key.game_highlighter.togglehide",
+            "key.gamehighlighter.togglehide",
             InputUtil.Type.KEYSYM,
             InputUtil.GLFW_KEY_H,
             "key.category.GameHighlighter"
     );
     public static final KeyBinding HIDE_KEYBIND = new KeyBinding(
-            "key.game_highlighter.hide",
+            "key.gamehighlighter.hide",
             InputUtil.Type.KEYSYM,
             InputUtil.UNKNOWN_KEY.getCode(),
             "key.category.GameHighlighter"
     );
     public static final KeyBinding HIDETYPE_KEYBIND = new KeyBinding(
-            "key.game_highlighter.hidetype",
+            "key.gamehighlighter.hidetype",
             InputUtil.Type.KEYSYM,
             InputUtil.GLFW_KEY_T,
             "key.category.GameHighlighter"
     );
     public static final KeyBinding TABKEY_KEYBIND = new KeyBinding(
-            "key.game_highlighter.tabkey",
+            "key.gamehighlighter.tabkey",
             InputUtil.Type.KEYSYM,
             InputUtil.GLFW_KEY_J,
             "key.category.GameHighlighter"
     );
     public static final KeyBinding OPEN_HIGHLIGHTS_KEYBIND = new KeyBinding(
-            "key.game_highlighter.open_highlights",
+            "key.gamehighlighter.open_highlights",
             InputUtil.Type.KEYSYM,
             InputUtil.GLFW_KEY_K,
             "key.category.GameHighlighter"
@@ -63,10 +63,12 @@ public class KeyBindManager {
             while (TOGGLEHIDE_KEYBIND.wasPressed()) {
                 if (config.player_hider){
                     config.player_hider = false;
-                    client.player.sendMessage(Text.translatable("messages.game_highlighter.player_hider.disabled"),true);
+                    assert client.player != null;
+                    client.player.sendMessage(Text.translatable("messages.gamehighlighter.player_hider.disabled"),true);
                 }else {
                     config.player_hider = true;
-                    client.player.sendMessage(Text.translatable("messages.game_highlighter.player_hider.enabled"),true);
+                    assert client.player != null;
+                    client.player.sendMessage(Text.translatable("messages.gamehighlighter.player_hider.enabled"),true);
                 }
 
             }
@@ -75,13 +77,16 @@ public class KeyBindManager {
             while (HIDETYPE_KEYBIND.wasPressed()) {
                 if (config.playerHider_setttings.hideType == ModConfig.HideType.ALL){
                     config.playerHider_setttings.hideType = ModConfig.HideType.HIDEN;
-                    client.player.sendMessage(Text.translatable("messages.game_highlighter.player_hider.type").append(Text.translatable("messages.game_highlighter.player_hider.type.minecraft")), true);
+                    assert client.player != null;
+                    client.player.sendMessage(Text.translatable("messages.gamehighlighter.player_hider.type").append(Text.translatable("messages.gamehighlighter.player_hider.type.minecraft")), true);
                 }else if (config.playerHider_setttings.hideType == ModConfig.HideType.HIDEN){
                     config.playerHider_setttings.hideType = ModConfig.HideType.RADIUS;
-                    client.player.sendMessage(Text.translatable("messages.game_highlighter.player_hider.type").append(Text.translatable("messages.game_highlighter.player_hider.type.radius")), true);
+                    assert client.player != null;
+                    client.player.sendMessage(Text.translatable("messages.gamehighlighter.player_hider.type").append(Text.translatable("messages.gamehighlighter.player_hider.type.radius")), true);
                 }else if (config.playerHider_setttings.hideType == ModConfig.HideType.RADIUS){
                     config.playerHider_setttings.hideType = ModConfig.HideType.ALL;
-                    client.player.sendMessage(Text.translatable("messages.game_highlighter.player_hider.type").append(Text.translatable("messages.game_highlighter.player_hider.type.all")),true);
+                    assert client.player != null;
+                    client.player.sendMessage(Text.translatable("messages.gamehighlighter.player_hider.type").append(Text.translatable("messages.gamehighlighter.player_hider.type.all")),true);
                 }
 
             }
@@ -89,16 +94,15 @@ public class KeyBindManager {
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             while (HIDE_KEYBIND.wasPressed()) {
                 HitResult result = client.crosshairTarget;
-                if (result instanceof EntityHitResult) {
-                    EntityHitResult entityResult = (EntityHitResult) result;
+                if (result instanceof EntityHitResult entityResult) {
                     Entity entity = entityResult.getEntity();
-                    if (entity instanceof PlayerEntity) {
-                        PlayerEntity player = (PlayerEntity) entity;
+                    if (entity instanceof PlayerEntity player) {
                         MinecraftClient.getInstance().getSocialInteractionsManager().hidePlayer(player.getUuid());
                         MutableText mutableText = Text.literal("");
                         mutableText.append("Player ").styled(style -> style.withColor(TextColor.parse("#00b894")));
                         mutableText.append(player.getDisplayName()).styled(style -> style.withColor(TextColor.parse("#55efc4")));
                         mutableText.append(" hided").styled(style -> style.withColor(TextColor.parse("#00b894")));
+                        assert client.player != null;
                         client.player.sendMessage(mutableText,true);
 
 

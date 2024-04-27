@@ -3,7 +3,7 @@ package com.dalynkaa.utilities;
 import me.shedaniel.autoconfig.ConfigData;
 import me.shedaniel.autoconfig.annotation.Config;
 import me.shedaniel.autoconfig.annotation.ConfigEntry;
-@Config(name = "assets/gamehighlighter")
+@Config(name = "gamehighlighter")
 public class ModConfig implements ConfigData {
     boolean tab_enabled = true;
     public boolean player_hider = false;

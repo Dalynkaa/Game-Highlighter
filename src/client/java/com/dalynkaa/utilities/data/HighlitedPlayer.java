@@ -1,11 +1,14 @@
 package com.dalynkaa.utilities.data;
 
 import com.dalynkaa.GameHighlighterClient;
+import lombok.Getter;
 
+import java.util.Objects;
 import java.util.UUID;
 
 public class HighlitedPlayer {
-    private UUID uuid;
+    @Getter
+    private final UUID uuid;
     private UUID prefix;
     private boolean isHiden;
     private boolean isHighlighted;
@@ -17,9 +20,6 @@ public class HighlitedPlayer {
         this.isHighlighted = isHighlighted;
     }
 
-    public UUID getUuid() {
-        return uuid;
-    }
     public Prefix getPrefix() {
         return Prefix.getPrefix(prefix);
     }
@@ -30,9 +30,9 @@ public class HighlitedPlayer {
     public boolean isHiden() {
         return isHiden;
     }
-    public HighlitedPlayer setHiden(boolean hiden) {
+    public void setHiden(boolean hiden) {
         isHiden = hiden;
-        return this;
+        GameHighlighterClient.getClientConfig().setPlayer(this);
     }
     public boolean isHighlighted() {
         return isHighlighted;
@@ -53,10 +53,7 @@ public class HighlitedPlayer {
     }
     public static HighlitedPlayer getHighlitedPlayer(UUID uuid) {
         HighlitedPlayer player = GameHighlighterClient.getClientConfig().getHighlitedPlayer(uuid);
-        if (player == null) {
-            return new HighlitedPlayer(uuid, null, false, false);
-        }
-        return player;
+        return Objects.requireNonNullElseGet(player, () -> new HighlitedPlayer(uuid, null, false, false));
     }
 
 

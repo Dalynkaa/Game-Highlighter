@@ -1,12 +1,14 @@
 package com.dalynkaa.utilities;
 
+import com.dalynkaa.utilities.data.HighlitedPlayer;
 import com.dalynkaa.utilities.data.Prefix;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.stream.JsonReader;
+import lombok.Getter;
+import lombok.Setter;
 import net.fabricmc.loader.api.FabricLoader;
-import com.dalynkaa.utilities.data.HighlitedPlayer;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -18,6 +20,8 @@ import java.util.UUID;
 
 
 public class HiglightConfig {
+    @Getter
+    @Setter
     @SerializedName("version")
     private String version;
     @SerializedName("playersHighlighted")
@@ -69,11 +73,9 @@ public class HiglightConfig {
                     co.migration();
                     return Objects.requireNonNullElseGet(co, () -> new HiglightConfig("1.4",new HashSet<>(), new HashSet<>(), new HashSet<>()));
                 } catch (JsonSyntaxException j) {
-                    j.printStackTrace();
                     configFile.delete();
                 }
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
+            } catch (FileNotFoundException ignored) {
             }
         }
         return new HiglightConfig("1.4",new HashSet<>(), new HashSet<>(), new HashSet<>());
@@ -81,8 +83,6 @@ public class HiglightConfig {
     public void save() {
         Gson gson = new Gson();
         Path saveDir = FabricLoader.getInstance().getConfigDir();
-        System.out.println("SAVE DIR: " + saveDir.toString());
-        System.out.println("SAVE DIR: " + saveDir.resolve("HighlightMod").toString());
         File configFile = saveDir.resolve("HighlightMod").resolve("data.json").toFile();
         if (!Files.exists(saveDir.resolve("HighlightMod"))){
             try {
@@ -94,15 +94,8 @@ public class HiglightConfig {
         try (OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(configFile), StandardCharsets.UTF_8)){
             writer.write(gson.toJson(this));
             System.out.println("[Configuration] Saved New File!");
-        } catch (Exception e1) {
-            e1.printStackTrace();
+        } catch (Exception ignored) {
         }
-    }
-    public void setVersion(String version) {
-        this.version = version;
-    }
-    public String getVersion() {
-        return version;
     }
 
     public boolean isHighlighted(UUID id){
@@ -120,6 +113,9 @@ public class HiglightConfig {
         if (highlitedPlayers == null){
             highlitedPlayers = new HashSet<>();
         }
+        if (containsPlayer(player.getUuid())){
+            return;
+        }
         this.highlitedPlayers.add(player);
         save();
     }
@@ -131,10 +127,10 @@ public class HiglightConfig {
         for (HighlitedPlayer p: this.highlitedPlayers){
             if (p.getUuid().equals(player.getUuid())){
                 this.highlitedPlayers.remove(p);
-                this.highlitedPlayers.add(player);
                 break;
             }
         }
+        this.highlitedPlayers.add(player);
         save();
     }
     public boolean containsPlayer(UUID uuid) {
@@ -157,7 +153,7 @@ public class HiglightConfig {
     }
     public HighlitedPlayer getHighlitedPlayer(UUID uuid) {
         for (HighlitedPlayer player: this.highlitedPlayers){
-            if (player.getUuid().equals(uuid) && player.isHighlighted()){
+            if (player.getUuid().equals(uuid)){
                 return player;
             }
         }

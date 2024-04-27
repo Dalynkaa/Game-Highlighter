@@ -29,8 +29,6 @@ public class PlayerListMixin {
     @Unique
     ModConfig config = GameHighlighterClient.config;
     @Unique
-    private static final Logger LOGGER = LoggerFactory.getLogger("gamehighlighter");
-    @Unique
     private static final Comparator<PlayerListEntry> ENTRY_ORDERING = Comparator.comparingInt(entry -> GameHighlighterClient.clientConfig.getAllHighlitedUUID().contains(entry.getProfile().getId())? 0 : 1);
 
     @Shadow
@@ -40,7 +38,7 @@ public class PlayerListMixin {
     public void getPlayerName(PlayerListEntry entry, CallbackInfoReturnable<Text> cir){
         Text displayname = cir.getReturnValue();
         if (GameHighlighterClient.clientConfig.isHighlighted(entry.getProfile().getId()) && GameHighlighterClient.config.hasTabEnable()){
-            HighlitedPlayer highlitedPlayer = GameHighlighterClient.getClientConfig().getHighlitedPlayer(entry.getProfile().getId());
+            HighlitedPlayer highlitedPlayer = HighlitedPlayer.getHighlitedPlayer(entry.getProfile().getId());
             Prefix prefix = highlitedPlayer.getPrefix();
             cir.setReturnValue(prefix.getPrefixText(displayname));
         }
@@ -48,20 +46,23 @@ public class PlayerListMixin {
     @Inject(method = "collectPlayerEntries", at = @At("RETURN"), cancellable = true)
     public void collect(CallbackInfoReturnable<List<PlayerListEntry>> cir){
         long PLAYER_LIST_ENTRY_LIMIT = config.tab_settings.useExtendedTab ? 200L : 80L;
-        List<PlayerListEntry> entries = this.client.player.networkHandler.getListedPlayerListEntries().stream().sorted(ENTRY_ORDERING).toList();
-        List<UUID> need = GameHighlighterClient.clientConfig.getAllHighlitedUUID().stream().toList();
-        List<PlayerListEntry> entries1 = new ArrayList<>();
-        Comparator<PlayerListEntry> customComparator = Comparator.comparingInt(value -> Arrays.asList(need).contains(value.getProfile().getId()) ? 0 : 1);
-        if (TABKEY_KEYBIND.isPressed()) {
-            for (PlayerListEntry entry: entries){
-                if (need.contains(entry.getProfile().getId())){
-                    entries1.add(entry);
+        if (this.client.player!=null){
+            List<PlayerListEntry> entries = this.client.player.networkHandler.getListedPlayerListEntries().stream().sorted(ENTRY_ORDERING).toList();
+            List<UUID> need = GameHighlighterClient.clientConfig.getAllHighlitedUUID().stream().toList();
+            List<PlayerListEntry> entries1 = new ArrayList<>();
+            Comparator<PlayerListEntry> customComparator = Comparator.comparingInt(value -> Arrays.asList(need).contains(value.getProfile().getId()) ? 0 : 1);
+            if (TABKEY_KEYBIND.isPressed()) {
+                for (PlayerListEntry entry: entries){
+                    if (need.contains(entry.getProfile().getId())){
+                        entries1.add(entry);
+                    }
                 }
+                cir.setReturnValue(entries1.stream().limit(PLAYER_LIST_ENTRY_LIMIT).toList());
+                return;
             }
-            cir.setReturnValue(entries1.stream().limit(PLAYER_LIST_ENTRY_LIMIT).toList());
-            return;
+            cir.setReturnValue(entries.stream().sorted(customComparator).limit(PLAYER_LIST_ENTRY_LIMIT).toList());
         }
-        cir.setReturnValue(entries.stream().sorted(customComparator).limit(PLAYER_LIST_ENTRY_LIMIT).toList());
+
     }
 
 }

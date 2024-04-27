@@ -1,6 +1,7 @@
 package com.dalynkaa.mixin.client;
 
 import com.dalynkaa.utilities.ModConfig;
+import com.dalynkaa.utilities.data.HighlitedPlayer;
 import me.shedaniel.autoconfig.AutoConfig;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -21,16 +22,20 @@ public class EntityRenderDispatcherMixin {
     @Inject(method = "render", at = @At("HEAD"), cancellable = true)
     private <E extends Entity> void render(E entity, double x, double y, double z, float yaw, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, CallbackInfo ci) {
         if (config.playerHider_setttings.hideType.equals(ModConfig.HideType.RADIUS)){
-            if(entity instanceof PlayerEntity player && !player.isMainPlayer() && config.hasPlayerHiderEnable() && MinecraftClient.getInstance().player.distanceTo(player) > config.playerHider_setttings.radius) {
-                ci.cancel();
+            if (MinecraftClient.getInstance().player!=null){
+                if(entity instanceof PlayerEntity player && !player.isMainPlayer() && config.hasPlayerHiderEnable() && MinecraftClient.getInstance().player.distanceTo(player) > config.playerHider_setttings.radius) {
+                    ci.cancel();
+                }
             }
+
         }else if (config.playerHider_setttings.hideType.equals(ModConfig.HideType.ALL)){
             if(entity instanceof PlayerEntity player && !player.isMainPlayer() && config.hasPlayerHiderEnable()) {
                 ci.cancel();
             }
         }else if (config.playerHider_setttings.hideType.equals(ModConfig.HideType.HIDEN)){
             if(entity instanceof PlayerEntity player && !player.isMainPlayer() && config.hasPlayerHiderEnable()) {
-                if (MinecraftClient.getInstance().getSocialInteractionsManager().isPlayerHidden(player.getUuid())){
+                HighlitedPlayer highlitedPlayer = HighlitedPlayer.getHighlitedPlayer(player.getUuid());
+                if (highlitedPlayer.isHiden()){
                     ci.cancel();
                 }
 
