@@ -3,7 +3,7 @@
 	"id": "gamehighlighter",
 	"version": "${version}",
 	"name": "GameHighlighter",
-	"description": "This is an example description! Tell everyone what your mod is about!",
+	"description": "Mod for highlighting and hiding players",
 	"authors": [
 		"Me!"
 	],
