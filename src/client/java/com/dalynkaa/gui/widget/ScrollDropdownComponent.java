@@ -149,7 +149,7 @@ public class ScrollDropdownComponent extends FlowLayout {
     }
 
     @Override
-    protected void drawChildren(OwoUIDrawContext context, int mouseX, int mouseY, float partialTicks, float delta, List<Component> children) {
+    protected void drawChildren(OwoUIDrawContext context, int mouseX, int mouseY, float partialTicks, float delta, List<? extends Component> children) {
         if (!expanded) {
             arrowLabel.text(Text.literal(UNEXPANDED_DROPDOWN_CHAR));
         } else {

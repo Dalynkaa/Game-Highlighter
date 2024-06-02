@@ -7,7 +7,7 @@ version = project.mod_version
 group = project.maven_group
 
 base {
-	archivesName = project.archives_base_name
+	archivesName = project.archives_base_name + "-" + project.minecraft_version
 }
 
 repositories {
@@ -51,7 +51,6 @@ dependencies {
 	modApi("me.shedaniel.cloth:cloth-config-fabric:${project.cloth_config_version}") {
 		exclude(group: "net.fabricmc.fabric-api")
 	}
-	modImplementation include("io.github.cottonmc:LibGui:8.0.2+1.20")
 
 	// owo lib
 	modImplementation "io.wispforest:owo-lib:${project.owo_version}"

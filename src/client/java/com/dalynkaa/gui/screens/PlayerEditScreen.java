@@ -5,6 +5,7 @@ import com.dalynkaa.gui.widget.ScrollDropdownComponent;
 import com.dalynkaa.utilities.data.HighlightPlayer;
 import com.dalynkaa.utilities.data.HighlitedPlayer;
 import com.dalynkaa.utilities.data.Prefix;
+import com.terraformersmc.modmenu.gui.widget.LegacyTexturedButtonWidget;
 import io.wispforest.owo.ui.base.BaseOwoScreen;
 import io.wispforest.owo.ui.component.ButtonComponent;
 import io.wispforest.owo.ui.component.Components;
@@ -15,6 +16,7 @@ import io.wispforest.owo.ui.core.*;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.screen.ButtonTextures;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TexturedButtonWidget;
@@ -108,13 +110,13 @@ public class PlayerEditScreen extends BaseOwoScreen<FlowLayout> {
         boolean isHiden = highlitedPlayer.isHiden();
 
         if (isHiden) {
-            buttonComponent = new TexturedButtonWidget(0, 0, 20, 20, 20, 32, 20, HIGHLIGHT_ICON, 256, 256, click -> {
+            buttonComponent = new LegacyTexturedButtonWidget(0, 0, 20, 20, 20, 32, 20, HIGHLIGHT_ICON, 256, 256, click -> {
                 LOGGER.info("unhided");
                 HighlitedPlayer.getHighlitedPlayer(highlightPlayer.uuid()).setHiden(false);
                 client.setScreen(new PlayerEditScreen(highlightPlayer, new HighlightListScreen()));
             },Text.translatable("gui.gamehighlighter.un_highlighted"));
         }else {
-            buttonComponent = new TexturedButtonWidget(0, 0, 20, 20, 0, 32, 20, HIGHLIGHT_ICON, 256, 256, click -> {
+            buttonComponent = new LegacyTexturedButtonWidget(0, 0, 20, 20, 0, 32, 20, HIGHLIGHT_ICON, 256, 256, click -> {
                 LOGGER.info("hided");
                 HighlitedPlayer.getHighlitedPlayer(highlightPlayer.uuid()).setHiden(true);
                 client.setScreen(new PlayerEditScreen(highlightPlayer, new HighlightListScreen()));
