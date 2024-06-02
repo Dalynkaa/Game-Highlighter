@@ -31,7 +31,7 @@ public class KeyBindManager {
     public static final KeyBinding HIDETYPE_KEYBIND = new KeyBinding(
             "key.gamehighlighter.hidetype",
             InputUtil.Type.KEYSYM,
-            InputUtil.GLFW_KEY_T,
+            InputUtil.GLFW_KEY_Y,
             "key.category.GameHighlighter"
     );
     public static final KeyBinding TABKEY_KEYBIND = new KeyBinding(

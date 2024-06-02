@@ -35,7 +35,7 @@ public class PlayerEditScreen extends BaseOwoScreen<FlowLayout> {
     public static final int SKIN_TEXTURE_HEIGHT = 8;
     public static final int u = 8;
     public static final int v = 8;
-    private static final Logger LOGGER = LoggerFactory.getLogger("otsohelper");
+    private static final Logger LOGGER = LoggerFactory.getLogger("gamehighlighter");
     private boolean isHighlited;
 
     public PlayerEditScreen(HighlightPlayer highlightPlayer, Screen parent) {
