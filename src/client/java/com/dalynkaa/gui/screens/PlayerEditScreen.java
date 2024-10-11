@@ -31,7 +31,7 @@ import java.util.HashSet;
 
 @Environment(EnvType.CLIENT)
 public class PlayerEditScreen extends BaseOwoScreen<FlowLayout> {
-    private static final Identifier HIGHLIGHT_ICON = new Identifier("gamehighlighter","textures/gui/icons.png");
+    private static final Identifier HIGHLIGHT_ICON = Identifier.of("gamehighlighter","textures/gui/icons.png");
 
     public static final int SKIN_TEXTURE_WIDTH = 8;
     public static final int SKIN_TEXTURE_HEIGHT = 8;

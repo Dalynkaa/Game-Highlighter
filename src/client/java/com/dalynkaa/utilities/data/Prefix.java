@@ -62,8 +62,8 @@ public class Prefix {
     }
     public MutableText getPrefixText(Text displayname) {
         MutableText mutableText = Text.literal("");
-        mutableText.append(getPrefixChar()).styled(style -> style.withColor(TextColor.parse(getPrefix_color())));
-        mutableText.append(displayname.copy().styled(style -> style.withColor(TextColor.parse(getColor()))));
+        mutableText.append(getPrefixChar()).styled(style -> style.withColor(TextColor.parse(getPrefix_color()).getOrThrow()));
+        mutableText.append(displayname.copy().styled(style -> style.withColor(TextColor.parse(getColor()).getOrThrow())));
         return mutableText;
     }
 

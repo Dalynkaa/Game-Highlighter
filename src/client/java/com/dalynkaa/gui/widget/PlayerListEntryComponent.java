@@ -23,7 +23,7 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 
 public class PlayerListEntryComponent extends FlowLayout {
-    private static final Identifier HIGHLIGHT_ICON = new Identifier("gamehighlighter","textures/gui/icons.png");
+    private static final Identifier HIGHLIGHT_ICON = Identifier.of("gamehighlighter","textures/gui/icons.png");
 
     private final MinecraftClient client = MinecraftClient.getInstance();
 

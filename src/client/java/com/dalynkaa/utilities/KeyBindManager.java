@@ -99,9 +99,9 @@ public class KeyBindManager {
                     if (entity instanceof PlayerEntity player) {
                         MinecraftClient.getInstance().getSocialInteractionsManager().hidePlayer(player.getUuid());
                         MutableText mutableText = Text.literal("");
-                        mutableText.append("Player ").styled(style -> style.withColor(TextColor.parse("#00b894")));
-                        mutableText.append(player.getDisplayName()).styled(style -> style.withColor(TextColor.parse("#55efc4")));
-                        mutableText.append(" hided").styled(style -> style.withColor(TextColor.parse("#00b894")));
+                        mutableText.append("Player ").styled(style -> style.withColor(TextColor.parse("#00b894").getOrThrow()));
+                        mutableText.append(player.getDisplayName()).styled(style -> style.withColor(TextColor.parse("#55efc4").getOrThrow()));
+                        mutableText.append(" hided").styled(style -> style.withColor(TextColor.parse("#00b894").getOrThrow()));
                         assert client.player != null;
                         client.player.sendMessage(mutableText,true);
 
