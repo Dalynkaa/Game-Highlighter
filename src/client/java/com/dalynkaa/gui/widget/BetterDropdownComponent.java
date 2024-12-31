@@ -99,7 +99,9 @@ public class BetterDropdownComponent extends FlowLayout {
         if (this.closeWhenNotHovered && !this.isInBoundingBox(mouseX, mouseY)) {
             this.queue(() -> {
                 this.closeWhenNotHovered(false);
-                this.parent.removeChild(this);
+                if (this.parent != null) {
+                    this.parent.removeChild(this);
+                }
             });
         }
     }
@@ -148,7 +150,9 @@ public class BetterDropdownComponent extends FlowLayout {
         if (child == this.entries) {
             this.queue(() -> {
                 this.closeWhenNotHovered(false);
-                this.parent.removeChild(this);
+                if (this.parent != null) {
+                    this.parent.removeChild(this);
+                }
             });
         }
         return super.removeChild(child);
@@ -254,7 +258,9 @@ public class BetterDropdownComponent extends FlowLayout {
         @Override
         public void draw(OwoUIDrawContext context, int mouseX, int mouseY, float partialTicks, float delta) {
             super.draw(context, mouseX, mouseY, partialTicks, delta);
-            drawIconFromTexture(context, this.parent, this.y, 0, 16);
+            if (this.parent != null) {
+                drawIconFromTexture(context, this.parent, this.y, 0, 16);
+            }
 
             this.child.closeWhenNotHovered(!PositionedRectangle.of(this.x, this.y, this.parent.width(), this.height).isInBoundingBox(mouseX, mouseY));
         }
@@ -333,7 +339,9 @@ public class BetterDropdownComponent extends FlowLayout {
         @Override
         public void draw(OwoUIDrawContext context, int mouseX, int mouseY, float partialTicks, float delta) {
             super.draw(context, mouseX, mouseY, partialTicks, delta);
-            drawIconFromTexture(context, this.parent, this.y, this.state ? 16 : 0, 0);
+            if (this.parent != null) {
+                drawIconFromTexture(context, this.parent, this.y, this.state ? 16 : 0, 0);
+            }
         }
 
         @Override

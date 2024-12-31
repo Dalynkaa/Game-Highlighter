@@ -3,6 +3,7 @@ package com.dalynkaa.gui.widget;
 import com.dalynkaa.gui.screens.HighlightListScreen;
 import com.dalynkaa.gui.screens.PlayerEditScreen;
 import com.dalynkaa.utilities.data.HighlightPlayer;
+import com.dalynkaa.utilities.data.Prefix;
 import com.terraformersmc.modmenu.gui.widget.LegacyTexturedButtonWidget;
 import io.wispforest.owo.ui.component.Components;
 import io.wispforest.owo.ui.component.VanillaWidgetComponent;
@@ -28,12 +29,19 @@ public class PlayerListEntryComponent extends FlowLayout {
     private final MinecraftClient client = MinecraftClient.getInstance();
 
 
-    public PlayerListEntryComponent(PlayerListEntry entry) {
+    public PlayerListEntryComponent(PlayerListEntry entry, Prefix prefix) {
+
         super(Sizing.fill(99), Sizing.fixed(30), Algorithm.HORIZONTAL);
         super.padding(Insets.of(5,5,5,5));
         PlayerHeadComponent head = new PlayerHeadComponent(Sizing.fixed(20), Sizing.fixed(20), entry.getSkinTextures().texture());
-        Component player = Containers.horizontalFlow(Sizing.fixed(167), Sizing.fixed(35))
-                .child(Components.label(Text.literal(entry.getProfile().getName()).styled((style) -> style.withColor(TextColor.fromFormatting(Formatting.WHITE)))));
+        Component player;
+        if (prefix == null){
+            player = Containers.horizontalFlow(Sizing.fixed(167), Sizing.fixed(35))
+                    .child(Components.label(Text.literal(entry.getProfile().getName()).styled((style) -> style.withColor(TextColor.fromFormatting(Formatting.WHITE)))));
+        }else {
+            player = Containers.horizontalFlow(Sizing.fixed(167), Sizing.fixed(35))
+                    .child(Components.label(prefix.getPrefixText(Text.literal(entry.getProfile().getName()))));
+        }
         player.margins(Insets.of(5,0,5,0));
         ButtonWidget buttonComponent = new LegacyTexturedButtonWidget(0, 0, 20, 20, 0, 32, 20, HIGHLIGHT_ICON, 256, 256, button -> client.setScreen(new PlayerEditScreen(new HighlightPlayer(entry.getProfile().getId(), entry.getProfile().getName(),entry.getSkinTextures().texture()), new HighlightListScreen())),Text.translatable("gui.gamehighlighter.un_highlighted"));
         VanillaWidgetComponent buttonWidget = Components.wrapVanillaWidget(buttonComponent);

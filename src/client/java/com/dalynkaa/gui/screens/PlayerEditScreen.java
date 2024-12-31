@@ -16,10 +16,9 @@ import io.wispforest.owo.ui.core.*;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.ButtonTextures;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.widget.TexturedButtonWidget;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.NotNull;
@@ -39,6 +38,7 @@ public class PlayerEditScreen extends BaseOwoScreen<FlowLayout> {
     public static final int v = 8;
     private static final Logger LOGGER = LoggerFactory.getLogger("gamehighlighter");
     private boolean isHighlited;
+    private HashSet<Prefix> prefixes;
 
     public PlayerEditScreen(HighlightPlayer highlightPlayer, Screen parent) {
         super(Text.translatable("gui.playerEdit.title", highlightPlayer.name()));
@@ -46,24 +46,37 @@ public class PlayerEditScreen extends BaseOwoScreen<FlowLayout> {
         this.client = MinecraftClient.getInstance();
         this.parent = parent;
         this.isHighlited = GameHighlighterClient.getClientConfig().isHighlighted(highlightPlayer.uuid());
+        this.prefixes = GameHighlighterClient.getClientConfig().getAllPrefixes();
 
     }
     private final HighlightPlayer highlightPlayer;
     private final Screen parent;
     private final MinecraftClient client;
-    private String highlitedText() {
+
+    private String highlightedText() {
         this.isHighlited = GameHighlighterClient.getClientConfig().isHighlighted(highlightPlayer.uuid());
         if (isHighlited) {
             Prefix prefix = HighlitedPlayer.getHighlitedPlayer(highlightPlayer.uuid()).getPrefix();
-            LOGGER.info(prefix.toString());
-            return prefix.getPrefix_tag() + " (" + prefix.getPrefixChar() + ")";
+            if (prefix!=null) {
+                return prefix.getPrefix_tag() + " (" + prefix.getPrefixChar() + ")";
+            }else {
+                return Text.translatable("gui.playerEdit.label.highlight").getString();
+            }
         } else {
             return Text.translatable("gui.playerEdit.label.highlight").getString();
         }
     }
+
     @Override
     protected @NotNull OwoUIAdapter<FlowLayout> createAdapter() {
+        this.prefixes = GameHighlighterClient.getClientConfig().getAllPrefixes();
         return OwoUIAdapter.create(this, Containers::verticalFlow);
+    }
+
+
+    @Override
+    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+        super.render(context, mouseX, mouseY, delta);
     }
 
     @Override
@@ -77,11 +90,11 @@ public class PlayerEditScreen extends BaseOwoScreen<FlowLayout> {
         Component player_head = Components.texture(highlightPlayer.skinTexture(),u,v,SKIN_TEXTURE_WIDTH,SKIN_TEXTURE_HEIGHT,64,64)
                 .sizing(Sizing.fixed(20), Sizing.fixed(20))
                 .margins(Insets.of(0,0,0,5));
-        ParentComponent playerInfo = Containers.horizontalFlow(Sizing.fill(90), Sizing.content())
+        ParentComponent playerInfo = Containers.horizontalFlow(Sizing.fixed(276-32), Sizing.content())
                 .child(player_head)
                 .child(nickname);
-        ScrollDropdownComponent scrollDropdownComponent = new ScrollDropdownComponent(Sizing.fixed(150), Sizing.content(), Text.literal(highlitedText()), false);
-        HashSet<Prefix> prefixes = GameHighlighterClient.getClientConfig().getAllPrefixes();
+        ScrollDropdownComponent scrollDropdownComponent = new ScrollDropdownComponent(Sizing.fixed(150), Sizing.content(), Text.literal(highlightedText()), false);
+
         for (Prefix prefix : prefixes) {
             scrollDropdownComponent.button(Text.literal(prefix.getPrefix_tag()+" ("+ prefix.getPrefixChar() +")"), button -> {
                 HighlitedPlayer HPlayer = HighlitedPlayer.getHighlitedPlayer(highlightPlayer.uuid());
@@ -101,10 +114,15 @@ public class PlayerEditScreen extends BaseOwoScreen<FlowLayout> {
             client.setScreen(new PrefixEditScreen(Text.translatable("gui.playerEdit.button.newPrefix"), this));
         });
         ParentComponent scrollDropdown = scrollDropdownComponent.margins(Insets.of(5,5,5,5));
-        ButtonComponent button = Components.button(Text.translatable("gui.playerEdit.button.edit"), (comp) -> {
+        ButtonComponent edit = Components.button(Text.translatable("gui.playerEdit.button.edit"), (comp) -> {
             Prefix prefix = HighlitedPlayer.getHighlitedPlayer(highlightPlayer.uuid()).getPrefix();
-            client.setScreen(new PrefixEditScreen(null, this, prefix));
+            if (prefix!=null) {
+                client.setScreen(new PrefixEditScreen(Text.translatable("gui.playerEdit.button.edit"), this, prefix));
+            }
         }).active(isHighlited);
+        ButtonComponent save = Components.button(Text.translatable("gui.playerEdit.button.save"), (comp) -> {
+            client.setScreen(parent);
+        });
         ButtonWidget buttonComponent;
         HighlitedPlayer highlitedPlayer = HighlitedPlayer.getHighlitedPlayer(highlightPlayer.uuid());
         boolean isHiden = highlitedPlayer.isHiden();
@@ -124,22 +142,23 @@ public class PlayerEditScreen extends BaseOwoScreen<FlowLayout> {
         }
         VanillaWidgetComponent buttonWidget = Components.wrapVanillaWidget(buttonComponent);
 //        SmallCheckboxComponent checkbox = Components.smallCheckbox(Text.literal("Скрыт")).checked(HPlayer.isHiden());
-        ParentComponent editContainer = Containers.horizontalFlow(Sizing.fixed(236), Sizing.content())
+        ParentComponent editContainer = Containers.horizontalFlow(Sizing.fixed(276), Sizing.content())
                 .child(scrollDropdown)
-                .child(button.margins(Insets.of(5,5,5,5)).sizing(Sizing.fixed(50), Sizing.fixed(20)))
+                .child(edit.margins(Insets.of(5,5,0,0)).sizing(Sizing.fixed(51), Sizing.fixed(20)))
+                .child(save.margins(Insets.of(5,5,5,0)).sizing(Sizing.fixed(51), Sizing.fixed(20)))
 //                .child(checkbox.margins(Insets.of(5,5,5,5)))
                 .verticalAlignment(VerticalAlignment.TOP)
                 .horizontalAlignment(HorizontalAlignment.LEFT)
-                .padding(Insets.of(5,5,5,5))
+                .padding(Insets.of(2,2,2,2))
                 .surface(Surface.DARK_PANEL);
-        ParentComponent titleContainer = Containers.horizontalFlow(Sizing.fixed(236), Sizing.fixed(30))
+        ParentComponent titleContainer = Containers.horizontalFlow(Sizing.fixed(276), Sizing.fixed(30))
                 .child(playerInfo)
                 .child(buttonWidget)
                 .verticalAlignment(VerticalAlignment.TOP)
                 .horizontalAlignment(HorizontalAlignment.LEFT)
                 .padding(Insets.of(5,5,5,5))
                 .surface(Surface.DARK_PANEL);
-        ParentComponent container = Containers.verticalFlow(Sizing.fixed(236), Sizing.content())
+        ParentComponent container = Containers.verticalFlow(Sizing.fixed(276), Sizing.content())
                 .child(titleContainer)
                 .child(editContainer)
                 .padding(Insets.of(0))

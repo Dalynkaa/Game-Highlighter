@@ -1,5 +1,6 @@
 package com.dalynkaa.gui.screens;
 
+import com.dalynkaa.GameHighlighterClient;
 import com.dalynkaa.gui.widget.PlayerListEntryComponent;
 import com.dalynkaa.utilities.data.HighlitedPlayer;
 import com.dalynkaa.utilities.data.Prefix;
@@ -19,17 +20,26 @@ import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.text.Text;
 import net.minecraft.text.TextColor;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 
 @Environment(EnvType.CLIENT)
 
 public class HighlightListScreen extends BaseOwoScreen<FlowLayout> {
+
+    Comparator<PlayerListEntry> ENTRY_ORDERING = Comparator.comparingInt(value -> GameHighlighterClient.clientConfig.getAllHighlitedUUID().contains(value.getProfile().getId()) ? 0 : 1);
     Collection<PlayerListEntry> entries;
+    TextBoxComponent searchBox;
+
+    private static final Identifier SEARCH_ICON_TEXTURE = Identifier.of("gamehighlighter","textures/gui/search.png");
+
+
     public HighlightListScreen() {
         ClientPlayNetworkHandler networkHandler = MinecraftClient.getInstance().getNetworkHandler();
         if (networkHandler != null) {
@@ -37,6 +47,12 @@ public class HighlightListScreen extends BaseOwoScreen<FlowLayout> {
         }
 
     }
+
+    @Override
+    protected void setInitialFocus() {
+        super.setInitialFocus(searchBox);
+    }
+
     @Override
     protected @NotNull OwoUIAdapter<FlowLayout> createAdapter() {
         return OwoUIAdapter.create(this, Containers::horizontalFlow);
@@ -44,17 +60,20 @@ public class HighlightListScreen extends BaseOwoScreen<FlowLayout> {
 
     @Override
     protected void build(FlowLayout rootComponent) {
-        LabelComponent playerName = Components.label(Text.literal("????").styled((style) -> style.withColor(TextColor.fromFormatting(Formatting.WHITE))));
+        LabelComponent playerName = Components.label(Text.literal("Unknown").styled((style) -> style.withColor(TextColor.fromFormatting(Formatting.WHITE))));
         playerName.margins(Insets.of(5,5,5,0));
         rootComponent
                 .surface(Surface.blur(15,10))
                 .horizontalAlignment(HorizontalAlignment.RIGHT)
                 .verticalAlignment(VerticalAlignment.CENTER)
                 .padding(Insets.of(5,5,5,100));
-        Component title = Components.label(Text.literal("Player List").styled((style) -> style.withColor(TextColor.fromFormatting(Formatting.BLACK))))
+        Component title = Components.label(Text.literal("Player List").styled((style) -> style.withColor(TextColor.fromFormatting(Formatting.WHITE))))
                 .margins(Insets.of(5,5,5,0));
-        TextBoxComponent searchBox = Components.textBox(Sizing.fill(100), "");
-        searchBox.margins(Insets.of(0,5,0,0));
+        searchBox = Components.textBox(Sizing.fill(99), "");
+        FlowLayout searchContainer = Containers.horizontalFlow(Sizing.fill(100), Sizing.fixed(20))
+                .child(createSearchIcon().sizing(Sizing.fixed(20), Sizing.fixed(20)))
+                .child(searchBox);
+        searchBox.margins(Insets.of(0,5,0,5));
         FlowLayout scrollContainer = Containers.verticalFlow(Sizing.fill(100), Sizing.content());
         setTargetPlayer(scrollContainer,entries.stream().toList(),playerName);
         searchBox.onChanged().subscribe(text -> {
@@ -70,12 +89,16 @@ public class HighlightListScreen extends BaseOwoScreen<FlowLayout> {
         listContainer.scrollbar(ScrollContainer.Scrollbar.vanilla());
         listContainer.verticalAlignment(VerticalAlignment.TOP)
                 .horizontalAlignment(HorizontalAlignment.LEFT);
-        ParentComponent listContainerMain = Containers.verticalFlow(Sizing.fixed(236), Sizing.fixed(400))
-                .child(title)
-                .child(searchBox)
+        ParentComponent listContainerMain = Containers.verticalFlow(Sizing.fixed(236), Sizing.fixed(390))
+                .child(searchContainer.margins(Insets.of(0,5,0,3)))
                 .child(listContainer)
-                .padding(Insets.of(5,5,5,5))
-                .surface(Surface.PANEL);
+                .surface(Surface.PANEL)
+                .padding(Insets.of(5,5,5,5));
+
+        ParentComponent test = Containers.verticalFlow(Sizing.fixed(246), Sizing.fixed(400))
+                .child(title)
+                .child(listContainerMain)
+                .padding(Insets.of(5,5,5,5));
 
         //playerInfoContainer
 
@@ -86,14 +109,15 @@ public class HighlightListScreen extends BaseOwoScreen<FlowLayout> {
 
 
         rootComponent.child(playerInfoContainer);
-        rootComponent.child(listContainerMain);
+        rootComponent.child(test);
     }
     public void setTargetPlayer(FlowLayout scrollContainer, List<PlayerListEntry> filtered, LabelComponent playerName) {
-        for (PlayerListEntry entry : filtered) {
-            PlayerListEntryComponent player = new PlayerListEntryComponent(entry);
+        List<PlayerListEntry> filtered1 = filtered.stream().sorted(ENTRY_ORDERING).toList();
+        for (PlayerListEntry entry : filtered1) {
+            HighlitedPlayer highlitedPlayer = HighlitedPlayer.getHighlitedPlayer(entry.getProfile().getId());
+            Prefix prefix = highlitedPlayer.getPrefix();
+            PlayerListEntryComponent player = new PlayerListEntryComponent(entry, prefix);
             player.mouseEnter().subscribe(() ->{
-                HighlitedPlayer highlitedPlayer = HighlitedPlayer.getHighlitedPlayer(entry.getProfile().getId());
-                Prefix prefix = highlitedPlayer.getPrefix();
                 if (prefix == null) {
                     playerName.text(Text.literal(entry.getProfile().getName()).styled((style) -> style.withColor(TextColor.fromFormatting(Formatting.WHITE))));
                     return;
@@ -102,6 +126,11 @@ public class HighlightListScreen extends BaseOwoScreen<FlowLayout> {
             });
             scrollContainer.child(player);
         }
+    }
+    private Component createSearchIcon() {
+        return Components.texture(SEARCH_ICON_TEXTURE, 0, 0, 12, 12)
+                .sizing(Sizing.fixed(12), Sizing.fixed(12))
+                .margins(Insets.of(4)); // Add margins if needed
     }
 
 }

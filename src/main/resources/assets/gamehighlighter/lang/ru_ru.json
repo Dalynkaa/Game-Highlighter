@@ -25,6 +25,7 @@
   "gui.playerEdit.dropdown.removeHighlight": "Убрать выделение",
   "gui.playerEdit.button.newPrefix": "Новый префикс",
   "gui.playerEdit.button.edit": "Измен.",
+  "gui.playerEdit.button.save": "Сохран.",
 
   "gui.prefixEdit.titleNew": "Создание префикса",
   "gui.prefixEdit.titleEdit": "Редактирование - %d",

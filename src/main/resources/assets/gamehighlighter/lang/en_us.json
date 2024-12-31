@@ -25,6 +25,7 @@
   "gui.playerEdit.dropdown.removeHighlight": "Remove highlight",
   "gui.playerEdit.button.newPrefix": "Create new prefix",
   "gui.playerEdit.button.edit": "Edit",
+  "gui.playerEdit.button.save": "Save",
 
   "gui.prefixEdit.titleNew": "New prefix",
   "gui.prefixEdit.titleEdit": "Edit - %d",

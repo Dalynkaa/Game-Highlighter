@@ -71,7 +71,7 @@ public class PrefixEditScreen extends BaseOwoScreen<FlowLayout> {
             save_button = Components.button(Text.translatable("gui.prefixEdit.button.edit"), button -> {
                 if (!prefix_tag.getText().isEmpty() && !prefix_char.getText().isEmpty() && !prefix_player_color.getText().isEmpty() && !prefix_prefix_color.getText().isEmpty()) {
                     GameHighlighterClient.getClientConfig().setPrefix(new Prefix(prefix.getPrefix_id(), prefix_tag.getText(), prefix_char.getText(), prefix_player_color.getText(), prefix_prefix_color.getText()));
-                    client.setScreen(new SocialInteractionsScreen());
+                    client.setScreen(new HighlightListScreen());
                 }
             });
         }else {
@@ -82,7 +82,7 @@ public class PrefixEditScreen extends BaseOwoScreen<FlowLayout> {
             save_button = Components.button(Text.translatable("gui.prefixEdit.button.create"), button -> {
                 if (!prefix_tag.getText().isEmpty() && !prefix_char.getText().isEmpty() && !prefix_player_color.getText().isEmpty() && !prefix_prefix_color.getText().isEmpty()) {
                     GameHighlighterClient.getClientConfig().addPrefix(new Prefix(UUID.randomUUID(), prefix_tag.getText(), prefix_char.getText(), prefix_player_color.getText(), prefix_prefix_color.getText()));
-                    client.setScreen(new SocialInteractionsScreen());
+                    client.setScreen(new HighlightListScreen());
                 }
             });
         }

@@ -45,21 +45,25 @@ public class HiglightConfig {
                 for (UUID uuid: mutedClients){
                     addPlayer(new HighlitedPlayer(uuid, UUID.fromString("b4c9349b-2bf1-4af6-b8b7-a585797d56a4"), false, true));
                 }
+                save();
             }
             if (prefixes == null || prefixes.isEmpty()){
                 addPrefix(new Prefix(UUID.fromString("b4c9349b-2bf1-4af6-b8b7-a585797d56a4"), "Example prefix", "* ", "#e84393", "#fd79a8"));
+                save();
             }
         }
         if (Objects.equals(this.version, "1.4")){
             this.version = "1.5";
             if (getPrefix(UUID.fromString("b4c9349b-2bf1-4af6-b8b7-a585797d56a4"))==null){
                 addPrefix(new Prefix(UUID.fromString("b4c9349b-2bf1-4af6-b8b7-a585797d56a4"), "Default prefix", "* ", "#e84393", "#fd79a8"));
+                save();
             }
             if (getPrefix(UUID.fromString("b4c9349b-2bf1-4af6-b8b7-a585797d56a5"))!=null){
                 setPrefix(new Prefix(UUID.fromString("b4c9349b-2bf1-4af6-b8b7-a585797d56a5"), "Example prefix", "* ", "#e84393", "#fd79a8"));
+                save();
             }
         }
-        save();
+
     }
     public static HiglightConfig read() {
         Gson gson = new Gson();
@@ -73,7 +77,12 @@ public class HiglightConfig {
                     co.migration();
                     return Objects.requireNonNullElseGet(co, () -> new HiglightConfig("1.4",new HashSet<>(), new HashSet<>(), new HashSet<>()));
                 } catch (JsonSyntaxException j) {
-                    configFile.delete();
+                    boolean isDeleted = configFile.delete();
+                    if (isDeleted) {
+                        System.out.println("[Configuration] Deleted Corrupted File!");
+                    } else {
+                        System.out.println("[Configuration] Failed to Delete Corrupted File!");
+                    }
                 }
             } catch (FileNotFoundException ignored) {
             }

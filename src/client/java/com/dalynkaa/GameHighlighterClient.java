@@ -1,6 +1,5 @@
 package com.dalynkaa;
 
-import com.dalynkaa.listeners.OnChatMessage;
 import com.dalynkaa.utilities.HiglightConfig;
 import com.dalynkaa.utilities.KeyBindManager;
 import com.dalynkaa.utilities.ModConfig;
@@ -26,6 +25,9 @@ public class GameHighlighterClient implements ClientModInitializer {
 		clientConfig = HiglightConfig.read();
 		KeyBindManager.registerKeyBindings();
 		KeyBindManager.initKeysListeners();
-		new OnChatMessage();
+	}
+	public static void updateConfig(){
+		clientConfig.save();
+		clientConfig = HiglightConfig.read();
 	}
 }
