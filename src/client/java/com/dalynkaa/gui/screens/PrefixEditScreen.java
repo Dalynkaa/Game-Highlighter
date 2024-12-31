@@ -26,7 +26,7 @@ import java.util.UUID;
 
 @Environment(EnvType.CLIENT)
 public class PrefixEditScreen extends BaseOwoScreen<FlowLayout> {
-    private static final Logger LOGGER = LoggerFactory.getLogger("otsohelper");
+    private static final Logger LOGGER = LoggerFactory.getLogger("gamehighlighter");
 
     public PrefixEditScreen(Text title, Screen parent) {
         super(Text.translatable("gui.prefixEdit.titleNew"));
