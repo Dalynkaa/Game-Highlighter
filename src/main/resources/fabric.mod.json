@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "id": "gamehighlighter",
+  "version": "${version}",
+  "name": "GameHighlighter",
+  "description": "Mod for highlighting and hiding players",
+  "authors": [
+    "Dalynkaa"
+  ],
+  "contact": {},
+  "license": "All-Rights-Reserved",
+  "icon": "assets/gamehighlighter/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "me.dalynkaa.gamehighlighter.client.GameHighlighterClient"
+    ],
+    "main": [
+      "me.dalynkaa.gamehighlighter.GameHighlighter"
+    ],
+    "modmenu": [
+      "me.dalynkaa.gamehighlighter.client.utilities.ModMenuIntegration"
+    ]
+  },
+  "mixins": [
+    "gamehighlighter.mixins.json",
+    {
+      "config": "gamehighlighter.client.mixins.json",
+      "environment": "client"
+    }
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric": "*",
+    "minecraft": ">=${minecraft_version}",
+    "cloth-config": ">=${cloth_config_version}",
+    "owo-lib": ">=${owo_version}"
+  }
+}

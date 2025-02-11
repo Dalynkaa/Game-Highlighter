@@ -1,0 +1,17 @@
+{
+  "tab_enabled": true,
+  "player_hider": false,
+  "tabSettings": {
+    "useExtendedTab": false
+  },
+  "chatSettings": {
+    "globalChatRegex": "\\[СП5\\] (?\u003cnickname\u003e[a-zA-Z0-9,\\.\\_]\\w*): (?\u003cmessage\u003e[а-яА-Яa-zA-Z0-9,\\.\\_].*)",
+    "globalChatMessage": "\u003cdark_blue\u003e\u003cb\u003e\u003cnickname\u003e\u003c/b\u003e\u003c/dark_blue\u003e \u003cblack\u003e\u003cb\u003e-\u003e\u003c/b\u003e\u003c/black\u003e \u003cblue\u003e\u003cmessage\u003e\u003c/blue\u003e",
+    "localChatRegex": "\\[СП5\\] (?\u003cnickname\u003e[a-zA-Z0-9,\\.\\_]\\w*): (?\u003cmessage\u003e[а-яА-Яa-zA-Z0-9,\\.\\_].*)"
+  },
+  "playerHiderSettings": {
+    "hideType": "ALL",
+    "radius": 0
+  },
+  "playerHider": []
+}
