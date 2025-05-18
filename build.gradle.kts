@@ -3,12 +3,27 @@ plugins {
     id("fabric-loom") version "1.9-SNAPSHOT"
 }
 
-version = project.extra["mod_version"] as String
+class ModData {
+    val id = property("mod.id").toString()
+    val name = property("mod.name").toString()
+    val version = property("mod.version").toString()
+    val group = property("mod.group").toString()
+}
+
+class ModDependencies {
+    operator fun get(name: String) = property("deps.$name").toString()
+}
+
 group = project.extra["maven_group"] as String
 
-base.archivesName.set("${project.extra["archives_base_name"]}-${project.extra["minecraft_version"]}")
+base.archivesName.set("${project.extra["archives_base_name"]}-${stonecutter.current.version}")
 
+val mod = ModData()
+val deps = ModDependencies()
+val mcVersion = stonecutter.current.version
 
+java.sourceCompatibility = JavaVersion.VERSION_21
+java.targetCompatibility = JavaVersion.VERSION_21
 
 
 repositories {
@@ -33,9 +48,21 @@ repositories {
 loom {
     splitEnvironmentSourceSets()
     mods {
-        register("gamehighlighter") {
+        register("highlighter") {
             sourceSet("main")
             sourceSet("client")
+        }
+    }
+    runConfigs {
+        named("client") {
+            ideConfigGenerated(true)
+            runDir = "../../runs/${stonecutter.current.version}"
+        }
+
+        all {
+            if (name != "client") {
+                ideConfigGenerated(false)
+            }
         }
     }
 }
@@ -45,57 +72,74 @@ dependencies {
     annotationProcessor("org.projectlombok:lombok:1.18.32")
 
     // Minecraft dependencies
-    minecraft("com.mojang:minecraft:${project.findProperty("minecraft_version")}")
-    mappings("net.fabricmc:yarn:${project.findProperty("yarn_mappings")}:v2")
-    modImplementation("net.fabricmc:fabric-loader:${project.findProperty("loader_version")}")
+    minecraft("com.mojang:minecraft:${stonecutter.current.project}")
+    mappings("net.fabricmc:yarn:${property("deps.yarn_mappings")}:v2")
+    modImplementation("net.fabricmc:fabric-loader:${property("deps.fabric_loader")}")
+    val fapi = deps["fabric_api"]
+    val miniMessage = deps["minimessage_version"]
+    val clothConfig = deps["cloth_config_version"]
+    val modMenu = deps["mod_menu_version"]
+    val owo = deps["owo_version"]
 
-    // Fabric API
-    modImplementation("net.fabricmc.fabric-api:fabric-api:${project.findProperty("fabric_version")}")
+    if (stonecutter.current.isActive) {
+        if (fapi != "[VERSIONED]") {
+            println("Using Fabric API version $fapi")
+            modImplementation("net.fabricmc.fabric-api:fabric-api:$fapi")
+        }
+        if (miniMessage != "[VERSIONED]") {
+            println("Using MiniMessage version $miniMessage")
+//            modImplementation("net.kyori:adventure-platform-fabric:$miniMessage")
+//            include("net.kyori:adventure-platform-fabric:$miniMessage")
+            modImplementation(include("net.kyori:adventure-platform-fabric:$miniMessage")!!)
+        }
+        if (clothConfig != "[VERSIONED]") {
+            println("Using Cloth Config version $clothConfig")
+            modApi("me.shedaniel.cloth:cloth-config-fabric:$clothConfig") {
+                exclude(group = "net.fabricmc.fabric-api")
+            }
+        }
+        if (modMenu != "[VERSIONED]") {
+            println("Using Mod Menu version $modMenu")
+            modApi("com.terraformersmc:modmenu:$modMenu")
+        }
+        if (owo != "[VERSIONED]") {
+            println("Using OWO version $owo")
+            modImplementation("io.wispforest:owo-lib:$owo")
+            annotationProcessor("io.wispforest:owo-lib:$owo")
+            include("io.wispforest:owo-lib:$owo")
 
-    // Mod dependencies
-    modApi("com.terraformersmc:modmenu:${project.findProperty("mod_menu_version")}")
-    modApi("me.shedaniel.cloth:cloth-config-fabric:${project.findProperty("cloth_config_version")}") {
-        exclude(group = "net.fabricmc.fabric-api")
+        }
+
+
     }
 
-    // owo lib
-    modImplementation("io.wispforest:owo-lib:${project.findProperty("owo_version")}")
-    annotationProcessor("io.wispforest:owo-lib:${project.findProperty("owo_version")}")
-    include("io.wispforest:owo-lib:${project.findProperty("owo_version")}")
-
-    implementation("com.moulberry:mixinconstraints:1.0.1")
-    include("com.moulberry:mixinconstraints:1.0.1")
-
-    // MiniMessage
-    modImplementation("net.kyori:adventure-platform-fabric:${project.findProperty("minimessage_version")}")
-    include("net.kyori:adventure-platform-fabric:${project.findProperty("minimessage_version")}")
-
+    implementation("com.moulberry:mixinconstraints:1.0.8")?.let { include(it) }
 
     // Dev only
-    modRuntimeOnly("me.djtheredstoner:DevAuth-fabric:${project.findProperty("devauth_version")}")
+    runtimeOnly("me.djtheredstoner:DevAuth-fabric:${project.findProperty("devauth_version")}")
 }
 
 
 tasks {
     processResources {
-        inputs.property("version", project.version)
-        inputs.property("minecraft_version", project.extra["minecraft_version"])
-        inputs.property("loader_version", project.extra["loader_version"])
-        inputs.property("cloth_config_version", project.extra["cloth_config_version"])
-        inputs.property("mod_menu_version", project.extra["mod_menu_version"])
-        inputs.property("owo_version", project.extra["owo_version"])
+        inputs.property("version", mod.version)
+        inputs.property("minecraft_version", stonecutter.current.version)
+        inputs.property("loader_version", project.extra["deps.fabric_loader"])
+        inputs.property("cloth_config_version", project.extra["deps.cloth_config_version"])
+        inputs.property("mod_menu_version", project.extra["deps.mod_menu_version"])
+        inputs.property("owo_version", project.extra["deps.owo_version"])
         filteringCharset = "UTF-8"
 
         filesMatching("fabric.mod.json") {
             expand(
                 mapOf(
-                    "version" to project.version,
-                    "minecraft_version" to project.extra["minecraft_version"],
-                    "fabric_version" to project.extra["fabric_version"],
-                    "loader_version" to project.extra["loader_version"],
-                    "cloth_config_version" to project.extra["cloth_config_version"],
-                    "mod_menu_version" to project.extra["mod_menu_version"],
-                    "owo_version" to project.extra["owo_version"]
+                    "version" to mod.version,
+                    "minecraft_version" to stonecutter.current.version,
+                    "fabric_version" to project.extra["deps.fabric_api"],
+                    "loader_version" to project.extra["deps.fabric_loader"],
+                    "cloth_config_version" to project.extra["deps.cloth_config_version"],
+                    "mod_menu_version" to project.extra["deps.mod_menu_version"],
+                    "owo_version" to project.extra["deps.owo_version"]
                 )
             )
         }

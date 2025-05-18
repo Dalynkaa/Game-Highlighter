@@ -1,31 +1,31 @@
 {
   "schemaVersion": 1,
-  "id": "gamehighlighter",
+  "id": "highlighter",
   "version": "${version}",
-  "name": "GameHighlighter",
+  "name": "Highlighter",
   "description": "Mod for highlighting and hiding players",
   "authors": [
     "Dalynkaa"
   ],
   "contact": {},
   "license": "All-Rights-Reserved",
-  "icon": "assets/gamehighlighter/icon.png",
+  "icon": "assets/highlighter/icon.png",
   "environment": "client",
   "entrypoints": {
     "client": [
-      "me.dalynkaa.gamehighlighter.client.GameHighlighterClient"
+      "me.dalynkaa.highlighter.client.HighlighterClient"
     ],
     "main": [
-      "me.dalynkaa.gamehighlighter.GameHighlighter"
+      "me.dalynkaa.highlighter.Highlighter"
     ],
     "modmenu": [
-      "me.dalynkaa.gamehighlighter.client.utilities.ModMenuIntegration"
+      "me.dalynkaa.highlighter.client.utilities.ModMenuIntegration"
     ]
   },
   "mixins": [
-    "gamehighlighter.mixins.json",
+    "highlighter.mixins.json",
     {
-      "config": "gamehighlighter.client.mixins.json",
+      "config": "highlighter.client.mixins.json",
       "environment": "client"
     }
   ],
