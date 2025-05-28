@@ -1,9 +1,9 @@
-package me.dalynkaa.highlighter.client.newgui.widgets;
+package me.dalynkaa.highlighter.client.gui.widgets.lists;
 
 import com.google.common.collect.Lists;
 import lombok.Setter;
-import me.dalynkaa.highlighter.client.newgui.HighlightScreen;
-import me.dalynkaa.highlighter.client.newgui.widgets.entryes.HighlighterPlayerListEntry;
+import me.dalynkaa.highlighter.client.gui.widgets.lists.entryes.HighlighterPlayerListEntry;
+import me.dalynkaa.highlighter.client.gui.HighlightScreen;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.widget.ElementListWidget;

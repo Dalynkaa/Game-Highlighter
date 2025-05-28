@@ -13,9 +13,7 @@ import me.dalynkaa.highlighter.client.utilities.data.Prefix;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 import static me.dalynkaa.highlighter.Highlighter.MOD_VERSION;
 import static me.dalynkaa.highlighter.client.config.StorageManager.mainConfigPath;
@@ -24,8 +22,8 @@ public class PrefixStorage {
     @Getter
     @Expose
     @SerializedName("prefixes")
-    HashSet<Prefix> prefixes;
-    
+    private LinkedHashSet<Prefix> prefixes;
+
     @Expose
     @SerializedName("version")
     private String version;
@@ -40,7 +38,7 @@ public class PrefixStorage {
             .setPrettyPrinting()
             .create();
 
-    public PrefixStorage(HashSet<Prefix> prefixes, String version) {
+    public PrefixStorage(LinkedHashSet<Prefix> prefixes, String version) {
         this.version = version;
         this.prefixes = prefixes;
     }
@@ -52,7 +50,7 @@ public class PrefixStorage {
                 JsonReader reader = new JsonReader(new InputStreamReader(new FileInputStream(configFile), StandardCharsets.UTF_8));
                 try {
                     PrefixStorage co = gson.fromJson(reader, PrefixStorage.class);
-                    return Objects.requireNonNullElseGet(co, () -> new PrefixStorage(new HashSet<>(), MOD_VERSION));
+                    return Objects.requireNonNullElseGet(co, () -> new PrefixStorage(new LinkedHashSet<>(), MOD_VERSION));
                 } catch (JsonSyntaxException j) {
                     boolean isDeleted = configFile.delete();
                     if (isDeleted) {
@@ -64,14 +62,15 @@ public class PrefixStorage {
             } catch (FileNotFoundException ignored) {
             }
         }
-        PrefixStorage prefixStorage = new PrefixStorage(new HashSet<>(), MOD_VERSION);
+        PrefixStorage prefixStorage = new PrefixStorage(new LinkedHashSet<>(), MOD_VERSION);
         prefixStorage.save();
         return prefixStorage;
     }
+
     public void save() {
         Highlighter.LOGGER.info("[Configuration] Saving PrefixStorage...");
         File configFile = mainConfigPath.resolve(fileName).toFile();
-        try (OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(configFile), StandardCharsets.UTF_8)){
+        try (OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(configFile), StandardCharsets.UTF_8)) {
             String json = gson.toJson(this);
             Highlighter.LOGGER.info("Saving PrefixStorage: {}", json);
             writer.write(json);
@@ -83,19 +82,20 @@ public class PrefixStorage {
     }
 
     public void addPrefix(Prefix prefix) {
-        if (prefixes == null){
-            prefixes = new HashSet<>();
+        if (prefixes == null) {
+            prefixes = new LinkedHashSet<>();
         }
         this.prefixes.add(prefix);
         save();
     }
+
     public void setPrefix(Prefix prefix) {
-        if (!containsPrefix(prefix.getPrefixId())){
+        if (!containsPrefix(prefix.getPrefixId())) {
             addPrefix(prefix);
             return;
         }
-        for (Prefix p: this.prefixes){
-            if (p.getPrefixId().equals(prefix.getPrefixId())){
+        for (Prefix p : this.prefixes) {
+            if (p.getPrefixId().equals(prefix.getPrefixId())) {
                 this.prefixes.remove(p);
                 this.prefixes.add(prefix);
                 break;
@@ -103,29 +103,74 @@ public class PrefixStorage {
         }
         save();
     }
+
     public boolean containsPrefix(UUID prefix_id) {
-        for (Prefix prefix: this.prefixes){
-            if (prefix.getPrefixId().equals(prefix_id)){
+        for (Prefix prefix : this.prefixes) {
+            if (prefix.getPrefixId().equals(prefix_id)) {
                 return true;
             }
         }
         return false;
     }
+
     public void removePrefix(UUID prefix_id) {
-        for (Prefix prefix: this.prefixes){
-            if (prefix.getPrefixId().equals(prefix_id)){
+        for (Prefix prefix : this.prefixes) {
+            if (prefix.getPrefixId().equals(prefix_id)) {
                 this.prefixes.remove(prefix);
                 break;
             }
         }
         save();
     }
+
     public Prefix getPrefix(UUID prefix_id) {
-        for (Prefix prefix: this.prefixes){
-            if (prefix.getPrefixId().equals(prefix_id)){
+        for (Prefix prefix : this.prefixes) {
+            if (prefix.getPrefixId().equals(prefix_id)) {
                 return prefix;
             }
         }
         return null;
+    }
+
+    public void movePrefixTop(Prefix prefix) {
+        if (prefix == null || !prefixes.contains(prefix)) {
+            return;
+        }
+        int currentIndex = prefix.getIndex();
+        if (currentIndex <= 0) {
+            return;
+        }
+        prefix.setIndex(currentIndex - 1);
+        for (Prefix otherPrefix : prefixes) {
+            if (otherPrefix != prefix && otherPrefix.getIndex() == currentIndex - 1) {
+                otherPrefix.setIndex(currentIndex);
+                break;
+            }
+        }
+        save();
+    }
+
+    public void movePrefixDown(Prefix prefix) {
+        if (prefix == null || !prefixes.contains(prefix)) {
+            return;
+        }
+        int currentIndex = prefix.getIndex();
+        int maxIndex = -1;
+        for (Prefix p : prefixes) {
+            if (p.getIndex() > maxIndex) {
+                maxIndex = p.getIndex();
+            }
+        }
+        if (currentIndex >= maxIndex) {
+            return;
+        }
+        prefix.setIndex(currentIndex + 1);
+        for (Prefix otherPrefix : prefixes) {
+            if (otherPrefix != prefix && otherPrefix.getIndex() == currentIndex + 1) {
+                otherPrefix.setIndex(currentIndex);
+                break;
+            }
+        }
+        save();
     }
 }

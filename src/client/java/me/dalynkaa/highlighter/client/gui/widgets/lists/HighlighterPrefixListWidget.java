@@ -1,15 +1,14 @@
-package me.dalynkaa.highlighter.client.newgui.widgets;
+package me.dalynkaa.highlighter.client.gui.widgets.lists;
 
 import com.google.common.collect.Lists;
 import lombok.Setter;
 import me.dalynkaa.highlighter.Highlighter;
-import me.dalynkaa.highlighter.client.newgui.HighlightScreen;
-import me.dalynkaa.highlighter.client.newgui.widgets.entryes.HighlighterPrefixListEntry;
+import me.dalynkaa.highlighter.client.gui.widgets.lists.entryes.HighlighterPrefixListEntry;
+import me.dalynkaa.highlighter.client.gui.HighlightScreen;
 import me.dalynkaa.highlighter.client.utilities.data.Prefix;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.widget.ElementListWidget;
-import net.minecraft.client.network.ClientPlayNetworkHandler;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -62,15 +61,15 @@ public class HighlighterPrefixListWidget  extends ElementListWidget<HighlighterP
     }
 
 
-    private void sortPlayers() {
-
+    private void sortPrefixes() {
+        this.prefixListEntries.sort(Comparator.comparing(entry -> entry.getPrefix().getIndex()));
     }
 
 
     private void refresh(Collection<HighlighterPrefixListEntry> prefixListEntries, double scrollAmount) {
         this.prefixListEntries.clear();
         this.prefixListEntries.addAll(prefixListEntries);
-        this.sortPlayers();
+        this.sortPrefixes();
         this.filterPlayers();
         this.replaceEntries(this.prefixListEntries);
         this.setScrollAmount(scrollAmount);

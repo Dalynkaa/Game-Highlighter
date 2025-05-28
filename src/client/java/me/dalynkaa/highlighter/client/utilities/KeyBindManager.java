@@ -2,7 +2,7 @@ package me.dalynkaa.highlighter.client.utilities;
 
 import me.dalynkaa.highlighter.client.HighlighterClient;
 import me.dalynkaa.highlighter.client.config.ModConfig;
-import me.dalynkaa.highlighter.client.newgui.HighlightScreen;
+import me.dalynkaa.highlighter.client.gui.HighlightScreen;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.MinecraftClient;

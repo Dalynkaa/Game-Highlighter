@@ -1,9 +1,9 @@
-package me.dalynkaa.highlighter.client.newgui.widgets.entryes;
+package me.dalynkaa.highlighter.client.gui.widgets.lists.entryes;
 
 import com.terraformersmc.modmenu.gui.widget.LegacyTexturedButtonWidget;
 import lombok.Getter;
 import me.dalynkaa.highlighter.Highlighter;
-import me.dalynkaa.highlighter.client.newgui.HighlightScreen;
+import me.dalynkaa.highlighter.client.gui.HighlightScreen;
 import me.dalynkaa.highlighter.client.utilities.data.HighlightPlayer;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
@@ -19,7 +19,9 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 import java.util.function.Supplier;
 
 public class HighlighterPlayerListEntry extends ElementListWidget.Entry<HighlighterPlayerListEntry>{
@@ -33,6 +35,7 @@ public class HighlighterPlayerListEntry extends ElementListWidget.Entry<Highligh
 
     @Nullable
     private ButtonWidget highlightButton;
+
 
     @Getter
     private final UUID uuid;

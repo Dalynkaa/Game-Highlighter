@@ -3,6 +3,7 @@ package me.dalynkaa.highlighter.client.utilities.data;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import me.dalynkaa.highlighter.client.HighlighterClient;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TextColor;
@@ -34,6 +35,9 @@ public class Prefix {
     @Expose
     @SerializedName("prefix_color")
     private String prefixColor;
+    @Expose
+    @SerializedName("index")
+    private Integer index;
 
 
     public Prefix(UUID prefixId, String prefixTag,String chatTemplate,String chatSound,String prefixContent, String playerColor, String prefixColor) {
@@ -45,6 +49,7 @@ public class Prefix {
         this.prefixContent = prefixContent;
         this.playerColor = playerColor;
         this.prefixColor = prefixColor;
+        this.index = Prefix.gelLatestPrefixIndex()+1;
     }
 
     public UUID getPrefixId() {
@@ -107,6 +112,13 @@ public class Prefix {
         this.prefixColor = prefix_color;
     }
 
+    public Integer getIndex() {
+        return this.index;
+    }
+    public void setIndex(Integer index) {
+        this.index = index;
+    }
+
     public static Prefix getPrefix(UUID prefixId) {
         return HighlighterClient.STORAGE_MANAGER.getPrefixStorage().getPrefix(prefixId);
     }
@@ -115,6 +127,27 @@ public class Prefix {
         mutableText.append(getPrefixChar()).styled(style -> style.withColor(TextColor.parse(getPrefixColor()).getOrThrow()));
         mutableText.append(displayName.copy().styled(style -> style.withColor(TextColor.parse(getPlayerColor()).getOrThrow())));
         return mutableText;
+    }
+
+    public static Integer gelLatestPrefixIndex() {
+        return HighlighterClient.STORAGE_MANAGER.getPrefixStorage().getPrefixes()
+                .stream()
+                .mapToInt(Prefix::getIndex)
+                .max()
+                .orElse(0);
+    }
+
+    public void movePrefixTop() {
+        HighlighterClient.STORAGE_MANAGER.getPrefixStorage().movePrefixTop(this);
+    }
+    public void movePrefixDown() {
+        HighlighterClient.STORAGE_MANAGER.getPrefixStorage().movePrefixDown(this);
+    }
+    public boolean isLatestPrefix() {
+        return this.index.equals(gelLatestPrefixIndex());
+    }
+    public boolean isFirstPrefix() {
+        return this.index.equals(0);
     }
 
     @Override

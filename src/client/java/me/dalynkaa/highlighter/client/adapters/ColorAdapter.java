@@ -1,5 +1,6 @@
 package me.dalynkaa.highlighter.client.adapters;
 
+import io.wispforest.owo.ui.component.Components;
 import net.minecraft.util.math.ColorHelper;
 
 /**
@@ -18,6 +19,10 @@ public class ColorAdapter {
      */
     public static int getArgb(int alpha, int red, int green, int blue) {
         return ColorHelper.Argb.getArgb(alpha, red, green, blue);
+    }
+
+    public static int getRgb(int red, int green, int blue) {
+        return red << 16 | green << 8 | blue;
     }
     
     /**
@@ -46,6 +51,17 @@ public class ColorAdapter {
             return getArgb(alpha, r, g, b);
         } catch (Exception e) {
             return getArgb(alpha, 0, 0, 0); // Черный цвет по умолчанию
+        }
+    }
+
+    public static int fromHexString(String hexColor) {
+        try {
+            int r = Integer.parseInt(hexColor.substring(1, 3), 16);
+            int g = Integer.parseInt(hexColor.substring(3, 5), 16);
+            int b = Integer.parseInt(hexColor.substring(5, 7), 16);
+            return getRgb( r, g, b);
+        } catch (Exception e) {
+            return getRgb(0, 0, 0); // Черный цвет по умолчанию
         }
     }
     
@@ -115,6 +131,7 @@ public class ColorAdapter {
      * @param v Яркость (0-1)
      * @return Массив [R, G, B] где каждый компонент в диапазоне 0-255
      */
+
     public static int[] hsvToRgb(float h, float s, float v) {
         // Нормализуем оттенок до диапазона 0-1
         h = h - (float)Math.floor(h);
@@ -141,5 +158,12 @@ public class ColorAdapter {
                 Math.round(g * 255),
                 Math.round(b * 255)
         };
+    }
+
+    public static String rgbToHex(int rgb) {
+        int b = (rgb >> 16) & 0xFF;
+        int g = (rgb >> 8) & 0xFF;
+        int r = rgb & 0xFF;
+        return String.format("#%02X%02X%02X", r, g, b);
     }
 }

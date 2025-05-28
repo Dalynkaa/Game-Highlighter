@@ -52,29 +52,71 @@ public class PlayerListMixin {
         if (this.client.player!=null){
             List<PlayerListEntry> entries = this.client.player.networkHandler.getListedPlayerListEntries()
                     .stream()
-                    .sorted(ENTRY_ORDERING.thenComparing(entry -> serverEntry.getAllHighlitedUUID().contains(entry.getProfile().getId()) ? 0 : 1))
+                    .sorted(ENTRY_ORDERING)
                     .toList();
-            List<UUID> need = serverEntry.getAllHighlitedUUID().stream().toList();
-            List<PlayerListEntry> entries1 = new ArrayList<>();
-            Comparator<PlayerListEntry> customComparator = Comparator.comparingInt(value -> need.contains(value.getProfile().getId()) ? 0 : 1);
-            if (TABKEY_KEYBIND.isPressed()) {
-                for (PlayerListEntry entry: entries){
-                    if (need.contains(entry.getProfile().getId())){
-                        entries1.add(entry);
-                    }
+
+            // Получаем список выделенных UUID и создаем список для хранения отсортированных записей
+            List<UUID> highlightedUUIDs = serverEntry.getAllHighlitedUUID().stream().toList();
+            List<PlayerListEntry> sortedEntries = new ArrayList<>();
+
+            // Создаем временный список для выделенных игроков
+            List<PlayerListEntry> highlightedEntries = new ArrayList<>();
+            // Создаем временный список для обычных игроков
+            List<PlayerListEntry> regularEntries = new ArrayList<>();
+
+            // Разделяем игроков на выделенных и обычных
+            for (PlayerListEntry entry : entries) {
+                UUID playerId = entry.getProfile().getId();
+                if (highlightedUUIDs.contains(playerId)) {
+                    highlightedEntries.add(entry);
+                } else {
+                    regularEntries.add(entry);
                 }
-                cir.setReturnValue(entries1.stream().toList());
+            }
+
+            // Сортируем выделенных игроков по индексу префикса
+            highlightedEntries.sort((entry1, entry2) -> {
+                UUID id1 = entry1.getProfile().getId();
+                UUID id2 = entry2.getProfile().getId();
+
+                HighlightedPlayer player1 = serverEntry.getHighlitedPlayer(id1);
+                HighlightedPlayer player2 = serverEntry.getHighlitedPlayer(id2);
+
+                Prefix prefix1 = player1 != null ? player1.getPrefix() : null;
+                Prefix prefix2 = player2 != null ? player2.getPrefix() : null;
+
+                // Если у обоих есть префиксы, сортируем по индексу
+                if (prefix1 != null && prefix2 != null) {
+                    return Integer.compare(prefix1.getIndex(), prefix2.getIndex());
+                }
+                // Если только у одного есть префикс, он идет первым
+                else if (prefix1 != null) {
+                    return -1;
+                }
+                else if (prefix2 != null) {
+                    return 1;
+                }
+                // Если ни у кого нет префикса, сохраняем исходный порядок
+                return 0;
+            });
+
+            // Сначала добавляем выделенных игроков, затем обычных
+            sortedEntries.addAll(highlightedEntries);
+            sortedEntries.addAll(regularEntries);
+
+            // Проверяем, нажата ли клавиша TAB для показа только выделенных игроков
+            if (TABKEY_KEYBIND.isPressed()) {
+                cir.setReturnValue(highlightedEntries);
                 return;
             }
-            Stream<PlayerListEntry> stream = entries.stream().sorted(customComparator);
+
             // BetterTab compatibility
             if (BetterTabApiWrapper.isBetterTabAvailable()){
-                cir.setReturnValue(stream.toList());
-            }else {
-                cir.setReturnValue(stream.limit(PLAYER_LIST_ENTRY_LIMIT).toList());
+                cir.setReturnValue(sortedEntries);
+            } else {
+                cir.setReturnValue(sortedEntries.stream().limit(PLAYER_LIST_ENTRY_LIMIT).toList());
             }
         }
-
     }
 
 }
