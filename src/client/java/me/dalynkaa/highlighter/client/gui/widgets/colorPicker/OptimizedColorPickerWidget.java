@@ -1,6 +1,9 @@
 package me.dalynkaa.highlighter.client.gui.widgets.colorPicker;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import me.dalynkaa.highlighter.Highlighter;
+import me.dalynkaa.highlighter.client.adapters.ColorAdapter;
+import me.dalynkaa.highlighter.client.adapters.GuiAdapter;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
@@ -50,12 +53,22 @@ public class OptimizedColorPickerWidget extends ClickableWidget {
         // Create picker texture
         NativeImage pickerImage = new NativeImage(PICKER_SIZE, PICKER_SIZE, false);
         pickerTexture = new NativeImageBackedTexture(pickerImage);
+        //? if <=1.21.2 {
         pickerTextureId = client.getTextureManager().registerDynamicTexture("color_picker", pickerTexture);
+        //?} else {
+        /*pickerTextureId = Identifier.of(Highlighter.MOD_ID, "color_picker");
+        client.getTextureManager().registerTexture(pickerTextureId, pickerTexture);
+        *///?}
 
         // Create hue bar texture
         NativeImage hueImage = new NativeImage(HUE_BAR_WIDTH, PICKER_SIZE, false);
         hueTexture = new NativeImageBackedTexture(hueImage);
+        //? if <=1.21.2 {
         hueTextureId = client.getTextureManager().registerDynamicTexture("hue_bar", hueTexture);
+        //?} else {
+        /*hueTextureId = Identifier.of(Highlighter.MOD_ID, "hue_bar");
+        client.getTextureManager().registerTexture(hueTextureId, hueTexture);
+        *///?}
 
         updateTextures();
     }
@@ -77,7 +90,11 @@ public class OptimizedColorPickerWidget extends ClickableWidget {
                 int[] rgb = hsbToRgb(hue, s, b);
                 int color = 0xFF000000 | (rgb[2] << 16) | (rgb[1] << 8) | rgb[0];
 
+                //? if =1.21.1 {
                 image.setColor(x, y, color);
+                //?} else {
+                /*image.setColorArgb(x, y, color);
+                *///?}
             }
         }
 
@@ -93,7 +110,11 @@ public class OptimizedColorPickerWidget extends ClickableWidget {
             int color = 0xFF000000 | (rgb[2] << 16) | (rgb[1] << 8) | rgb[0];
 
             for (int x = 0; x < HUE_BAR_WIDTH; x++) {
+                //? if =1.21.1 {
                 image.setColor(x, y, color);
+                 //?} else {
+                /*image.setColorArgb(x, y, color);
+                *///?}
             }
         }
 
@@ -116,7 +137,7 @@ public class OptimizedColorPickerWidget extends ClickableWidget {
 
         // Draw main color picker using optimized texture
         RenderSystem.setShaderTexture(0, pickerTextureId);
-        context.drawTexture(pickerTextureId, x, y, 0, 0, PICKER_SIZE, PICKER_SIZE, PICKER_SIZE, PICKER_SIZE);
+        GuiAdapter.drawTexture(context,pickerTextureId, x, y, 0, 0, PICKER_SIZE, PICKER_SIZE, PICKER_SIZE, PICKER_SIZE);
 
         // Draw hue bar background with border
         int hueX = x + PICKER_SIZE + SPACING;
@@ -126,7 +147,7 @@ public class OptimizedColorPickerWidget extends ClickableWidget {
 
         // Draw hue bar using optimized texture
         RenderSystem.setShaderTexture(0, hueTextureId);
-        context.drawTexture(hueTextureId, hueX, y, 0, 0, HUE_BAR_WIDTH, PICKER_SIZE, HUE_BAR_WIDTH, PICKER_SIZE);
+        GuiAdapter.drawTexture(context,hueTextureId, hueX, y, 0, 0, HUE_BAR_WIDTH, PICKER_SIZE, HUE_BAR_WIDTH, PICKER_SIZE);
 
         // Draw selection indicators
         drawSelectionIndicators(context);
@@ -256,7 +277,7 @@ public class OptimizedColorPickerWidget extends ClickableWidget {
 
     private void updateColor() {
         int[] rgb = hsbToRgb(hue, saturation, brightness);
-        currentColor = ColorHelper.Argb.getArgb(255, rgb[0], rgb[1], rgb[2]);
+        currentColor = ColorAdapter.getArgb(255, rgb[0], rgb[1], rgb[2]);
 
         if (colorChangeCallback != null) {
             colorChangeCallback.accept(currentColor);
@@ -264,9 +285,9 @@ public class OptimizedColorPickerWidget extends ClickableWidget {
     }
 
     public void setColor(int color) {
-        int r = ColorHelper.Argb.getRed(color);
-        int g = ColorHelper.Argb.getGreen(color);
-        int b = ColorHelper.Argb.getBlue(color);
+        int r = color >> 16 & 0xFF;
+        int g = color >> 8 & 0xFF;
+        int b = color & 0xFF;
 
         float[] hsb = rgbToHsb(r, g, b);
         float oldHue = this.hue;

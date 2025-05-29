@@ -39,7 +39,6 @@ public class Prefix {
     @SerializedName("index")
     private Integer index;
 
-
     public Prefix(UUID prefixId, String prefixTag,String chatTemplate,String chatSound,String prefixContent, String playerColor, String prefixColor) {
         this.prefixId = prefixId;
         this.prefixTag = prefixTag;

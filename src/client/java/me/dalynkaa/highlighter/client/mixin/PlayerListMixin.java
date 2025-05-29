@@ -35,6 +35,10 @@ public class PlayerListMixin {
 
     @Inject(method = "getPlayerName",at = @At("RETURN"),cancellable = true)
     public void getPlayerName(PlayerListEntry entry, CallbackInfoReturnable<Text> cir){
+        if (!HighlighterClient.getServerEntry().isEnabled() || !HighlighterClient.getServerEntry().isUseTabHighlighter()) {
+            cir.setReturnValue(cir.getReturnValue());
+            return;
+        }
         ServerEntry serverEntry = HighlighterClient.getServerEntry();
         Text displayName = cir.getReturnValue();
         if (serverEntry.isHighlighted(entry.getProfile().getId()) && HighlighterClient.CONFIG.hasTabEnable()){
@@ -47,6 +51,10 @@ public class PlayerListMixin {
     }
     @Inject(method = "collectPlayerEntries", at = @At("HEAD"), cancellable = true)
     public void collect(CallbackInfoReturnable<List<PlayerListEntry>> cir){
+        if (!HighlighterClient.getServerEntry().isEnabled() || !HighlighterClient.getServerEntry().isUseTabHighlighter()) {
+            cir.setReturnValue(cir.getReturnValue());
+            return;
+        }
         ServerEntry serverEntry = HighlighterClient.getServerEntry();
         long PLAYER_LIST_ENTRY_LIMIT = config.tabSettings.useExtendedTab ? 200L : 80L;
         if (this.client.player!=null){

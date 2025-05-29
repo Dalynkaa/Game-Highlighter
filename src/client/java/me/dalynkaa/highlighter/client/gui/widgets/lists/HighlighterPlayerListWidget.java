@@ -79,7 +79,11 @@ public class HighlighterPlayerListWidget  extends ElementListWidget<HighlighterP
         this.sortPlayers();
         this.filterPlayers();
         this.replaceEntries(this.players);
+        //? <=1.21.2 {
         this.setScrollAmount(scrollAmount);
+        //?} else {
+        /*this.setScrollY(scrollAmount);
+        *///?}
     }
 
     private void filterPlayers() {

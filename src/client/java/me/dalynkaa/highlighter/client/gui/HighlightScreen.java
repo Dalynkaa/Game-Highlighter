@@ -12,6 +12,7 @@ import io.wispforest.owo.ui.core.Sizing;
 import io.wispforest.owo.ui.core.Surface;
 import me.dalynkaa.highlighter.Highlighter;
 import me.dalynkaa.highlighter.client.HighlighterClient;
+import me.dalynkaa.highlighter.client.adapters.GuiAdapter;
 import me.dalynkaa.highlighter.client.gui.widgets.HighlighterPlayerEditWidget;
 import me.dalynkaa.highlighter.client.gui.widgets.HighlighterPrefixEditWidget;
 import me.dalynkaa.highlighter.client.gui.widgets.lists.HighlighterPlayerListWidget;
@@ -35,6 +36,7 @@ public class HighlightScreen extends BaseOwoScreen<FlowLayout> {
 
     private static final Text PLAYERS_TAB_TITLE;
     private static final Text PREFIXES_TAB_TITLE;
+    private static final Text CREATE_PREFIX_BUTON_TEXT;
     private static final Text SELECTED_PLAYERS_TAB_TITLE;
     private static final Text SELECTED_PREFIXES_TAB_TITLE;
     private static final Text SEARCH_TEXT;
@@ -54,6 +56,7 @@ public class HighlightScreen extends BaseOwoScreen<FlowLayout> {
 
     private ButtonWidget playersTabButton;
     private ButtonWidget prefixesTabButton;
+    private ButtonWidget createPrefixButton;
     private TextFieldWidget searchBox;
     private String currentSearch;
 
@@ -99,9 +102,26 @@ public class HighlightScreen extends BaseOwoScreen<FlowLayout> {
 
         this.playersTabButton = this.addDrawableChild(ButtonWidget.builder(PLAYERS_TAB_TITLE, (button) -> this.setCurrentTab(Tab.PLAYERS)).dimensions(getScreenStartX()+1, 42, buttonsWidth, 20).build());
         this.prefixesTabButton = this.addDrawableChild(ButtonWidget.builder(PREFIXES_TAB_TITLE, (button) -> this.setCurrentTab(Tab.PREFIXES)).dimensions(getScreenStartX()+1+buttonsWidth, 42, buttonsWidth, 20).build());
+        this.createPrefixButton = ButtonWidget.builder(CREATE_PREFIX_BUTON_TEXT, (button) -> {
+            if (this.currentTab == Tab.PREFIXES) {
+                Prefix prefix = new Prefix(
+                        UUID.randomUUID(),
+                        "New Prefix",
+                        "",
+                        null,
+                        "",
+                        "#FFFFFF",
+                        "#FFFFFF"
+                );
+
+                this.setCurrentPrefix(prefix);
+
+            }
+        }).dimensions(getScreenStartX()+1, getPlayerListBottom()+10, SCREEN_WIDTH, 20).build();
 
         this.playersTabButton = (ButtonWidget) this.playersTabButton.positioning(Positioning.absolute(getScreenStartX()+1, 42));
         this.prefixesTabButton = (ButtonWidget) this.prefixesTabButton.positioning(Positioning.absolute(getScreenStartX()+1+buttonsWidth, 42));
+
 
         // --- search bar ---
         // --- searchBox ---
@@ -120,7 +140,8 @@ public class HighlightScreen extends BaseOwoScreen<FlowLayout> {
         // --- add components to mainLayout ---
         this.highlighterPlayerEditWidget = null;
         this.highlighterPrefixCreateEditWidget = null;
-        //flowLayout.child(highlighterPlayerEditWidget);
+
+
 
         // --- add components to flowLayout ---
         flowLayout.child(this.playersTabButton);
@@ -141,12 +162,17 @@ public class HighlightScreen extends BaseOwoScreen<FlowLayout> {
         super.renderBackground(context, mouseX, mouseY, delta);
         this.applyBlur(delta);
         BaseOwoScreen.renderBackgroundTexture(context, INWORLD_MENU_BACKGROUND_TEXTURE, 0, 0,0.0F, 0.0F, this.width, this.height);
-        context.drawGuiTexture(BACKGROUND_TEXTURE, getScreenStartX(), 64, SCREEN_WIDTH, this.getScreenHeight() + 16);
-        context.drawGuiTexture(SEARCH_ICON_TEXTURE, getScreenStartX() + 10, 76, 12, 12);
+        GuiAdapter.drawGuiTexture(context, BACKGROUND_TEXTURE, getScreenStartX(), 64, SCREEN_WIDTH, this.getScreenHeight() + 16);
+        GuiAdapter.drawGuiTexture(context,SEARCH_ICON_TEXTURE, getScreenStartX() + 10, 76, 12, 12);
     }
     protected void applyBlur(float delta) {
+        //? if =1.21.1 {
         this.client.gameRenderer.renderBlur(delta);
+        //?} else {
+        /*this.client.gameRenderer.renderBlur();
+        *///?}
         this.client.getFramebuffer().beginWrite(false);
+
     }
 
     public void setCurrentPlayer(@Nullable HighlightPlayer player) {
@@ -199,7 +225,11 @@ public class HighlightScreen extends BaseOwoScreen<FlowLayout> {
     }
     public void updatePrefixList() {
         Collection<Prefix> prefixes = HighlighterClient.STORAGE_MANAGER.getPrefixStorage().getPrefixes();
+        //? if <=1.21.2 {
         this.prefixList.update(prefixes, this.prefixList.getScrollAmount());
+        //?} else {
+        /*this.prefixList.update(prefixes, this.prefixList.getMaxScrollY());
+        *///?}
     }
 
     private void setCurrentTab(Tab tab) {
@@ -208,15 +238,21 @@ public class HighlightScreen extends BaseOwoScreen<FlowLayout> {
         prefixesTabButton.setMessage(PREFIXES_TAB_TITLE);
         this.mainLayout.removeChild(this.playerList);
         this.mainLayout.removeChild(this.prefixList);
+        this.mainLayout.removeChild(this.createPrefixButton);
         // Обновляем сообщения на кнопках вкладок
         switch (tab) {
             case PLAYERS -> {
                 this.mainLayout.child(this.playerList);
                 playersTabButton.setMessage(SELECTED_PLAYERS_TAB_TITLE);
                 Collection<UUID> collection = this.client.player.networkHandler.getPlayerUuids();
+                //? if <=1.21.2 {
                 playerList.update(collection, this.playerList.getScrollAmount(), false);
+                //?} else {
+                /*playerList.update(collection, this.playerList.getMaxScrollY(), false);
+                *///?}
             }
             case PREFIXES -> {
+                this.addDrawableChild(this.createPrefixButton);
                 this.mainLayout.child(this.prefixList);
                 prefixesTabButton.setMessage(SELECTED_PREFIXES_TAB_TITLE);
                 updatePrefixList();
@@ -231,7 +267,11 @@ public class HighlightScreen extends BaseOwoScreen<FlowLayout> {
             if (currentTab == Tab.PLAYERS) {
                 this.playerList.setCurrentSearch(currentSearch);
                 Collection<UUID> collection = this.client.player.networkHandler.getPlayerUuids();
+                //? if <=1.21.2 {
                 playerList.update(collection, this.playerList.getScrollAmount(), false);
+                //?} else {
+                /*playerList.update(collection, this.playerList.getMaxScrollY(), false);
+                *///?}
             } else if (currentTab == Tab.PREFIXES) {
                 this.prefixList.setCurrentSearch(currentSearch);
                 updatePrefixList();
@@ -245,11 +285,12 @@ public class HighlightScreen extends BaseOwoScreen<FlowLayout> {
     }
 
     static {
-        PLAYERS_TAB_TITLE = Text.translatable("gui.gamehighlighter.menu.tab.players");
-        PREFIXES_TAB_TITLE = Text.translatable("gui.gamehighlighter.menu.tab.prefixes");
+        PLAYERS_TAB_TITLE = Text.translatable("gui.highlighter.menu.tab.players");
+        PREFIXES_TAB_TITLE = Text.translatable("gui.highlighter.menu.tab.prefixes");
         SELECTED_PREFIXES_TAB_TITLE = PREFIXES_TAB_TITLE.copyContentOnly().formatted(Formatting.UNDERLINE);
         SELECTED_PLAYERS_TAB_TITLE = PLAYERS_TAB_TITLE.copyContentOnly().formatted(Formatting.UNDERLINE);
-        EMPTY_SEARCH_TEXT = Text.translatable("gui.gamehighlighter.menu.search_empty").formatted(Formatting.GRAY);
-        SEARCH_TEXT = Text.translatable("gui.gamehighlighter.menu.search_hint").formatted(Formatting.GRAY);
+        EMPTY_SEARCH_TEXT = Text.translatable("gui.highlighter.menu.search_empty").formatted(Formatting.GRAY);
+        SEARCH_TEXT = Text.translatable("gui.highlighter.menu.search_hint").formatted(Formatting.GRAY);
+        CREATE_PREFIX_BUTON_TEXT = Text.translatable("gui.highlighter.menu.create_prefix");
     }
 }

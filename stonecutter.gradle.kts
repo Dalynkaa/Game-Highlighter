@@ -11,5 +11,5 @@ stonecutter registerChiseled tasks.register("chiseledBuild", stonecutter.chisele
 
 stonecutter parameters {
     swap("mod_version", "\"${property("mod.version")}\";")
-    const("release", property("mod.id") != "gamehighlighter")
+    const("release", property("mod.id") != "highlighter")
 }

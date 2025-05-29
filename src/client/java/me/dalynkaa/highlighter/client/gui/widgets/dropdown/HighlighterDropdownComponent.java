@@ -9,6 +9,7 @@ import io.wispforest.owo.ui.core.*;
 import io.wispforest.owo.ui.parsing.UIModel;
 import io.wispforest.owo.ui.parsing.UIParsing;
 import io.wispforest.owo.ui.util.UISounds;
+import me.dalynkaa.highlighter.client.adapters.GuiAdapter;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenMouseEvents;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.Text;
@@ -121,12 +122,11 @@ public class HighlighterDropdownComponent extends FlowLayout {
     }
 
     protected static void drawIconFromTexture(OwoUIDrawContext context, ParentComponent dropdown, int y, int u, int v) {
-        context.drawTexture(ICONS_TEXTURE,
+        GuiAdapter.drawTexture(context,ICONS_TEXTURE,
                 dropdown.x() + dropdown.width() - dropdown.padding().get().right() - 10, y,
                 u, v,
                 9, 9,
-                32, 32
-        );
+                32, 32);
     }
 
     @Override

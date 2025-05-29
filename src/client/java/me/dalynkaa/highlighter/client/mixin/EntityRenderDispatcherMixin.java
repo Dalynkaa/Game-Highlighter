@@ -21,7 +21,11 @@ public class EntityRenderDispatcherMixin {
     @Unique
     ModConfig config = AutoConfig.getConfigHolder(ModConfig.class).getConfig();
     @Inject(method = "render*", at = @At("HEAD"), cancellable = true)
+    //? if =1.21.1 {
     private <E extends Entity> void render(E entity, double x, double y, double z, float yaw, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, CallbackInfo ci) {
+    //?} else {
+    /*private <E extends Entity> void render(E entity, double x, double y, double z,float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, CallbackInfo ci) {
+     *///? }
         if (config.playerHiderSettings.hideType.equals(ModConfig.HideType.RADIUS)){
             if (MinecraftClient.getInstance().player!=null){
                 if(entity instanceof PlayerEntity player && !player.isMainPlayer() && config.hasPlayerHiderEnable() && MinecraftClient.getInstance().player.distanceTo(player) > config.playerHiderSettings.radius) {

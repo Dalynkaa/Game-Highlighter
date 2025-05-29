@@ -6,6 +6,8 @@ import com.google.gson.JsonSyntaxException;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.stream.JsonReader;
+import lombok.Getter;
+import lombok.Setter;
 import me.dalynkaa.highlighter.Highlighter;
 import me.dalynkaa.highlighter.client.utilities.data.HighlightedPlayer;
 
@@ -26,9 +28,20 @@ public class ServerEntry {
     @Expose
     private String[] chatRegex;
 
+    @SerializedName("enabled")
+    @Expose
+    @Getter @Setter
+    private boolean enabled;
+
     @SerializedName("useChatHighlighter")
     @Expose
+    @Getter @Setter
     private boolean useChatHighlighter;
+
+    @SerializedName("useTabHighlighter")
+    @Expose
+    @Getter @Setter
+    private boolean useTabHighlighter;
 
     @SerializedName("version")
     @Expose
@@ -40,11 +53,13 @@ public class ServerEntry {
     @Expose
     private static Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
 
-    public ServerEntry(HashSet<HighlightedPlayer> highlightedPlayers, String[] chatRegex, Boolean useChatHighlighter, String version, String serverName) {
+    public ServerEntry(HashSet<HighlightedPlayer> highlightedPlayers, String[] chatRegex, Boolean enabled,Boolean useChatHighlighter,Boolean useTabHighlighter, String version, String serverName) {
         this.version = version;
         this.highlightedPlayers = highlightedPlayers;
         this.chatRegex = chatRegex;
+        this.enabled = enabled;
         this.useChatHighlighter = useChatHighlighter;
+        this.useTabHighlighter = useTabHighlighter;
         this.serverName = serverName;
     }
 
@@ -56,7 +71,7 @@ public class ServerEntry {
                 JsonReader reader = new JsonReader(new InputStreamReader(new FileInputStream(configFile), StandardCharsets.UTF_8));
                 try {
                     ServerEntry co = gson.fromJson(reader, ServerEntry.class);
-                    return Objects.requireNonNullElseGet(co, () -> new ServerEntry(new HashSet<>(),new String[0],true, MOD_VERSION, serverName));
+                    return Objects.requireNonNullElseGet(co, () -> new ServerEntry(new HashSet<>(),new String[0],true,true,true, MOD_VERSION, serverName));
                 } catch (JsonSyntaxException j) {
                     boolean isDeleted = configFile.delete();
                     if (isDeleted) {
@@ -68,9 +83,21 @@ public class ServerEntry {
             } catch (FileNotFoundException ignored) {
             }
         }
-        ServerEntry serverEntry = new ServerEntry(new HashSet<>(),new String[0],true, MOD_VERSION,serverName);
+        ServerEntry serverEntry = new ServerEntry(new HashSet<>(),new String[0],true,true,true, MOD_VERSION,serverName);
         serverEntry.save();
         return serverEntry;
+    }
+
+    public String[] getChatRegex() {
+        if (this.chatRegex == null || this.chatRegex.length == 0) {
+            return new String[0];
+        }
+        return this.chatRegex;
+    }
+
+    public void setChatRegex(String[] chatRegex) {
+        this.chatRegex = chatRegex;
+        save();
     }
 
     public void save() {

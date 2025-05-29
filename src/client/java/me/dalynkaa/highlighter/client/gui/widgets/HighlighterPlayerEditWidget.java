@@ -7,6 +7,8 @@ import io.wispforest.owo.ui.core.Sizing;
 import lombok.Setter;
 import me.dalynkaa.highlighter.Highlighter;
 import me.dalynkaa.highlighter.client.HighlighterClient;
+import me.dalynkaa.highlighter.client.adapters.ColorAdapter;
+import me.dalynkaa.highlighter.client.adapters.GuiAdapter;
 import me.dalynkaa.highlighter.client.gui.widgets.dropdown.HighlighterScrollDropdownComponent;
 import me.dalynkaa.highlighter.client.utilities.data.HighlightPlayer;
 import me.dalynkaa.highlighter.client.utilities.data.HighlightedPlayer;
@@ -46,11 +48,11 @@ public class HighlighterPlayerEditWidget extends FlowLayout {
         this.width = width;
         this.height = height;
         this.textRenderer = MinecraftClient.getInstance().textRenderer;
-        this.dropdown = new HighlighterScrollDropdownComponent(Sizing.fixed(width-16), Sizing.content(), highlightedPlayer.getPrefix() == null ? Text.literal("Prefix"):Text.literal(highlightedPlayer.getPrefix().getPrefixTag()), false);
+        this.dropdown = new HighlighterScrollDropdownComponent(Sizing.fixed(width-16), Sizing.content(), highlightedPlayer.getPrefix() == null ? Text.translatable("gui.highlighter.menu.player_edit.prefix_select.title"):Text.literal(highlightedPlayer.getPrefix().getPrefixTag()), false);
+        this.dropdown.tooltip(Text.translatable("gui.highlighter.menu.player_edit.prefix_select.tooltip"));
         HashSet<Prefix> prefixes = HighlighterClient.STORAGE_MANAGER.getPrefixStorage().getPrefixes();
         for (Prefix prefix : prefixes) {
             dropdown.button(Text.literal(prefix.getPrefixTag()), (comp) -> {
-                Highlighter.LOGGER.info("Highlighted player: {}", highlightedPlayer);
                 highlightedPlayer.highlight(prefix.getPrefixId());
                 HighlighterClient.getServerEntry().setPlayer(highlightedPlayer);
                 this.dropdown.title(Text.literal(prefix.getPrefixTag()));
@@ -63,9 +65,10 @@ public class HighlighterPlayerEditWidget extends FlowLayout {
     public void draw(OwoUIDrawContext context, int mouseX, int mouseY, float partialTicks, float delta) {
         super.draw(context, mouseX, mouseY, partialTicks, delta);
         renderBackground(context);
-        context.drawCenteredTextWithShadow(textRenderer, "Player Edit", this.x + width/2, this.y - 12, 0xFFFFFF);
+        String text = Text.translatable("gui.highlighter.menu.player_edit.title", highlightPlayer.name()).getString();
+        context.drawCenteredTextWithShadow(textRenderer, text, this.x + width/2, this.y - 12, 0xFFFFFF);
         context.fill(this.x + 8, this.y + 8, this.x + this.width - 8, this.y + 40, 0x80000000);
-        context.drawHorizontalLine(this.x + 7, this.x + this.width - 8, this.y + 40, ColorHelper.Abgr.getAbgr(255, 198, 198, 198));
+        context.drawHorizontalLine(this.x + 7, this.x + this.width - 8, this.y + 40, ColorAdapter.getArgb(255, 198, 198, 198));
 
         int i = x + 12;
         int j = y + 8 + 4;
@@ -75,6 +78,6 @@ public class HighlighterPlayerEditWidget extends FlowLayout {
         }
     }
     private void renderBackground(DrawContext context) {
-        context.drawGuiTexture(BACKGROUND_TEXTURE, this.x, this.y, this.width, this.height);
+        GuiAdapter.drawGuiTexture(context,BACKGROUND_TEXTURE, this.x, this.y, this.width, this.height);
     }
 }

@@ -1,6 +1,6 @@
-# GameHighlighter Improvement Tasks
+# highlighter Improvement Tasks
 
-This document contains a detailed list of actionable improvement tasks for the GameHighlighter mod. Each task is logically ordered and covers both architectural and code-level improvements.
+This document contains a detailed list of actionable improvement tasks for the highlighter mod. Each task is logically ordered and covers both architectural and code-level improvements.
 
 ## Code Quality Improvements
 
@@ -98,7 +98,7 @@ This document contains a detailed list of actionable improvement tasks for the G
     - Implement keyboard shortcuts for common actions
 
 19. [ ] Add integration with other mods
-    - Implement API for other mods to interact with GameHighlighter
+    - Implement API for other mods to interact with highlighter
     - Add support for popular mods like JourneyMap, REI, etc.
     - Create documentation for mod integration
 

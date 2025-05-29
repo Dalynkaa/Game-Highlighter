@@ -18,23 +18,11 @@ public class ColorAdapter {
      * @return целочисленное представление цвета
      */
     public static int getArgb(int alpha, int red, int green, int blue) {
-        return ColorHelper.Argb.getArgb(alpha, red, green, blue);
+        return (alpha & 0xFF) << 24 | (red & 0xFF) << 16 | (green & 0xFF) << 8 | (blue & 0xFF);
     }
 
     public static int getRgb(int red, int green, int blue) {
         return red << 16 | green << 8 | blue;
-    }
-    
-    /**
-     * Создает ABGR цвет из компонентов
-     * @param alpha Альфа-канал (0-255)
-     * @param blue Синий компонент (0-255)
-     * @param green Зеленый компонент (0-255)
-     * @param red Красный компонент (0-255)
-     * @return целочисленное представление цвета
-     */
-    public static int getAbgr(int alpha, int red, int green, int blue) {
-        return ColorHelper.Abgr.getAbgr(alpha, red, green, blue);
     }
     
     /**
@@ -161,9 +149,9 @@ public class ColorAdapter {
     }
 
     public static String rgbToHex(int rgb) {
-        int b = (rgb >> 16) & 0xFF;
+        int r = (rgb >> 16) & 0xFF;
         int g = (rgb >> 8) & 0xFF;
-        int r = rgb & 0xFF;
+        int b = rgb & 0xFF;
         return String.format("#%02X%02X%02X", r, g, b);
     }
 }

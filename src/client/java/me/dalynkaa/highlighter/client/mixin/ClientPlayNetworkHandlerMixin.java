@@ -1,6 +1,7 @@
 package me.dalynkaa.highlighter.client.mixin;
 
 
+import me.dalynkaa.highlighter.client.HighlighterClient;
 import me.dalynkaa.highlighter.client.customEvents.ChatMessageEvent;
 import me.dalynkaa.highlighter.client.customEvents.data.ChatMessage;
 import me.dalynkaa.highlighter.client.customEvents.data.ChatMessageType;
@@ -23,6 +24,9 @@ public abstract class ClientPlayNetworkHandlerMixin  {
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/network/NetworkThreadUtils;forceMainThread(Lnet/minecraft/network/packet/Packet;Lnet/minecraft/network/listener/PacketListener;Lnet/minecraft/util/thread/ThreadExecutor;)V", shift = At.Shift.AFTER ), method = "onGameMessage", cancellable = true)
     public void onGameMessage(GameMessageS2CPacket packet, CallbackInfo ci) {
+        if (!HighlighterClient.getServerEntry().isEnabled() || !HighlighterClient.getServerEntry().isUseChatHighlighter()) {
+            return;
+        }
         ChatMessage chatMessage = new ChatMessage(packet.content(),packet.overlay() ? ChatMessageType.SYSTEM : ChatMessageType.CHAT);
         Boolean isCancelled = ChatMessageEvent.EVENT.invoker().onChatMessage(chatMessage);
         if (isCancelled) {

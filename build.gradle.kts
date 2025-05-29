@@ -8,6 +8,7 @@ class ModData {
     val name = property("mod.name").toString()
     val version = property("mod.version").toString()
     val group = property("mod.group").toString()
+    val mc_dep = property("mod.mc_dep").toString()
 }
 
 class ModDependencies {
@@ -124,6 +125,7 @@ tasks {
     processResources {
         inputs.property("version", mod.version)
         inputs.property("minecraft_version", stonecutter.current.version)
+        inputs.property("mc",mod.mc_dep)
         inputs.property("loader_version", project.extra["deps.fabric_loader"])
         inputs.property("cloth_config_version", project.extra["deps.cloth_config_version"])
         inputs.property("mod_menu_version", project.extra["deps.mod_menu_version"])
@@ -135,6 +137,7 @@ tasks {
                 mapOf(
                     "version" to mod.version,
                     "minecraft_version" to stonecutter.current.version,
+                    "mc" to mod.mc_dep,
                     "fabric_version" to project.extra["deps.fabric_api"],
                     "loader_version" to project.extra["deps.fabric_loader"],
                     "cloth_config_version" to project.extra["deps.cloth_config_version"],

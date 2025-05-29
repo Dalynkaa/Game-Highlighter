@@ -1,8 +1,8 @@
 package me.dalynkaa.highlighter.client.gui.widgets.lists.entryes;
 
-import com.terraformersmc.modmenu.gui.widget.LegacyTexturedButtonWidget;
 import lombok.Getter;
 import me.dalynkaa.highlighter.Highlighter;
+import me.dalynkaa.highlighter.client.adapters.ColorAdapter;
 import me.dalynkaa.highlighter.client.gui.HighlightScreen;
 import me.dalynkaa.highlighter.client.utilities.data.HighlightPlayer;
 import net.minecraft.client.MinecraftClient;
@@ -10,9 +10,8 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.PlayerSkinDrawer;
 import net.minecraft.client.gui.Selectable;
-import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.widget.ClickableWidget;
-import net.minecraft.client.gui.widget.ElementListWidget;
+import net.minecraft.client.gui.screen.ButtonTextures;
+import net.minecraft.client.gui.widget.*;
 import net.minecraft.client.util.SkinTextures;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -30,7 +29,12 @@ public class HighlighterPlayerListEntry extends ElementListWidget.Entry<Highligh
     public static final int DARK_GRAY_COLOR;
     public static final int WHITE_COLOR;
     public static final int LIGHT_GRAY_COLOR;
-    private static final Identifier HIGHLIGHT_ICON = Identifier.of(Highlighter.MOD_ID,"textures/gui/icons.png");
+    private static final Identifier HIGHLIGHT_ICON = Identifier.of(Highlighter.MOD_ID,"highlight");
+    private static final Identifier HIGHLIGHT_ICON_FOCUSED = Identifier.of(Highlighter.MOD_ID,"highlightfocus");
+    private static final ButtonTextures HIGHLIGHT_BUTTON_ICON = new ButtonTextures(
+        HIGHLIGHT_ICON,
+        HIGHLIGHT_ICON_FOCUSED
+    );
 
 
     @Nullable
@@ -54,9 +58,11 @@ public class HighlighterPlayerListEntry extends ElementListWidget.Entry<Highligh
         this.skinTexture = skinTexture;
         this.hideble = hideble;
         this.buttons = new ArrayList<>();
-        this.highlightButton = new LegacyTexturedButtonWidget(0, 0, 20, 20, 0, 32, 20, HIGHLIGHT_ICON, 256, 256, button -> {
+        this.highlightButton = new TexturedButtonWidget(0,0,20,20,HIGHLIGHT_BUTTON_ICON, button -> {
             parent.setCurrentPlayer(new HighlightPlayer(uuid,name,skinTexture.get()));
-        },Text.translatable("gui.gamehighlighter.un_highlighted"));
+        }, Text.translatable("gui.highlighter.menu.button.edit"));
+        //this.highlightButton.tooltip(Text.translatable("gui.highlighter.menu.button.edit.tooltip"));
+
         this.buttons.add(this.highlightButton);
     }
 
@@ -90,10 +96,10 @@ public class HighlighterPlayerListEntry extends ElementListWidget.Entry<Highligh
     }
 
     static {
-        GRAY_COLOR = ColorHelper.Abgr.getAbgr(255, 74, 74, 74);
-        DARK_GRAY_COLOR = ColorHelper.Abgr.getAbgr(255, 48, 48, 48);
-        WHITE_COLOR = ColorHelper.Abgr.getAbgr(255, 255, 255, 255);
-        LIGHT_GRAY_COLOR = ColorHelper.Abgr.getAbgr(100, 255, 255, 255);
+        GRAY_COLOR = ColorAdapter.getArgb(255, 74, 74, 74);
+        DARK_GRAY_COLOR = ColorAdapter.getArgb(255, 48, 48, 48);
+        WHITE_COLOR = ColorAdapter.getArgb(255, 255, 255, 255);
+        LIGHT_GRAY_COLOR = ColorAdapter.getArgb(100, 255, 255, 255);
     }
 
 }

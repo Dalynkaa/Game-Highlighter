@@ -14,13 +14,16 @@ import me.dalynkaa.highlighter.Highlighter;
 
 import me.dalynkaa.highlighter.client.HighlighterClient;
 import me.dalynkaa.highlighter.client.adapters.ColorAdapter;
+import me.dalynkaa.highlighter.client.adapters.GuiAdapter;
 import me.dalynkaa.highlighter.client.gui.HighlightScreen;
 import me.dalynkaa.highlighter.client.gui.widgets.colorPicker.ColorPickerFieldWidget;
 import me.dalynkaa.highlighter.client.gui.widgets.dropdown.HighlighterScrollDropdownComponent;
+import me.dalynkaa.highlighter.client.utilities.CustomNotificationEffects;
 import me.dalynkaa.highlighter.client.utilities.data.Prefix;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
@@ -63,15 +66,17 @@ public class HighlighterPrefixEditWidget extends FlowLayout {
         FlowLayout nameLayout = Containers.verticalFlow(Sizing.content(), Sizing.content());
         this.name = Components.textBox(Sizing.fill(),prefix == null ? "": prefix.getPrefixTag());
         this.name.setMaxLength(16);
-        this.name.setPlaceholder(Text.literal("Prefix name"));
-        LabelComponent nameLabel = Components.label(Text.literal("Prefix name"));
+        this.name.setPlaceholder(Text.translatable("gui.highlighter.menu.prefix_edit.form.prefix_name.placeholder"));
+        this.name.tooltip(Text.translatable("gui.highlighter.menu.prefix_edit.form.prefix_name.tooltip"));
+        LabelComponent nameLabel = Components.label(Text.translatable("gui.highlighter.menu.prefix_edit.form.prefix_name.label"));
         nameLayout.child(nameLabel).child(this.name);
 
         FlowLayout tagLayout = Containers.verticalFlow(Sizing.content(), Sizing.content());
         this.tag = Components.textBox(Sizing.fill(), prefix == null ? "": prefix.getPrefixChar());
         this.tag.setMaxLength(4);
-        this.tag.setPlaceholder(Text.literal("Prefix tag"));
-        LabelComponent tagLabel = Components.label(Text.literal("Prefix tag"));
+        this.tag.setPlaceholder(Text.translatable("gui.highlighter.menu.prefix_edit.form.prefix_tag.placeholder"));
+        this.tag.tooltip(Text.translatable("gui.highlighter.menu.prefix_edit.form.prefix_tag.tooltip"));
+        LabelComponent tagLabel = Components.label(Text.translatable("gui.highlighter.menu.prefix_edit.form.prefix_tag.label"));
         tagLayout.child(tagLabel).child(this.tag);
 
         this.nameColorField = new ColorPickerFieldWidget(0, 0, width-16, prefix == null ? 0xFF0000 : ColorAdapter.fromHexString(prefix.getPlayerColor()), (color)->{
@@ -89,12 +94,13 @@ public class HighlighterPrefixEditWidget extends FlowLayout {
                 this.currentColorField = null;
             }
         });
+        //this.nameColorField.setTooltip(Tooltip.of(Text.translatable("gui.highlighter.menu.prefix_edit.form.player_name_color.tooltip")));
         if (prefix!= null) {
             int color = ColorAdapter.fromHexString(prefix.getPlayerColor());
             Highlighter.LOGGER.info("Setting name color: {}", color);
             this.nameColorField.setColor(color);
         }
-        LabelComponent nameColorLabel = Components.label(Text.literal("Prefix name color"));
+        LabelComponent nameColorLabel = Components.label(Text.translatable("gui.highlighter.menu.prefix_edit.form.player_name_color.label"));
         nameColorLabel.sizing(Sizing.content(), Sizing.fixed(10));
 
         this.tagColorField = new ColorPickerFieldWidget(0, 0, width-16, prefix == null ? 0xFF0000 : ColorAdapter.fromHexString(prefix.getPrefixColor()), (color)->{
@@ -112,27 +118,38 @@ public class HighlighterPrefixEditWidget extends FlowLayout {
                 this.currentColorField = null;
             }
         });
+        //this.tagColorField.setTooltip(Tooltip.of(Text.translatable("gui.highlighter.menu.prefix_edit.form.prefix_color.tooltip")).);
         if (prefix!= null) {
             this.tagColorField.setColor(ColorAdapter.fromHexString(prefix.getPrefixColor()));
         }
-        LabelComponent tagColorLabel = Components.label(Text.literal("Prefix tag color"));
+        LabelComponent tagColorLabel = Components.label(Text.translatable("gui.highlighter.menu.prefix_edit.form.prefix_color.label"));
         Text chatSoundInitial = prefix == null ? Text.literal("Chat sound") : Text.literal(prefix.getChatSound() == null ? "None" : prefix.getChatSound());
         this.chatSoundDropdown = new HighlighterScrollDropdownComponent(Sizing.fill(), Sizing.content(), chatSoundInitial, false);
         this.chatSoundDropdown.button(Text.literal("None"), (comp) -> {
             this.chatSoundDropdown.title(Text.literal("None"));
             this.mainChatSound = null;
         });
-        LabelComponent chatSoundLabel = Components.label(Text.literal("Chat sound"));
+        for (CustomNotificationEffects effects : CustomNotificationEffects.values()) {
+            if (effects.getSoundEvent() != null) {
+                this.chatSoundDropdown.button(Text.literal(effects.getName()), (comp) -> {
+                    this.chatSoundDropdown.title(Text.literal(effects.getName()));
+                    this.mainChatSound = effects.getName();
+                });
+            }
+        }
+        this.chatSoundDropdown.tooltip(Text.translatable("gui.highlighter.menu.prefix_edit.form.chat_sound.tooltip"));
+        LabelComponent chatSoundLabel = Components.label(Text.translatable("gui.highlighter.menu.prefix_edit.form.chat_sound.label"));
         chatSoundLabel.sizing(Sizing.content(), Sizing.fixed(10));
 
         FlowLayout chatPatternLayout = Containers.verticalFlow(Sizing.content(), Sizing.content());
         this.chatPattern = Components.textBox(Sizing.fill(), prefix == null ? "": prefix.getChatTemplate());
         this.chatPattern.setMaxLength(64);
-        this.chatPattern.setPlaceholder(Text.literal("Chat pattern"));
-        LabelComponent chatPatternLabel = Components.label(Text.literal("Chat pattern"));
+        this.chatPattern.setPlaceholder(Text.translatable("gui.highlighter.menu.prefix_edit.form.chat_pattern.placeholder"));
+        this.chatPattern.tooltip(Text.translatable("gui.highlighter.menu.prefix_edit.form.chat_pattern.tooltip"));
+        LabelComponent chatPatternLabel = Components.label(Text.translatable("gui.highlighter.menu.prefix_edit.form.chat_pattern.label"));
         chatPatternLayout.child(chatPatternLabel).child(this.chatPattern);
 
-        this.saveButton = Components.button(Text.literal("Save"), (button) -> {
+        this.saveButton = Components.button(Text.translatable("gui.highlighter.menu.prefix_edit.button.save"), (button) -> {
 
             String prefixName = this.name.getText().trim();
             String prefixTag = this.tag.getText().trim();
@@ -140,6 +157,17 @@ public class HighlighterPrefixEditWidget extends FlowLayout {
             String prefixColor = ColorAdapter.rgbToHex(this.tagColorField.getColor());
             String chatSound = this.mainChatSound;
             String chatTemplate = this.chatPattern.getText().trim();
+
+            if (prefixName.isEmpty() || prefixTag.isEmpty() || playerColor.isEmpty() || prefixColor.isEmpty()) {
+                Highlighter.LOGGER.warn("Prefix creation failed: All fields must be filled.");
+                return;
+            }
+            if (chatSound == null || chatSound.isEmpty() || chatSound.equals("None")) {
+                chatSound = null; // Set to null if no sound is selected
+            }
+            if (chatTemplate.isEmpty()) {
+                chatTemplate = null; // Set to null if no template is provided
+            }
 
             if (this.prefix == null) {
                 this.prefix = new Prefix(UUID.randomUUID(), prefixName, chatTemplate, chatSound, prefixTag, playerColor, prefixColor);
@@ -156,6 +184,7 @@ public class HighlighterPrefixEditWidget extends FlowLayout {
             highlightScreen.updatePrefixList();
             highlightScreen.setCurrentPrefix(null);
         });
+        this.saveButton.tooltip(Text.translatable("gui.highlighter.menu.prefix_edit.button.save.tooltip"));
 
         int startX = 8;
         int startY = 8;
@@ -181,7 +210,8 @@ public class HighlighterPrefixEditWidget extends FlowLayout {
         renderBackground(context);
     }
     private void renderBackground(DrawContext context) {
-        context.drawGuiTexture(BACKGROUND_TEXTURE, this.x, this.y, this.width+2, this.height);
-        context.drawCenteredTextWithShadow(textRenderer, prefix == null ? "Creating Prefix": "Edit prefix - "+prefix.getPrefixTag(), this.x + width/2, this.y - 12, 0xFFFFFF);
+        GuiAdapter.drawGuiTexture(context,BACKGROUND_TEXTURE, this.x, this.y, this.width+2, this.height);
+        String text = prefix == null ? Text.translatable("gui.highlighter.menu.prefix_edit.create.title").getString() : Text.translatable("gui.highlighter.menu.prefix_edit.edit.title", prefix.getPrefixTag()).getString();
+        context.drawCenteredTextWithShadow(textRenderer, text, this.x + width/2, this.y - 12, 0xFFFFFF);
     }
 }

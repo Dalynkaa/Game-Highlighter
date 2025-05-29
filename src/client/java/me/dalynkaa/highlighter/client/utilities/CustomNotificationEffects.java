@@ -13,7 +13,6 @@ public enum CustomNotificationEffects {
     BELL(Text.translatable("effects.bell"),SoundEvents.BLOCK_BELL_USE),
     ANVIL(Text.translatable("effects.anvil"),SoundEvents.BLOCK_ANVIL_LAND);
 
-    @Getter
     final String name;
     @Getter
     final MutableText displayName;
@@ -25,6 +24,11 @@ public enum CustomNotificationEffects {
         this.displayName = displayName;
         this.soundEvent = soundEvent;
     }
+
+    public String getName() {
+        return name;
+    }
+
     public static CustomNotificationEffects getEffectByName(String name){
         for (CustomNotificationEffects effect: CustomNotificationEffects.values()){
             if (effect.getName().equalsIgnoreCase(name)){

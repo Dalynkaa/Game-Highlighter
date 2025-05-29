@@ -39,26 +39,48 @@ public class OnChatMessage {
     }
 
     public boolean onChatMessage(ChatMessage chatMessage) {
-        Pattern pattern = Pattern.compile(config.chatSettings.globalChatRegex);
-        Matcher matcher = pattern.matcher(chatMessage.getMessage().getString());
+        String[] patterns = HighlighterClient.getServerEntry().getChatRegex();
+        if (patterns == null || patterns.length == 0) {
+            return false;
+        }
+        if (!HighlighterClient.getServerEntry().isEnabled() || !HighlighterClient.getServerEntry().isUseChatHighlighter()) {
+            return false;
+        }
+
+        String messageString = chatMessage.getMessage().getString();
+        String nickname = null;
+        String message = null;
+
+        for (String patternStr : patterns) {
+            try {
+                Pattern pattern = Pattern.compile(patternStr);
+                Matcher matcher = pattern.matcher(messageString);
+
+                if (matcher.matches()) {
+                    if (matcher.groupCount() == 2 &&
+                            matcher.namedGroups().containsKey("nickname") &&
+                            matcher.namedGroups().containsKey("message")) {
+
+                        nickname = matcher.group("nickname");
+                        message = matcher.group("message");
+                        break;
+                    }
+                }
+            } catch (Exception e) {
+                continue;
+            }
+        }
+
+        if (nickname == null || message == null) {
+            return false;
+        }
+
         ChatLog chatLog = this.client.getAbuseReportContext().getChatLog();
-
-        if (!matcher.matches()) {
-            return false;
-        }
-        if (matcher.groupCount() != 2) {
-            return false;
-        }
-        if (!matcher.namedGroups().containsKey("nickname") && !matcher.namedGroups().containsKey("message")) {
-            return false;
-        }
-        String nickname = matcher.group("nickname");
-        String message = matcher.group("message");
-
         PlayerListEntry playerListEntry = Objects.requireNonNull(client.getNetworkHandler()).getPlayerListEntry(nickname);
         if (playerListEntry == null) {
             return false;
         }
+
         boolean isHighlighted = HighlighterClient.getServerEntry().isHighlighted(playerListEntry.getProfile().getId());
 
         if (isHighlighted) {
@@ -80,7 +102,6 @@ public class OnChatMessage {
                 this.client.getNarratorManager().narrateSystemMessage(chatMessage.getMessage());
                 return true;
             }
-
         }
 
         return false;

@@ -4,6 +4,7 @@
   "package": "me.dalynkaa.highlighter.client.mixin",
   "compatibilityLevel": "JAVA_21",
   "client": [
+    "AddServerScreenMixin",
     "ClientPlayNetworkHandlerMixin",
     "EntityRenderDispatcherMixin",
     "PlayerListMixin"

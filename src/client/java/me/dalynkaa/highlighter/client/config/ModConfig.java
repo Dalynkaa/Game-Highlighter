@@ -7,7 +7,7 @@ import me.shedaniel.autoconfig.annotation.ConfigEntry;
 import java.util.ArrayList;
 import java.util.List;
 
-@Config(name = "gamehighlighter")
+@Config(name = "highlighter")
 public class ModConfig implements ConfigData {
     boolean tab_enabled = true;
 
