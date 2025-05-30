@@ -19,11 +19,13 @@ import me.dalynkaa.highlighter.client.gui.HighlightScreen;
 import me.dalynkaa.highlighter.client.gui.widgets.colorPicker.ColorPickerFieldWidget;
 import me.dalynkaa.highlighter.client.gui.widgets.dropdown.HighlighterScrollDropdownComponent;
 import me.dalynkaa.highlighter.client.utilities.CustomNotificationEffects;
+import me.dalynkaa.highlighter.client.utilities.SoundUtils;
 import me.dalynkaa.highlighter.client.utilities.data.Prefix;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.tooltip.Tooltip;
+import net.minecraft.client.sound.SoundInstance;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
@@ -51,6 +53,9 @@ public class HighlighterPrefixEditWidget extends FlowLayout {
     ButtonComponent saveButton, cancelButton;
     String mainChatSound = null;
 
+    // Флаг, указывающий, открыт ли выпадающий список
+    private boolean isDropdownExpanded = false;
+
     public HighlighterPrefixEditWidget(HighlightScreen parent, int x, int y, int width, int height, @Nullable Prefix prefix) {
         super(Sizing.fill(), Sizing.fill(),Algorithm.VERTICAL);
         this.highlightScreen = parent;
@@ -65,7 +70,7 @@ public class HighlighterPrefixEditWidget extends FlowLayout {
 
         FlowLayout nameLayout = Containers.verticalFlow(Sizing.content(), Sizing.content());
         this.name = Components.textBox(Sizing.fill(),prefix == null ? "": prefix.getPrefixTag());
-        this.name.setMaxLength(16);
+        this.name.setMaxLength(20);
         this.name.setPlaceholder(Text.translatable("gui.highlighter.menu.prefix_edit.form.prefix_name.placeholder"));
         this.name.tooltip(Text.translatable("gui.highlighter.menu.prefix_edit.form.prefix_name.tooltip"));
         LabelComponent nameLabel = Components.label(Text.translatable("gui.highlighter.menu.prefix_edit.form.prefix_name.label"));
@@ -73,7 +78,7 @@ public class HighlighterPrefixEditWidget extends FlowLayout {
 
         FlowLayout tagLayout = Containers.verticalFlow(Sizing.content(), Sizing.content());
         this.tag = Components.textBox(Sizing.fill(), prefix == null ? "": prefix.getPrefixChar());
-        this.tag.setMaxLength(4);
+        this.tag.setMaxLength(12);
         this.tag.setPlaceholder(Text.translatable("gui.highlighter.menu.prefix_edit.form.prefix_tag.placeholder"));
         this.tag.tooltip(Text.translatable("gui.highlighter.menu.prefix_edit.form.prefix_tag.tooltip"));
         LabelComponent tagLabel = Components.label(Text.translatable("gui.highlighter.menu.prefix_edit.form.prefix_tag.label"));
@@ -124,7 +129,22 @@ public class HighlighterPrefixEditWidget extends FlowLayout {
         }
         LabelComponent tagColorLabel = Components.label(Text.translatable("gui.highlighter.menu.prefix_edit.form.prefix_color.label"));
         Text chatSoundInitial = prefix == null ? Text.literal("Chat sound") : Text.literal(prefix.getChatSound() == null ? "None" : prefix.getChatSound());
+
+        // Установка повышенного z-index и настройка обработчиков для выпадающего списка
         this.chatSoundDropdown = new HighlighterScrollDropdownComponent(Sizing.fill(), Sizing.content(), chatSoundInitial, false);
+
+        // Отслеживаем изменение состояния выпадающего списка
+        this.chatSoundDropdown.onExpandStateChanged(expanded -> {
+            Highlighter.LOGGER.info("Setting chat sound: {}", expanded);
+            this.isDropdownExpanded = expanded;
+            this.saveButton.active = !expanded;
+            this.chatPattern.active = !expanded;
+        });
+        if (prefix!=null && prefix.getChatSound()!= null) {
+            this.mainChatSound = prefix.getChatSound();
+            this.chatSoundDropdown.title(Text.literal(prefix.getChatSound()));
+        }
+
         this.chatSoundDropdown.button(Text.literal("None"), (comp) -> {
             this.chatSoundDropdown.title(Text.literal("None"));
             this.mainChatSound = null;
@@ -134,21 +154,24 @@ public class HighlighterPrefixEditWidget extends FlowLayout {
                 this.chatSoundDropdown.button(Text.literal(effects.getName()), (comp) -> {
                     this.chatSoundDropdown.title(Text.literal(effects.getName()));
                     this.mainChatSound = effects.getName();
+                    SoundUtils.playSound(effects.getSoundEvent());
                 });
             }
         }
-        this.chatSoundDropdown.tooltip(Text.translatable("gui.highlighter.menu.prefix_edit.form.chat_sound.tooltip"));
+        //this.chatSoundDropdown.tooltip(Text.translatable("gui.highlighter.menu.prefix_edit.form.chat_sound.tooltip"));
         LabelComponent chatSoundLabel = Components.label(Text.translatable("gui.highlighter.menu.prefix_edit.form.chat_sound.label"));
         chatSoundLabel.sizing(Sizing.content(), Sizing.fixed(10));
 
         FlowLayout chatPatternLayout = Containers.verticalFlow(Sizing.content(), Sizing.content());
-        this.chatPattern = Components.textBox(Sizing.fill(), prefix == null ? "": prefix.getChatTemplate());
-        this.chatPattern.setMaxLength(64);
+        this.chatPattern = Components.textBox(Sizing.fill());
+        this.chatPattern.setMaxLength(1000);
+        if (prefix!=null){
+            this.chatPattern.text(prefix.getChatTemplate());
+        }
         this.chatPattern.setPlaceholder(Text.translatable("gui.highlighter.menu.prefix_edit.form.chat_pattern.placeholder"));
         this.chatPattern.tooltip(Text.translatable("gui.highlighter.menu.prefix_edit.form.chat_pattern.tooltip"));
         LabelComponent chatPatternLabel = Components.label(Text.translatable("gui.highlighter.menu.prefix_edit.form.chat_pattern.label"));
         chatPatternLayout.child(chatPatternLabel).child(this.chatPattern);
-
         this.saveButton = Components.button(Text.translatable("gui.highlighter.menu.prefix_edit.button.save"), (button) -> {
 
             String prefixName = this.name.getText().trim();
@@ -192,16 +215,16 @@ public class HighlighterPrefixEditWidget extends FlowLayout {
         int labelHeight = 10;
 
         this
-            .child(nameLayout.positioning(Positioning.absolute(startX, startY)).sizing(Sizing.fixed(width-14), Sizing.fixed(30)))
-            .child(tagLayout.positioning(Positioning.absolute(startX,startY+spacing)).sizing(Sizing.fixed(width-14), Sizing.fixed(30)))
-            .child(nameColorLabel.positioning(Positioning.absolute(startX,startY+spacing*2)))
-            .child(this.nameColorField.positioning(Positioning.absolute(startX, startY+spacing*2+labelHeight)))
-            .child(tagColorLabel.positioning(Positioning.absolute(startX, startY+spacing*3)))
-            .child(this.tagColorField.positioning(Positioning.absolute(startX, startY+spacing*3+labelHeight)))
-            .child(chatSoundLabel.positioning(Positioning.absolute(startX, startY+spacing*4)))
-            .child(this.chatSoundDropdown.positioning(Positioning.absolute(startX, startY + spacing * 4 + labelHeight)).sizing(Sizing.fixed(width-15), Sizing.fixed(20)))
-            .child(chatPatternLayout.positioning(Positioning.absolute(startX, startY + spacing * 5)).sizing(Sizing.fixed(width-14), Sizing.fixed(30)))
-            .child(this.saveButton.positioning(Positioning.absolute(startX, startY + spacing * 6 + 10)).sizing(Sizing.fixed(width-14), Sizing.fixed(20)));
+                .child(this.chatSoundDropdown.allowOverflow(true).positioning(Positioning.absolute(startX, startY + spacing * 4 + labelHeight)).sizing(Sizing.fixed(width-15), Sizing.fixed(20)))
+                .child(nameLayout.positioning(Positioning.absolute(startX, startY)).sizing(Sizing.fixed(width-14), Sizing.fixed(30)))
+                .child(tagLayout.positioning(Positioning.absolute(startX,startY+spacing)).sizing(Sizing.fixed(width-14), Sizing.fixed(30)))
+                .child(nameColorLabel.positioning(Positioning.absolute(startX,startY+spacing*2)))
+                .child(this.nameColorField.positioning(Positioning.absolute(startX, startY+spacing*2+labelHeight)))
+                .child(tagColorLabel.positioning(Positioning.absolute(startX, startY+spacing*3)))
+                .child(this.tagColorField.positioning(Positioning.absolute(startX, startY+spacing*3+labelHeight)))
+                .child(chatSoundLabel.positioning(Positioning.absolute(startX, startY+spacing*4)))
+                .child(chatPatternLayout.positioning(Positioning.absolute(startX, startY + spacing * 5)).sizing(Sizing.fixed(width-14), Sizing.fixed(30)))
+                .child(this.saveButton.positioning(Positioning.absolute(startX, startY + spacing * 6 + 10)).sizing(Sizing.fixed(width-14), Sizing.fixed(20)));
     }
 
     @Override
@@ -209,9 +232,33 @@ public class HighlighterPrefixEditWidget extends FlowLayout {
         super.draw(context, mouseX, mouseY, partialTicks, delta);
         renderBackground(context);
     }
+
     private void renderBackground(DrawContext context) {
         GuiAdapter.drawGuiTexture(context,BACKGROUND_TEXTURE, this.x, this.y, this.width+2, this.height);
         String text = prefix == null ? Text.translatable("gui.highlighter.menu.prefix_edit.create.title").getString() : Text.translatable("gui.highlighter.menu.prefix_edit.edit.title", prefix.getPrefixTag()).getString();
         context.drawCenteredTextWithShadow(textRenderer, text, this.x + width/2, this.y - 12, 0xFFFFFF);
+    }
+
+    @Override
+    public boolean onMouseDown(double mouseX, double mouseY, int button) {
+        if (isDropdownExpanded && isMouseOverDropdown(mouseX, mouseY)) {
+            Highlighter.LOGGER.info("Mouse down on dropdown");
+            return super.onMouseDown(mouseX, mouseY, button);
+        }
+        return super.onMouseDown(mouseX, mouseY, button);
+    }
+
+    @Override
+    public boolean isInBoundingBox(double x, double y) {
+        if (isDropdownExpanded && isMouseOverDropdown(x, y)) {
+            return true;
+        }else {
+            return super.isInBoundingBox(x, y);
+        }
+    }
+
+    private boolean isMouseOverDropdown(double mouseX, double mouseY) {
+        if (!isDropdownExpanded) return false;
+        return chatSoundDropdown.isInBoundingBox(mouseX, mouseY);
     }
 }

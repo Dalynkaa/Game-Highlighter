@@ -116,6 +116,7 @@ public class ServerSettingsScreen extends Screen {
         if (regexFields.size() >= 4) return;
 
         TextFieldWidget input = new TextFieldWidget(this.textRenderer, 0, 0, 200, 20, Text.translatable("gui.highlighter.menu.server_settings.regex_filters.field"));
+        input.setMaxLength(1000);
         input.setText(value);
         this.addDrawableChild(input);
 

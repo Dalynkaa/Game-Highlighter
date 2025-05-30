@@ -4,6 +4,7 @@ import me.dalynkaa.highlighter.client.HighlighterClient;
 import me.dalynkaa.highlighter.client.customEvents.ChatMessageEvent;
 import me.dalynkaa.highlighter.client.customEvents.data.ChatMessage;
 import me.dalynkaa.highlighter.client.config.ModConfig;
+import me.dalynkaa.highlighter.client.utilities.SoundUtils;
 import me.dalynkaa.highlighter.client.utilities.data.HighlightedPlayer;
 import me.dalynkaa.highlighter.client.utilities.data.Prefix;
 //import net.kyori.adventure.audience.Audience;
@@ -86,7 +87,7 @@ public class OnChatMessage {
         if (isHighlighted) {
             HighlightedPlayer highlightedPlayer = HighlighterClient.getServerEntry().getHighlitedPlayer(playerListEntry.getProfile().getId());
             Prefix prefix = highlightedPlayer.getPrefix();
-            String template = prefix.getChatTemplate() == null ? config.chatSettings.globalChatMessage : prefix.getChatTemplate();
+            String template = prefix.getChatTemplate();
             Component formattedMessage = MiniMessage.miniMessage()
                     .deserialize(template,
                             Placeholder.unparsed("nickname", nickname),
@@ -97,7 +98,9 @@ public class OnChatMessage {
             ClientPlayerEntity player = this.client.player;
             if (player != null) {
                 player.sendMessage(formattedMessage);
-                client.player.playSound(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP);
+                if (prefix.getChatSoundEffect() != null) {
+                    SoundUtils.playSound(prefix.getChatSoundEffect().getSoundEvent());
+                }
                 chatLog.add(ReceivedMessage.of(chatMessage.getMessage(), Instant.now()));
                 this.client.getNarratorManager().narrateSystemMessage(chatMessage.getMessage());
                 return true;

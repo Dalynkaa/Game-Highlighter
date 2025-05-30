@@ -49,7 +49,7 @@
   "gui.highlighter.menu.prefix_edit.form.chat_sound.tooltip": "Sound played when you receive a message\nfrom a highlighted player.\nLeave empty to disable",
   "gui.highlighter.menu.prefix_edit.form.chat_pattern.label": "Chat pattern",
   "gui.highlighter.menu.prefix_edit.form.chat_pattern.placeholder": "Pattern",
-  "gui.highlighter.menu.prefix_edit.form.chat_pattern.tooltip": "Message pattern for highlighted players\nwith this prefix. Supports MiniMessage formatting.\nPlaceholders:\n<nickname/> - player name\n<message/> - message\n<prefix/> - prefix\n<name_color></name_color> - player name color\n<prefix_color></prefix_color> - prefix color",
+  "gui.highlighter.menu.prefix_edit.form.chat_pattern.tooltip": "Message pattern for highlighted players\nwith this prefix. Supports MiniMessage formatting.\nPlaceholders:\n<nickname> - player name\n<message> - message\n<prefixБЮ> - prefix\n<name_color></name_color> - player name color\n<prefix_color></prefix_color> - prefix color",
   "gui.highlighter.menu.prefix_edit.button.save": "Save",
   "gui.highlighter.menu.prefix_edit.button.save.tooltip": "Save the changes",
 

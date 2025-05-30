@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 public class HighlighterScrollDropdownComponent extends FlowLayout {
+    private Consumer<Boolean> expandStateChangeListener;
     private static final String EXPANDED_DROPDOWN_CHAR = "⏶ ";
     private static final String UNEXPANDED_DROPDOWN_CHAR = "⏷ ";
     public final HighlighterDropdownComponent expandableDropdown;
@@ -47,17 +48,11 @@ public class HighlighterScrollDropdownComponent extends FlowLayout {
 
         // Вычисляем высоту скролла для обеспечения оптимального отображения
         if (verticalSizing.isContent()) {
-            // Ограничиваем высоту скролла для контентного размера
             expandableDropdownScroll = Containers.verticalScroll(horizontalSizing, Sizing.fixed(MAX_VISIBLE_ITEMS * DEFAULT_ITEM_HEIGHT), expandableDropdown);
         } else {
             expandableDropdownScroll = Containers.verticalScroll(horizontalSizing, verticalSizing, expandableDropdown);
         }
 
-//        // Улучшенный скроллбар
-//        expandableDropdownScroll.scrollbarThiccness(SCROLL_BAR_THICKNESS);
-//        expandableDropdownScroll.scrollbar(ScrollContainer.Scrollbar.vanilla());
-//        // Разрешаем более плавную прокрутку колесиком мыши
-//        expandableDropdownScroll.scrollStep(16); // Установка размера шага прокрутки
 
         titleDropdown = new HighlighterDropdownComponent(horizontalSizing);
         titleDropdown.zIndex(110);
@@ -108,6 +103,27 @@ public class HighlighterScrollDropdownComponent extends FlowLayout {
         return this;
     }
 
+    @Override
+    public boolean isInBoundingBox(double x, double y) {
+        if (expanded) {
+            // Проверяем, находится ли точка в области выпадающего списка
+            double dropdownX = this.x + this.width / 2 - expandableDropdownScroll.width() / 2;
+            double dropdownY = this.y + this.height;
+            return (x >= dropdownX && x <= dropdownX + expandableDropdownScroll.width() &&
+                   y >= dropdownY && y <= dropdownY + expandableDropdownScroll.height()) ||
+                    (x >= this.x && x <= this.x + this.width &&
+                    y >= this.y && y <= this.y + this.height);
+        }else {
+            // Если не развернут, проверяем только область заголовка
+            return x >= this.x && x <= this.x + this.width &&
+                   y >= this.y && y <= this.y + this.height;
+        }
+    }
+
+    public void onExpandStateChanged(Consumer<Boolean> listener) {
+        this.expandStateChangeListener = listener;
+    }
+
     public HighlighterScrollDropdownComponent button(Text text, Consumer<HighlighterDropdownComponent> onClick) {
         expandableDropdown.button(text, dropdown -> {
             this.expanded(false);
@@ -144,11 +160,18 @@ public class HighlighterScrollDropdownComponent extends FlowLayout {
     public void expanded(boolean value) {
         expanded = value;
         updateExpandableDropdown();
+
+        // Вызываем слушателя при изменении состояния
+        if (expandStateChangeListener != null) {
+            expandStateChangeListener.accept(value);
+        }
     }
 
     protected void updateExpandableDropdown() {
         expandableDropdown.horizontalSizing(Sizing.fixed(this.width()));
-
+        if (this.expandStateChangeListener !=null){
+            this.expandStateChangeListener.accept(expanded);
+        }
         if (!expanded) {
             contentLayout.removeChild(expandableDropdownScroll);
         } else {
@@ -166,4 +189,16 @@ public class HighlighterScrollDropdownComponent extends FlowLayout {
         }
         super.drawChildren(context, mouseX, mouseY, partialTicks, delta, children);
     }
+
+    /**
+     * Проверяет, должен ли компонент перехватывать все события ввода.
+     * Возвращает true, когда dropdown активен (развернут), что позволяет
+     * предотвратить обработку кликов по другим виджетам.
+     *
+     * @return true если dropdown активен и должен захватить все клики
+     */
+    public boolean shouldCaptureAllInputs() {
+        return expanded;
+    }
+
 }

@@ -3,6 +3,7 @@ package me.dalynkaa.highlighter.client.utilities.data;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import me.dalynkaa.highlighter.client.HighlighterClient;
+import me.dalynkaa.highlighter.client.utilities.CustomNotificationEffects;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
@@ -114,8 +115,13 @@ public class Prefix {
     public Integer getIndex() {
         return this.index;
     }
+
     public void setIndex(Integer index) {
         this.index = index;
+    }
+
+    public CustomNotificationEffects getChatSoundEffect() {
+        return CustomNotificationEffects.getEffectByName(this.chatSound);
     }
 
     public static Prefix getPrefix(UUID prefixId) {
