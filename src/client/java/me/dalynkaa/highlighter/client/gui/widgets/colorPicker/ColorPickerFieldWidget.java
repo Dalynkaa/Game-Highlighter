@@ -48,15 +48,9 @@ public class ColorPickerFieldWidget extends TextFieldWidget {
     @Override
     public boolean isInBoundingBox(double x, double y) {
         if (popupOpen) {
-            return isMouseOverPopup(x, y) || super.isInBoundingBox(x, y);
+            return popup.isMouseOver(x, y) || super.isInBoundingBox(x, y);
         }
         return super.isInBoundingBox(x, y);
-    }
-
-    private boolean isMouseOverPopup(double mouseX, double mouseY) {
-        if (popup == null || !popupOpen) return false;
-        return mouseX >= popup.x && mouseX < popup.x + ColorPickerPopup.POPUP_WIDTH &&
-               mouseY >= popup.y && mouseY < popup.y + ColorPickerPopup.POPUP_HEIGHT;
     }
 
     public String getText() {
@@ -127,7 +121,7 @@ public class ColorPickerFieldWidget extends TextFieldWidget {
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (popup != null && popupOpen) {
-            if (!isMouseOverPopup(mouseX, mouseY)) {
+            if (!popup.isMouseOver(mouseX, mouseY)) {
                 closePopup();
                 return true;
             }
@@ -418,10 +412,7 @@ public class ColorPickerFieldWidget extends TextFieldWidget {
             context.fill(presetsStartX, y+8, x + POPUP_WIDTH - 4, y + POPUP_HEIGHT - 8, 0x40000000);
 
             // Рисуем заголовок
-//            context.drawText(MinecraftClient.getInstance().textRenderer,
-//                    "Пресеты", presetsStartX, presetsStartY - 3, 0xFFCCCCCC, false);
 
-//            presetsStartY += 12;
 
             // Рисуем все пресеты
             for (int i = 0; i < COLOR_PRESETS.length; i++) {
@@ -468,8 +459,8 @@ public class ColorPickerFieldWidget extends TextFieldWidget {
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
             if (button != 0) return false;
             // Проверяем клик по предустановленным цветам
-            int presetsStartX = x + POPUP_WIDTH - PRESET_PANEL_WIDTH;
-            int presetsStartY = y + 8 + 12;
+            int presetsStartX = x + POPUP_WIDTH - PRESET_PANEL_WIDTH - 4;
+            int presetsStartY = y + 8;
 
             for (int i = 0; i < COLOR_PRESETS.length; i++) {
                 int col = i / PRESET_ROWS;
@@ -508,6 +499,11 @@ public class ColorPickerFieldWidget extends TextFieldWidget {
             double scaledY = scaleCoordinate(mouseY);
 
             return colorPicker.mouseReleased(scaledX, scaledY, button);
+        }
+
+        public boolean isMouseOver(double mouseX, double mouseY) {
+            return mouseX >= x && mouseX < x + POPUP_WIDTH &&
+                   mouseY >= y && mouseY < y + POPUP_HEIGHT;
         }
 
         public void close() {

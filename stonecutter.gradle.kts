@@ -1,12 +1,17 @@
 plugins {
     id("dev.kikugie.stonecutter")
-    id("fabric-loom") version "1.9-SNAPSHOT" apply false
+    id("fabric-loom") version "1.10-SNAPSHOT" apply false
 }
 stonecutter active "1.21.1" /* [SC] DO NOT EDIT */
 
 stonecutter registerChiseled tasks.register("chiseledBuild", stonecutter.chiseled) {
     group = "project"
-    ofTask("build")
+    ofTask("buildAndCollect")
+}
+
+stonecutter registerChiseled tasks.register("chiseledPublishToModrinth", stonecutter.chiseled) {
+    group = "project"
+    ofTask("chiseledPublish")
 }
 
 stonecutter parameters {

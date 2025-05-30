@@ -2,6 +2,7 @@ package me.dalynkaa.highlighter.client.adapters;
 
 import io.wispforest.owo.ui.component.Components;
 import net.minecraft.util.math.ColorHelper;
+import net.minecraft.util.math.MathHelper;
 
 /**
  * Адаптер для работы с цветами
@@ -72,80 +73,89 @@ public class ColorAdapter {
         }
     }
 
-    /**
-     * Конвертирует RGB в HSV
-     * @param r Красный компонент (0-255)
-     * @param g Зеленый компонент (0-255)
-     * @param b Синий компонент (0-255)
-     * @return Массив [H, S, V] где каждый компонент в диапазоне 0-1
-     */
-    public static float[] rgbToHsv(int r, int g, int b) {
-        float rf = r / 255f;
-        float gf = g / 255f;
-        float bf = b / 255f;
+    public static int[] hsbToRgb(float hue, float saturation, float brightness) {
+        int r = 0, g = 0, b = 0;
 
-        float max = Math.max(rf, Math.max(gf, bf));
-        float min = Math.min(rf, Math.min(gf, bf));
-        float delta = max - min;
+        if (saturation == 0) {
+            r = g = b = Math.round(brightness * 255.0f);
+        } else {
+            float h = (hue - (float) Math.floor(hue)) * 6.0f;
+            float f = h - (float) Math.floor(h);
+            float p = brightness * (1.0f - saturation);
+            float q = brightness * (1.0f - saturation * f);
+            float t = brightness * (1.0f - (saturation * (1.0f - f)));
 
-        // Расчет оттенка (Hue)
-        float h = 0;
-        if (delta != 0) {
-            if (max == rf) {
-                h = ((gf - bf) / delta) % 6;
-            } else if (max == gf) {
-                h = ((bf - rf) / delta) + 2;
-            } else { // max == bf
-                h = ((rf - gf) / delta) + 4;
+            switch ((int) h) {
+                case 0:
+                    r = Math.round(brightness * 255.0f);
+                    g = Math.round(t * 255.0f);
+                    b = Math.round(p * 255.0f);
+                    break;
+                case 1:
+                    r = Math.round(q * 255.0f);
+                    g = Math.round(brightness * 255.0f);
+                    b = Math.round(p * 255.0f);
+                    break;
+                case 2:
+                    r = Math.round(p * 255.0f);
+                    g = Math.round(brightness * 255.0f);
+                    b = Math.round(t * 255.0f);
+                    break;
+                case 3:
+                    r = Math.round(p * 255.0f);
+                    g = Math.round(q * 255.0f);
+                    b = Math.round(brightness * 255.0f);
+                    break;
+                case 4:
+                    r = Math.round(t * 255.0f);
+                    g = Math.round(p * 255.0f);
+                    b = Math.round(brightness * 255.0f);
+                    break;
+                case 5:
+                    r = Math.round(brightness * 255.0f);
+                    g = Math.round(p * 255.0f);
+                    b = Math.round(q * 255.0f);
+                    break;
             }
-
-            h /= 6;
-            if (h < 0) h += 1;
-        }
-
-        // Расчет насыщенности (Saturation)
-        float s = (max == 0) ? 0 : (delta / max);
-
-        // Значение (Value)
-        float v = max;
-
-        return new float[]{h, s, v};
-    }
-
-    /**
-     * Конвертирует HSV в RGB
-     * @param h Оттенок (0-1)
-     * @param s Насыщенность (0-1)
-     * @param v Яркость (0-1)
-     * @return Массив [R, G, B] где каждый компонент в диапазоне 0-255
-     */
-
-    public static int[] hsvToRgb(float h, float s, float v) {
-        // Нормализуем оттенок до диапазона 0-1
-        h = h - (float)Math.floor(h);
-
-        int i = (int)(h * 6);
-        float f = h * 6 - i;
-        float p = v * (1 - s);
-        float q = v * (1 - f * s);
-        float t = v * (1 - (1 - f) * s);
-
-        float r, g, b;
-        switch (i % 6) {
-            case 0 -> { r = v; g = t; b = p; }
-            case 1 -> { r = q; g = v; b = p; }
-            case 2 -> { r = p; g = v; b = t; }
-            case 3 -> { r = p; g = q; b = v; }
-            case 4 -> { r = t; g = p; b = v; }
-            case 5 -> { r = v; g = p; b = q; }
-            default -> { r = v; g = t; b = p; } // Не должно происходить, но на всякий случай
         }
 
         return new int[]{
-                Math.round(r * 255),
-                Math.round(g * 255),
-                Math.round(b * 255)
+                MathHelper.clamp(r, 0, 255),
+                MathHelper.clamp(g, 0, 255),
+                MathHelper.clamp(b, 0, 255)
         };
+    }
+
+    public static float[] rgbToHsb(int r, int g, int b) {
+        float[] hsbvals = new float[3];
+        int cmax = Math.max(r, Math.max(g, b));
+        int cmin = Math.min(r, Math.min(g, b));
+
+        float brightness = ((float) cmax) / 255.0f;
+        float saturation = (cmax != 0) ? ((float) (cmax - cmin)) / ((float) cmax) : 0;
+        float hue = 0;
+
+        if (saturation != 0) {
+            float redc = ((float) (cmax - r)) / ((float) (cmax - cmin));
+            float greenc = ((float) (cmax - g)) / ((float) (cmax - cmin));
+            float bluec = ((float) (cmax - b)) / ((float) (cmax - cmin));
+
+            if (r == cmax)
+                hue = bluec - greenc;
+            else if (g == cmax)
+                hue = 2.0f + redc - bluec;
+            else
+                hue = 4.0f + greenc - redc;
+
+            hue = hue / 6.0f;
+            if (hue < 0)
+                hue = hue + 1.0f;
+        }
+
+        hsbvals[0] = hue;
+        hsbvals[1] = saturation;
+        hsbvals[2] = brightness;
+        return hsbvals;
     }
 
     public static String rgbToHex(int rgb) {

@@ -31,6 +31,7 @@ import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
+import java.util.logging.Logger;
 
 
 public class HighlighterPrefixEditWidget extends FlowLayout {
@@ -111,7 +112,7 @@ public class HighlighterPrefixEditWidget extends FlowLayout {
         this.tagColorField = new ColorPickerFieldWidget(0, 0, width-16, prefix == null ? 0xFF0000 : ColorAdapter.fromHexString(prefix.getPrefixColor()), (color)->{
             return;
         });
-        this.tagColorField.zIndex(1000);
+        this.tagColorField.zIndex(999);
         this.tagColorField.onPopupOpenEvent((colorPicker) -> {
             if(currentColorField != null) {
                 currentColorField.closePopup();
@@ -186,10 +187,10 @@ public class HighlighterPrefixEditWidget extends FlowLayout {
                 return;
             }
             if (chatSound == null || chatSound.isEmpty() || chatSound.equals("None")) {
-                chatSound = null; // Set to null if no sound is selected
+                chatSound = null;
             }
             if (chatTemplate.isEmpty()) {
-                chatTemplate = null; // Set to null if no template is provided
+                chatTemplate = null;
             }
 
             if (this.prefix == null) {
@@ -242,7 +243,6 @@ public class HighlighterPrefixEditWidget extends FlowLayout {
     @Override
     public boolean onMouseDown(double mouseX, double mouseY, int button) {
         if (isDropdownExpanded && isMouseOverDropdown(mouseX, mouseY)) {
-            Highlighter.LOGGER.info("Mouse down on dropdown");
             return super.onMouseDown(mouseX, mouseY, button);
         }
         return super.onMouseDown(mouseX, mouseY, button);

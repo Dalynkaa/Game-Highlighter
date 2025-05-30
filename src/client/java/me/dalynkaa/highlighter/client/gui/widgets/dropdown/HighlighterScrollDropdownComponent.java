@@ -31,12 +31,14 @@ public class HighlighterScrollDropdownComponent extends FlowLayout {
     protected final int SCROLL_BAR_THICKNESS = 4;
     protected final int MAX_VISIBLE_ITEMS = 10;
     protected final int DEFAULT_ITEM_HEIGHT = 16;
+    public boolean active;
 
     public HighlighterScrollDropdownComponent(Sizing horizontalSizing, Sizing verticalSizing, Text title, boolean expanded) {
         super(horizontalSizing, Sizing.content(), Algorithm.HORIZONTAL);
 
         this.title = title;
         this.expanded = expanded;
+        this.active = true;
 
         contentLayout = Containers.verticalFlow(horizontalSizing, Sizing.content());
 
@@ -45,6 +47,7 @@ public class HighlighterScrollDropdownComponent extends FlowLayout {
         expandableDropdown.alignment(HorizontalAlignment.CENTER, VerticalAlignment.CENTER);
         expandableDropdown.margins(Insets.top(-2));
         expandableDropdown.padding(Insets.of(0));
+
 
         // Вычисляем высоту скролла для обеспечения оптимального отображения
         if (verticalSizing.isContent()) {
@@ -98,6 +101,12 @@ public class HighlighterScrollDropdownComponent extends FlowLayout {
         super.allowOverflow(true);
     }
 
+    @Override
+    public boolean onMouseDown(double mouseX, double mouseY, int button) {
+        if (!active) return false;
+        return super.onMouseDown(mouseX, mouseY, button);
+    }
+
     public HighlighterScrollDropdownComponent title(Text text) {
         titleLabel.text(text);
         return this;
@@ -105,6 +114,7 @@ public class HighlighterScrollDropdownComponent extends FlowLayout {
 
     @Override
     public boolean isInBoundingBox(double x, double y) {
+        if (!active) return false;
         if (expanded) {
             // Проверяем, находится ли точка в области выпадающего списка
             double dropdownX = this.x + this.width / 2 - expandableDropdownScroll.width() / 2;

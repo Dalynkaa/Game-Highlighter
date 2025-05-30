@@ -33,13 +33,4 @@ public abstract class ClientPlayNetworkHandlerMixin  {
             ci.cancel();
         }
     }
-
-    @Inject(at = @At("RETURN"), method = "onChatMessage")
-    public void onChatMessage(ChatMessageS2CPacket packet, CallbackInfo ci) {
-    }
-
-    @Inject(at = @At("TAIL"), method = "onGameJoin")
-    private void onJoin(GameJoinS2CPacket packet, CallbackInfo ci) {
-
-    }
 }

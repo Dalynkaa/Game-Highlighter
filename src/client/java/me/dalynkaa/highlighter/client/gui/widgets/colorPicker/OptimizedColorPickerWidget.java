@@ -1,6 +1,10 @@
 package me.dalynkaa.highlighter.client.gui.widgets.colorPicker;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+//? if = 1.21.5 {
+/*import com.mojang.blaze3d.textures.GpuTexture;
+*///?}
+// IMORTANT: This code is optimized for Minecraft 1.21.1 and later versions.
 import me.dalynkaa.highlighter.Highlighter;
 import me.dalynkaa.highlighter.client.adapters.ColorAdapter;
 import me.dalynkaa.highlighter.client.adapters.GuiAdapter;
@@ -12,10 +16,12 @@ import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.MathHelper;
 
 import java.util.function.Consumer;
+
+import static me.dalynkaa.highlighter.client.adapters.ColorAdapter.hsbToRgb;
+import static me.dalynkaa.highlighter.client.adapters.ColorAdapter.rgbToHsb;
 
 public class OptimizedColorPickerWidget extends ClickableWidget {
     private static final int PICKER_SIZE = 200;
@@ -52,21 +58,43 @@ public class OptimizedColorPickerWidget extends ClickableWidget {
 
         // Create picker texture
         NativeImage pickerImage = new NativeImage(PICKER_SIZE, PICKER_SIZE, false);
+
+        //? if <1.21.5 {
         pickerTexture = new NativeImageBackedTexture(pickerImage);
+         //?}
+
         //? if <=1.21.2 {
         pickerTextureId = client.getTextureManager().registerDynamicTexture("color_picker", pickerTexture);
-        //?} else {
+        //?} elif =1.21.3 {
         /*pickerTextureId = Identifier.of(Highlighter.MOD_ID, "color_picker");
+        client.getTextureManager().registerTexture(pickerTextureId, pickerTexture);
+        *///?} elif =1.21.4 {
+        /*pickerTextureId = Identifier.of(Highlighter.MOD_ID, "color_picker");
+        client.getTextureManager().registerTexture(pickerTextureId, pickerTexture);
+        *///?} else {
+        /*pickerTextureId = Identifier.of(Highlighter.MOD_ID, "color_picker");
+        pickerTexture = new NativeImageBackedTexture(() -> ((Identifier)pickerTextureId).toString(),pickerImage);
         client.getTextureManager().registerTexture(pickerTextureId, pickerTexture);
         *///?}
 
         // Create hue bar texture
         NativeImage hueImage = new NativeImage(HUE_BAR_WIDTH, PICKER_SIZE, false);
+
+        //? if <1.21.5 {
         hueTexture = new NativeImageBackedTexture(hueImage);
+         //?}
+
         //? if <=1.21.2 {
-        hueTextureId = client.getTextureManager().registerDynamicTexture("hue_bar", hueTexture);
-        //?} else {
-        /*hueTextureId = Identifier.of(Highlighter.MOD_ID, "hue_bar");
+        hueTextureId = client.getTextureManager().registerDynamicTexture("hue", hueTexture);
+         //?} elif =1.21.3 {
+        /*hueTextureId = Identifier.of(Highlighter.MOD_ID, "hue");
+        client.getTextureManager().registerTexture(hueTextureId, hueTexture);
+        *///?} elif =1.21.4 {
+        /*hueTextureId = Identifier.of(Highlighter.MOD_ID, "hue");
+        client.getTextureManager().registerTexture(hueTextureId, hueTexture);
+        *///?} else {
+        /*hueTextureId = Identifier.of(Highlighter.MOD_ID, "hue");
+        hueTexture = new NativeImageBackedTexture(() -> ((Identifier)hueTextureId).toString(),hueImage);
         client.getTextureManager().registerTexture(hueTextureId, hueTexture);
         *///?}
 
@@ -88,7 +116,12 @@ public class OptimizedColorPickerWidget extends ClickableWidget {
                 float b = 1.0f - (float) y / (PICKER_SIZE - 1);
 
                 int[] rgb = hsbToRgb(hue, s, b);
+
+                //? if =1.21.1 {
                 int color = 0xFF000000 | (rgb[2] << 16) | (rgb[1] << 8) | rgb[0];
+                //?} else {
+                /*int color = 0xFF000000 | (rgb[0] << 16) | (rgb[1] << 8) | rgb[2];
+                *///?}
 
                 //? if =1.21.1 {
                 image.setColor(x, y, color);
@@ -107,7 +140,12 @@ public class OptimizedColorPickerWidget extends ClickableWidget {
         for (int y = 0; y < PICKER_SIZE; y++) {
             float h = (float) y / (PICKER_SIZE - 1);
             int[] rgb = hsbToRgb(h, 1.0f, 1.0f);
+
+            //? if =1.21.1 {
             int color = 0xFF000000 | (rgb[2] << 16) | (rgb[1] << 8) | rgb[0];
+            //?} else {
+            /*int color = 0xFF000000 | (rgb[0] << 16) | (rgb[1] << 8) | rgb[2];
+             *///?}
 
             for (int x = 0; x < HUE_BAR_WIDTH; x++) {
                 //? if =1.21.1 {
@@ -136,7 +174,11 @@ public class OptimizedColorPickerWidget extends ClickableWidget {
                 0xFF2A2A2A);
 
         // Draw main color picker using optimized texture
+        //? if <1.21.5 {
         RenderSystem.setShaderTexture(0, pickerTextureId);
+        //?} else {
+        /*RenderSystem.setShaderTexture(0, pickerTexture.getGlTexture());
+        *///?}
         GuiAdapter.drawTexture(context,pickerTextureId, x, y, 0, 0, PICKER_SIZE, PICKER_SIZE, PICKER_SIZE, PICKER_SIZE);
 
         // Draw hue bar background with border
@@ -146,7 +188,11 @@ public class OptimizedColorPickerWidget extends ClickableWidget {
                 0xFF2A2A2A);
 
         // Draw hue bar using optimized texture
+        //? if <1.21.5 {
         RenderSystem.setShaderTexture(0, hueTextureId);
+        //?} else {
+        /*RenderSystem.setShaderTexture(0, hueTexture.getGlTexture());
+        *///?}
         GuiAdapter.drawTexture(context,hueTextureId, hueX, y, 0, 0, HUE_BAR_WIDTH, PICKER_SIZE, HUE_BAR_WIDTH, PICKER_SIZE);
 
         // Draw selection indicators
@@ -317,90 +363,7 @@ public class OptimizedColorPickerWidget extends ClickableWidget {
     }
 
     // HSB/RGB conversion utilities
-    private static int[] hsbToRgb(float hue, float saturation, float brightness) {
-        int r = 0, g = 0, b = 0;
 
-        if (saturation == 0) {
-            r = g = b = Math.round(brightness * 255.0f);
-        } else {
-            float h = (hue - (float) Math.floor(hue)) * 6.0f;
-            float f = h - (float) Math.floor(h);
-            float p = brightness * (1.0f - saturation);
-            float q = brightness * (1.0f - saturation * f);
-            float t = brightness * (1.0f - (saturation * (1.0f - f)));
-
-            switch ((int) h) {
-                case 0:
-                    r = Math.round(brightness * 255.0f);
-                    g = Math.round(t * 255.0f);
-                    b = Math.round(p * 255.0f);
-                    break;
-                case 1:
-                    r = Math.round(q * 255.0f);
-                    g = Math.round(brightness * 255.0f);
-                    b = Math.round(p * 255.0f);
-                    break;
-                case 2:
-                    r = Math.round(p * 255.0f);
-                    g = Math.round(brightness * 255.0f);
-                    b = Math.round(t * 255.0f);
-                    break;
-                case 3:
-                    r = Math.round(p * 255.0f);
-                    g = Math.round(q * 255.0f);
-                    b = Math.round(brightness * 255.0f);
-                    break;
-                case 4:
-                    r = Math.round(t * 255.0f);
-                    g = Math.round(p * 255.0f);
-                    b = Math.round(brightness * 255.0f);
-                    break;
-                case 5:
-                    r = Math.round(brightness * 255.0f);
-                    g = Math.round(p * 255.0f);
-                    b = Math.round(q * 255.0f);
-                    break;
-            }
-        }
-
-        return new int[]{
-                MathHelper.clamp(r, 0, 255),
-                MathHelper.clamp(g, 0, 255),
-                MathHelper.clamp(b, 0, 255)
-        };
-    }
-
-    private static float[] rgbToHsb(int r, int g, int b) {
-        float[] hsbvals = new float[3];
-        int cmax = Math.max(r, Math.max(g, b));
-        int cmin = Math.min(r, Math.min(g, b));
-
-        float brightness = ((float) cmax) / 255.0f;
-        float saturation = (cmax != 0) ? ((float) (cmax - cmin)) / ((float) cmax) : 0;
-        float hue = 0;
-
-        if (saturation != 0) {
-            float redc = ((float) (cmax - r)) / ((float) (cmax - cmin));
-            float greenc = ((float) (cmax - g)) / ((float) (cmax - cmin));
-            float bluec = ((float) (cmax - b)) / ((float) (cmax - cmin));
-
-            if (r == cmax)
-                hue = bluec - greenc;
-            else if (g == cmax)
-                hue = 2.0f + redc - bluec;
-            else
-                hue = 4.0f + greenc - redc;
-
-            hue = hue / 6.0f;
-            if (hue < 0)
-                hue = hue + 1.0f;
-        }
-
-        hsbvals[0] = hue;
-        hsbvals[1] = saturation;
-        hsbvals[2] = brightness;
-        return hsbvals;
-    }
 
     @Override
     protected void appendClickableNarrations(NarrationMessageBuilder builder) {

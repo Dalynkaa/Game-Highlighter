@@ -1,6 +1,7 @@
 plugins {
     id("java-library")
-    id("fabric-loom") version "1.9-SNAPSHOT"
+    id("fabric-loom") version "1.10-SNAPSHOT"
+    id("com.modrinth.minotaur") version "2.+"
 }
 
 class ModData {
@@ -25,6 +26,34 @@ val mcVersion = stonecutter.current.version
 
 java.sourceCompatibility = JavaVersion.VERSION_21
 java.targetCompatibility = JavaVersion.VERSION_21
+
+modrinth {
+    token.set(System.getenv("MODRINTH_TOKEN") ?: project.findProperty("modrinth_token")?.toString())
+    projectId.set(project.findProperty("modrinth_project_id")?.toString() ?: "your-project-id")
+    versionNumber.set(mod.version)
+    versionName.set("${mod.name} ${mod.version}")
+    versionType.set("release") // or "beta", "alpha"
+    uploadFile.set(tasks.remapJar)
+
+    gameVersions.set(listOf(stonecutter.current.version))
+    loaders.set(listOf("fabric"))
+
+    dependencies {
+        required.project("fabric-api")
+        optional.project("modmenu")
+        optional.project("cloth-config")
+    }
+
+    // Read changelog from file
+    changelog.set(provider {
+        val changelogFile = file("../changelog/${mod.version}.md")
+        if (changelogFile.exists()) {
+            changelogFile.readText()
+        } else {
+            "No changelog available for version ${mod.version}"
+        }
+    })
+}
 
 
 repositories {
@@ -82,37 +111,21 @@ dependencies {
     val modMenu = deps["mod_menu_version"]
     val owo = deps["owo_version"]
 
-    if (stonecutter.current.isActive) {
-        if (fapi != "[VERSIONED]") {
-            println("Using Fabric API version $fapi")
-            modImplementation("net.fabricmc.fabric-api:fabric-api:$fapi")
-        }
-        if (miniMessage != "[VERSIONED]") {
-            println("Using MiniMessage version $miniMessage")
-//            modImplementation("net.kyori:adventure-platform-fabric:$miniMessage")
-//            include("net.kyori:adventure-platform-fabric:$miniMessage")
-            modImplementation(include("net.kyori:adventure-platform-fabric:$miniMessage")!!)
-        }
-        if (clothConfig != "[VERSIONED]") {
-            println("Using Cloth Config version $clothConfig")
-            modApi("me.shedaniel.cloth:cloth-config-fabric:$clothConfig") {
-                exclude(group = "net.fabricmc.fabric-api")
-            }
-        }
-        if (modMenu != "[VERSIONED]") {
-            println("Using Mod Menu version $modMenu")
-            modApi("com.terraformersmc:modmenu:$modMenu")
-        }
-        if (owo != "[VERSIONED]") {
-            println("Using OWO version $owo")
-            modImplementation("io.wispforest:owo-lib:$owo")
-            annotationProcessor("io.wispforest:owo-lib:$owo")
-            include("io.wispforest:owo-lib:$owo")
 
-        }
+    modImplementation("net.fabricmc.fabric-api:fabric-api:$fapi")
 
 
+    modImplementation(include("net.kyori:adventure-platform-fabric:$miniMessage")!!)
+    modApi("me.shedaniel.cloth:cloth-config-fabric:$clothConfig") {
+        exclude(group = "net.fabricmc.fabric-api")
     }
+    modApi("com.terraformersmc:modmenu:$modMenu")
+
+    modImplementation("io.wispforest:owo-lib:$owo")
+    annotationProcessor("io.wispforest:owo-lib:$owo")
+    include("io.wispforest:owo-lib:$owo")
+
+
 
     implementation("com.moulberry:mixinconstraints:1.0.8")?.let { include(it) }
 
@@ -151,6 +164,27 @@ tasks {
     withType<JavaCompile> {
         options.release.set(21)
     }
+}
+
+tasks.register<Copy>("buildAndCollect") {
+    group = "versioned"
+    description = "Must run through 'chiseledBuild'"
+    from(tasks.remapJar.get().archiveFile) // Only main JAR, no sources
+    into(rootProject.layout.buildDirectory.file("libs/"))
+    dependsOn("build")
+}
+tasks.register("publishToModrinth") {
+    group = "publishing"
+    description = "Publish current version to Modrinth"
+    dependsOn("build")
+    finalizedBy("modrinth")
+}
+
+// Task that can be used with chiseled
+tasks.register("chiseledPublish") {
+    group = "versioned"
+    description = "Publish all versions to Modrinth (use with stonecutter chiseled)"
+    dependsOn("publishToModrinth")
 }
 
 java {

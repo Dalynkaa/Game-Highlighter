@@ -102,7 +102,8 @@ public class HighlightScreen extends BaseOwoScreen<FlowLayout> {
 
         this.playersTabButton = this.addDrawableChild(ButtonWidget.builder(PLAYERS_TAB_TITLE, (button) -> this.setCurrentTab(Tab.PLAYERS)).dimensions(getScreenStartX()+1, 42, buttonsWidth, 20).build());
         this.prefixesTabButton = this.addDrawableChild(ButtonWidget.builder(PREFIXES_TAB_TITLE, (button) -> this.setCurrentTab(Tab.PREFIXES)).dimensions(getScreenStartX()+1+buttonsWidth, 42, buttonsWidth, 20).build());
-        this.createPrefixButton = ButtonWidget.builder(CREATE_PREFIX_BUTON_TEXT, (button) -> {
+        this.createPrefixButton = this.addDrawableChild(ButtonWidget.builder(CREATE_PREFIX_BUTON_TEXT, (button) -> {
+            Highlighter.LOGGER.info("Current tab: {}", this.currentTab);
             if (this.currentTab == Tab.PREFIXES) {
                 Prefix prefix = new Prefix(
                         UUID.randomUUID(),
@@ -113,14 +114,14 @@ public class HighlightScreen extends BaseOwoScreen<FlowLayout> {
                         "#FFFFFF",
                         "#FFFFFF"
                 );
-
+                Highlighter.LOGGER.info("Prefix: {}", prefix);
                 this.setCurrentPrefix(prefix);
-
             }
-        }).dimensions(getScreenStartX()+1, getPlayerListBottom()+10, SCREEN_WIDTH, 20).build();
+        }).dimensions(getScreenStartX()+1, getPlayerListBottom()+10, SCREEN_WIDTH, 20).build());
 
         this.playersTabButton = (ButtonWidget) this.playersTabButton.positioning(Positioning.absolute(getScreenStartX()+1, 42));
         this.prefixesTabButton = (ButtonWidget) this.prefixesTabButton.positioning(Positioning.absolute(getScreenStartX()+1+buttonsWidth, 42));
+        this.createPrefixButton = (ButtonWidget) this.createPrefixButton.positioning(Positioning.absolute(getScreenStartX()+1, getPlayerListBottom()+10));
 
 
         // --- search bar ---
@@ -146,6 +147,7 @@ public class HighlightScreen extends BaseOwoScreen<FlowLayout> {
         // --- add components to flowLayout ---
         flowLayout.child(this.playersTabButton);
         flowLayout.child(this.prefixesTabButton);
+        flowLayout.child(this.createPrefixButton);
         flowLayout.child(this.searchBox);
         flowLayout.child(playerList);
         setCurrentTab(Tab.PLAYERS);
@@ -171,7 +173,9 @@ public class HighlightScreen extends BaseOwoScreen<FlowLayout> {
         //?} else {
         /*this.client.gameRenderer.renderBlur();
         *///?}
+        //? if <=1.21.4 {
         this.client.getFramebuffer().beginWrite(false);
+        //?}
 
     }
 
@@ -238,7 +242,6 @@ public class HighlightScreen extends BaseOwoScreen<FlowLayout> {
         prefixesTabButton.setMessage(PREFIXES_TAB_TITLE);
         this.mainLayout.removeChild(this.playerList);
         this.mainLayout.removeChild(this.prefixList);
-        this.mainLayout.removeChild(this.createPrefixButton);
         // Обновляем сообщения на кнопках вкладок
         switch (tab) {
             case PLAYERS -> {
@@ -249,13 +252,14 @@ public class HighlightScreen extends BaseOwoScreen<FlowLayout> {
                 playerList.update(collection, this.playerList.getScrollAmount(), false);
                 //?} else {
                 /*playerList.update(collection, this.playerList.getMaxScrollY(), false);
+                createPrefixButton.active = false;
                 *///?}
             }
             case PREFIXES -> {
-                this.addDrawableChild(this.createPrefixButton);
                 this.mainLayout.child(this.prefixList);
                 prefixesTabButton.setMessage(SELECTED_PREFIXES_TAB_TITLE);
                 updatePrefixList();
+                createPrefixButton.active = true;
             }
         }
     }

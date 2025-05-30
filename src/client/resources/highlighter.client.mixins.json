@@ -6,7 +6,6 @@
   "client": [
     "AddServerScreenMixin",
     "ClientPlayNetworkHandlerMixin",
-    "EntityRenderDispatcherMixin",
     "PlayerListMixin"
   ],
   "injectors": {

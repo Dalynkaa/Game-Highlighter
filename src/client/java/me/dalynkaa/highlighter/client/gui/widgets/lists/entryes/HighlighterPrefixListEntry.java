@@ -123,10 +123,10 @@ public class HighlighterPrefixListEntry extends ElementListWidget.Entry<Highligh
             
         context.getMatrices().pop();
         
-        int nameX = iconX + 50;
-        int nameY = y + (entryHeight - 8) / 2;
-        context.drawTextWithShadow(this.client.textRenderer, this.prefix.getPrefixTag(), 
-            nameX, nameY, WHITE_COLOR);
+//        int nameX = iconX + 100;
+//        int nameY = y + (entryHeight - 8) / 2;
+//        context.drawTextWithShadow(this.client.textRenderer, this.prefix.getPrefixTag(),
+//            nameX, nameY, WHITE_COLOR);
 
         if (this.highlightButton != null) {
             this.highlightButton.setX(x + (entryWidth - this.highlightButton.getWidth() - 4) - 14);
