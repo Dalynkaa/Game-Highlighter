@@ -43,7 +43,6 @@ public class HighlighterPrefixListWidget  extends ElementListWidget<HighlighterP
     }
 
     public void update(Collection<Prefix> prefixes, double scrollAmount) {
-        Highlighter.LOGGER.info("Prefixes: {}", prefixes);
         if (prefixes == null) return;
         Map<UUID, HighlighterPrefixListEntry> map = new HashMap<>();
         this.setPrefixes(prefixes, map);

@@ -29,8 +29,8 @@ public class HighlighterPlayerListEntry extends ElementListWidget.Entry<Highligh
     public static final int DARK_GRAY_COLOR;
     public static final int WHITE_COLOR;
     public static final int LIGHT_GRAY_COLOR;
-    private static final Identifier HIGHLIGHT_ICON = Identifier.of(Highlighter.MOD_ID,"highlight");
-    private static final Identifier HIGHLIGHT_ICON_FOCUSED = Identifier.of(Highlighter.MOD_ID,"highlightfocus");
+    private static final Identifier HIGHLIGHT_ICON = Identifier.of(Highlighter.MOD_ID,"edit");
+    private static final Identifier HIGHLIGHT_ICON_FOCUSED = Identifier.of(Highlighter.MOD_ID,"edit-hovered");
     private static final ButtonTextures HIGHLIGHT_BUTTON_ICON = new ButtonTextures(
         HIGHLIGHT_ICON,
         HIGHLIGHT_ICON_FOCUSED

@@ -1,6 +1,8 @@
 package me.dalynkaa.highlighter.client.gui.widgets;
 
+import io.wispforest.owo.ui.component.Components;
 import io.wispforest.owo.ui.container.FlowLayout;
+import io.wispforest.owo.ui.core.Component;
 import io.wispforest.owo.ui.core.OwoUIDrawContext;
 import io.wispforest.owo.ui.core.Positioning;
 import io.wispforest.owo.ui.core.Sizing;
@@ -17,11 +19,16 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.PlayerSkinDrawer;
+import net.minecraft.client.gui.screen.ButtonTextures;
+import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.TexturedButtonWidget;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashSet;
+import java.util.List;
 
 public class HighlighterPlayerEditWidget extends FlowLayout {
     private static final Identifier BACKGROUND_TEXTURE = Identifier.ofVanilla("social_interactions/background");
@@ -38,6 +45,7 @@ public class HighlighterPlayerEditWidget extends FlowLayout {
 
     private final HighlighterScrollDropdownComponent dropdown;
 
+
     public HighlighterPlayerEditWidget(int x, int y, int width, int height, HighlightPlayer highlightPlayer) {
         super(Sizing.fixed(width), Sizing.fill(),Algorithm.VERTICAL);
         this.highlightPlayer = highlightPlayer;
@@ -48,7 +56,7 @@ public class HighlighterPlayerEditWidget extends FlowLayout {
         this.width = width;
         this.height = height;
         this.textRenderer = MinecraftClient.getInstance().textRenderer;
-        this.dropdown = new HighlighterScrollDropdownComponent(Sizing.fixed(width-16), Sizing.content(), highlightedPlayer.getPrefix() == null ? Text.translatable("gui.highlighter.menu.player_edit.prefix_select.title"):Text.literal(highlightedPlayer.getPrefix().getPrefixTag()), false);
+        this.dropdown = new HighlighterScrollDropdownComponent(Sizing.fixed(width - 16), Sizing.content(), highlightedPlayer.getPrefix() == null ? Text.translatable("gui.highlighter.menu.player_edit.prefix_select.title"):Text.literal(highlightedPlayer.getPrefix().getPrefixTag()), false);
         this.dropdown.tooltip(Text.translatable("gui.highlighter.menu.player_edit.prefix_select.tooltip"));
         HashSet<Prefix> prefixes = HighlighterClient.STORAGE_MANAGER.getPrefixStorage().getPrefixes();
         for (Prefix prefix : prefixes) {
@@ -58,8 +66,11 @@ public class HighlighterPlayerEditWidget extends FlowLayout {
                 this.dropdown.title(Text.literal(prefix.getPrefixTag()));
             });
         }
-        this.child(dropdown.positioning(Positioning.absolute(8,42)));
-    }
+        dropdown.button(Text.literal("None"), (comp) -> {
+            highlightedPlayer.unhighlight();
+            this.dropdown.title(Text.translatable("gui.highlighter.menu.player_edit.prefix_select.title"));
+        });
+        this.child(dropdown.positioning(Positioning.absolute(8,42)));}
 
     @Override
     public void draw(OwoUIDrawContext context, int mouseX, int mouseY, float partialTicks, float delta) {
@@ -77,6 +88,7 @@ public class HighlighterPlayerEditWidget extends FlowLayout {
             context.drawText(textRenderer, this.highlightPlayer.name(), i + 24 + 4, j + 4, 0xFFFFFF, true);
         }
     }
+
     private void renderBackground(DrawContext context) {
         GuiAdapter.drawGuiTexture(context,BACKGROUND_TEXTURE, this.x, this.y, this.width, this.height);
     }

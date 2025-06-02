@@ -103,7 +103,6 @@ public class HighlightScreen extends BaseOwoScreen<FlowLayout> {
         this.playersTabButton = this.addDrawableChild(ButtonWidget.builder(PLAYERS_TAB_TITLE, (button) -> this.setCurrentTab(Tab.PLAYERS)).dimensions(getScreenStartX()+1, 42, buttonsWidth, 20).build());
         this.prefixesTabButton = this.addDrawableChild(ButtonWidget.builder(PREFIXES_TAB_TITLE, (button) -> this.setCurrentTab(Tab.PREFIXES)).dimensions(getScreenStartX()+1+buttonsWidth, 42, buttonsWidth, 20).build());
         this.createPrefixButton = this.addDrawableChild(ButtonWidget.builder(CREATE_PREFIX_BUTON_TEXT, (button) -> {
-            Highlighter.LOGGER.info("Current tab: {}", this.currentTab);
             if (this.currentTab == Tab.PREFIXES) {
                 Prefix prefix = new Prefix(
                         UUID.randomUUID(),
@@ -114,7 +113,6 @@ public class HighlightScreen extends BaseOwoScreen<FlowLayout> {
                         "#FFFFFF",
                         "#FFFFFF"
                 );
-                Highlighter.LOGGER.info("Prefix: {}", prefix);
                 this.setCurrentPrefix(prefix);
             }
         }).dimensions(getScreenStartX()+1, getPlayerListBottom()+10, SCREEN_WIDTH, 20).build());
@@ -169,10 +167,10 @@ public class HighlightScreen extends BaseOwoScreen<FlowLayout> {
     }
     protected void applyBlur(float delta) {
         //? if =1.21.1 {
-        this.client.gameRenderer.renderBlur(delta);
-        //?} else {
-        /*this.client.gameRenderer.renderBlur();
-        *///?}
+        /*this.client.gameRenderer.renderBlur(delta);
+        *///?} else {
+        this.client.gameRenderer.renderBlur();
+        //?}
         //? if <=1.21.4 {
         this.client.getFramebuffer().beginWrite(false);
         //?}
@@ -180,7 +178,6 @@ public class HighlightScreen extends BaseOwoScreen<FlowLayout> {
     }
 
     public void setCurrentPlayer(@Nullable HighlightPlayer player) {
-        Highlighter.LOGGER.info("setCurrentPlayer: {}", player);
         if (this.highlighterPrefixCreateEditWidget != null) {
             this.mainLayout.removeChild(this.highlighterPrefixCreateEditWidget);
             this.highlighterPrefixCreateEditWidget = null;
@@ -203,8 +200,8 @@ public class HighlightScreen extends BaseOwoScreen<FlowLayout> {
         this.currentPlayer = player;
         this.mainLayout.child(highlighterPlayerEditWidget);
     }
+
     public void setCurrentPrefix(@Nullable Prefix prefix) {
-        Highlighter.LOGGER.info("setCurrentPrefix: {}", prefix);
         if (this.highlighterPlayerEditWidget != null) {
             this.mainLayout.removeChild(this.highlighterPlayerEditWidget);
             this.highlighterPlayerEditWidget = null;
@@ -227,6 +224,19 @@ public class HighlightScreen extends BaseOwoScreen<FlowLayout> {
         this.currentPrefix = prefix;
         this.mainLayout.child(highlighterPrefixCreateEditWidget);
     }
+
+    public  void  deletePrefix(@NotNull Prefix prefix) {
+        HighlighterClient.STORAGE_MANAGER.getPrefixStorage().removePrefix(prefix.getPrefixId());
+        this.updatePrefixList();
+        if (this.currentPrefix != null && this.currentPrefix.getPrefixId().equals(prefix.getPrefixId())) {
+            this.setCurrentPrefix(null);
+        }
+    }
+    public boolean isPrefixAlone(){
+        Collection<Prefix> prefixes = HighlighterClient.STORAGE_MANAGER.getPrefixStorage().getPrefixes();
+        return prefixes.size() <= 1;
+    }
+
     public void updatePrefixList() {
         Collection<Prefix> prefixes = HighlighterClient.STORAGE_MANAGER.getPrefixStorage().getPrefixes();
         //? if <=1.21.2 {

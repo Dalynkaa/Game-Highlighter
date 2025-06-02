@@ -49,8 +49,16 @@ public class OptimizedColorPickerWidget extends ClickableWidget {
     public OptimizedColorPickerWidget(int x, int y, Consumer<Integer> colorChangeCallback) {
         super(x, y, PICKER_SIZE + HUE_BAR_WIDTH + SPACING, PICKER_SIZE, Text.empty());
         this.colorChangeCallback = colorChangeCallback;
+
+        this.hue = 0.0f;
+        this.saturation = 1.0f;
+        this.brightness = 1.0f;
+        this.currentColor = 0xFFFF0000; // Красный
+
         initializeTextures();
-        updateColor();
+
+        // Важно! Не вызываем updateColor() здесь, чтобы не вызывать колбэк раньше времени
+        // updateColor будет вызван при явном setColor()
     }
 
     private void initializeTextures() {
@@ -117,17 +125,12 @@ public class OptimizedColorPickerWidget extends ClickableWidget {
 
                 int[] rgb = hsbToRgb(hue, s, b);
 
-                //? if =1.21.1 {
                 int color = 0xFF000000 | (rgb[2] << 16) | (rgb[1] << 8) | rgb[0];
-                //?} else {
-                /*int color = 0xFF000000 | (rgb[0] << 16) | (rgb[1] << 8) | rgb[2];
-                *///?}
-
                 //? if =1.21.1 {
-                image.setColor(x, y, color);
-                //?} else {
-                /*image.setColorArgb(x, y, color);
-                *///?}
+                /*image.setColor(x, y, color);
+                *///? } else {
+                image.setColorArgb(x, y, color);
+                //? }
             }
         }
 
@@ -139,20 +142,17 @@ public class OptimizedColorPickerWidget extends ClickableWidget {
 
         for (int y = 0; y < PICKER_SIZE; y++) {
             float h = (float) y / (PICKER_SIZE - 1);
+
             int[] rgb = hsbToRgb(h, 1.0f, 1.0f);
 
-            //? if =1.21.1 {
             int color = 0xFF000000 | (rgb[2] << 16) | (rgb[1] << 8) | rgb[0];
-            //?} else {
-            /*int color = 0xFF000000 | (rgb[0] << 16) | (rgb[1] << 8) | rgb[2];
-             *///?}
 
             for (int x = 0; x < HUE_BAR_WIDTH; x++) {
                 //? if =1.21.1 {
-                image.setColor(x, y, color);
-                 //?} else {
-                /*image.setColorArgb(x, y, color);
-                *///?}
+                /*image.setColor(x, y, color);
+                *///? } else {
+                image.setColorArgb(x, y, color);
+                //? }
             }
         }
 
@@ -331,19 +331,20 @@ public class OptimizedColorPickerWidget extends ClickableWidget {
     }
 
     public void setColor(int color) {
-        int r = color >> 16 & 0xFF;
-        int g = color >> 8 & 0xFF;
+        int r = (color >> 16) & 0xFF;
+        int g = (color >> 8) & 0xFF;
         int b = color & 0xFF;
 
         float[] hsb = rgbToHsb(r, g, b);
         float oldHue = this.hue;
 
+
         this.hue = hsb[0];
         this.saturation = hsb[1];
         this.brightness = hsb[2];
-        this.currentColor = color;
 
-        // Update textures if hue changed
+        this.currentColor = 0xFF000000 | (r << 16) | (g << 8) | b;
+
         if (Math.abs(oldHue - hue) > 0.01f) {
             texturesNeedUpdate = true;
         }
@@ -370,3 +371,4 @@ public class OptimizedColorPickerWidget extends ClickableWidget {
 
     }
 }
+

@@ -27,7 +27,7 @@ public class KeyBindManager {
     );
 
     public static final KeyBinding OPEN_HIGHLIGHTS_KEYBIND = new KeyBinding(
-            "key.highlighter.open_highlights",
+            "key.highlighter.open_menu",
             InputUtil.Type.KEYSYM,
             InputUtil.GLFW_KEY_K,
             "key.category.highlighter"

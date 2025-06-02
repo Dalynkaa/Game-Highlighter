@@ -1,7 +1,9 @@
 package me.dalynkaa.highlighter.client;
 
+import io.wispforest.owo.Owo;
 import me.dalynkaa.highlighter.client.config.ServerEntry;
 import me.dalynkaa.highlighter.client.config.StorageManager;
+import me.dalynkaa.highlighter.client.config.migrations.MigrationManager;
 import me.dalynkaa.highlighter.client.listeners.OnChatMessage;
 import me.dalynkaa.highlighter.client.utilities.KeyBindManager;
 import me.dalynkaa.highlighter.client.config.ModConfig;
@@ -25,6 +27,9 @@ public class HighlighterClient implements ClientModInitializer {
 
 		STORAGE_MANAGER = new StorageManager();
 		STORAGE_MANAGER.initialize();
+
+		MigrationManager migrationManager = new MigrationManager(STORAGE_MANAGER);
+		migrationManager.runMigrations();
 
 		KeyBindManager.registerKeyBindings();
 		KeyBindManager.initKeysListeners();

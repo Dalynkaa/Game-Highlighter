@@ -53,6 +53,8 @@ public class HighlighterPrefixEditWidget extends FlowLayout {
     HighlighterScrollDropdownComponent chatSoundDropdown;
     ButtonComponent saveButton, cancelButton;
     String mainChatSound = null;
+    int currentNameColor = 0xFF0000;
+    int currentTagColor = 0xFF0000;
 
     // Флаг, указывающий, открыт ли выпадающий список
     private boolean isDropdownExpanded = false;
@@ -74,19 +76,25 @@ public class HighlighterPrefixEditWidget extends FlowLayout {
         this.name.setMaxLength(20);
         this.name.setPlaceholder(Text.translatable("gui.highlighter.menu.prefix_edit.form.prefix_name.placeholder"));
         this.name.tooltip(Text.translatable("gui.highlighter.menu.prefix_edit.form.prefix_name.tooltip"));
-        LabelComponent nameLabel = Components.label(Text.translatable("gui.highlighter.menu.prefix_edit.form.prefix_name.label"));
-        nameLayout.child(nameLabel).child(this.name);
+        //LabelComponent nameLabel = Components.label(Text.translatable("gui.highlighter.menu.prefix_edit.form.prefix_name.label"));
+        nameLayout.child(this.name);
 
         FlowLayout tagLayout = Containers.verticalFlow(Sizing.content(), Sizing.content());
         this.tag = Components.textBox(Sizing.fill(), prefix == null ? "": prefix.getPrefixChar());
         this.tag.setMaxLength(12);
         this.tag.setPlaceholder(Text.translatable("gui.highlighter.menu.prefix_edit.form.prefix_tag.placeholder"));
         this.tag.tooltip(Text.translatable("gui.highlighter.menu.prefix_edit.form.prefix_tag.tooltip"));
-        LabelComponent tagLabel = Components.label(Text.translatable("gui.highlighter.menu.prefix_edit.form.prefix_tag.label"));
-        tagLayout.child(tagLabel).child(this.tag);
+        //LabelComponent tagLabel = Components.label(Text.translatable("gui.highlighter.menu.prefix_edit.form.prefix_tag.label"));
+        tagLayout.child(this.tag);
 
-        this.nameColorField = new ColorPickerFieldWidget(0, 0, width-16, prefix == null ? 0xFF0000 : ColorAdapter.fromHexString(prefix.getPlayerColor()), (color)->{
-            return;
+        // Инициализация цветов
+        int nameColor = 0xFF0000; // Красный по умолчанию
+        if (prefix != null) {
+            nameColor = ColorAdapter.fromHexString(prefix.getPlayerColor(), 255);
+        }
+
+        this.nameColorField = new ColorPickerFieldWidget(0, 0, width-16, nameColor, (color)->{
+            currentNameColor = color;
         });
         this.nameColorField.zIndex(1000);
         this.nameColorField.onPopupOpenEvent((colorPicker) -> {
@@ -101,16 +109,17 @@ public class HighlighterPrefixEditWidget extends FlowLayout {
             }
         });
         //this.nameColorField.setTooltip(Tooltip.of(Text.translatable("gui.highlighter.menu.prefix_edit.form.player_name_color.tooltip")));
-        if (prefix!= null) {
-            int color = ColorAdapter.fromHexString(prefix.getPlayerColor());
-            Highlighter.LOGGER.info("Setting name color: {}", color);
-            this.nameColorField.setColor(color);
-        }
-        LabelComponent nameColorLabel = Components.label(Text.translatable("gui.highlighter.menu.prefix_edit.form.player_name_color.label"));
-        nameColorLabel.sizing(Sizing.content(), Sizing.fixed(10));
+        //LabelComponent nameColorLabel = Components.label(Text.translatable("gui.highlighter.menu.prefix_edit.form.player_name_color.label"));
+        //nameColorLabel.sizing(Sizing.content(), Sizing.fixed(10));
 
-        this.tagColorField = new ColorPickerFieldWidget(0, 0, width-16, prefix == null ? 0xFF0000 : ColorAdapter.fromHexString(prefix.getPrefixColor()), (color)->{
-            return;
+        // Инициализация цвета тега
+        int tagColor = 0xFF0000; // Красный по умолчанию
+        if (prefix != null) {
+            tagColor = ColorAdapter.fromHexString(prefix.getPrefixColor(), 255);
+        }
+
+        this.tagColorField = new ColorPickerFieldWidget(0, 0, width-16, tagColor, (color)->{
+            this.currentTagColor = color;
         });
         this.tagColorField.zIndex(999);
         this.tagColorField.onPopupOpenEvent((colorPicker) -> {
@@ -125,10 +134,7 @@ public class HighlighterPrefixEditWidget extends FlowLayout {
             }
         });
         //this.tagColorField.setTooltip(Tooltip.of(Text.translatable("gui.highlighter.menu.prefix_edit.form.prefix_color.tooltip")).);
-        if (prefix!= null) {
-            this.tagColorField.setColor(ColorAdapter.fromHexString(prefix.getPrefixColor()));
-        }
-        LabelComponent tagColorLabel = Components.label(Text.translatable("gui.highlighter.menu.prefix_edit.form.prefix_color.label"));
+        //LabelComponent tagColorLabel = Components.label(Text.translatable("gui.highlighter.menu.prefix_edit.form.prefix_color.label"));
         Text chatSoundInitial = prefix == null ? Text.literal("Chat sound") : Text.literal(prefix.getChatSound() == null ? "None" : prefix.getChatSound());
 
         // Установка повышенного z-index и настройка обработчиков для выпадающего списка
@@ -136,7 +142,6 @@ public class HighlighterPrefixEditWidget extends FlowLayout {
 
         // Отслеживаем изменение состояния выпадающего списка
         this.chatSoundDropdown.onExpandStateChanged(expanded -> {
-            Highlighter.LOGGER.info("Setting chat sound: {}", expanded);
             this.isDropdownExpanded = expanded;
             this.saveButton.active = !expanded;
             this.chatPattern.active = !expanded;
@@ -160,8 +165,8 @@ public class HighlighterPrefixEditWidget extends FlowLayout {
             }
         }
         //this.chatSoundDropdown.tooltip(Text.translatable("gui.highlighter.menu.prefix_edit.form.chat_sound.tooltip"));
-        LabelComponent chatSoundLabel = Components.label(Text.translatable("gui.highlighter.menu.prefix_edit.form.chat_sound.label"));
-        chatSoundLabel.sizing(Sizing.content(), Sizing.fixed(10));
+        //LabelComponent chatSoundLabel = Components.label(Text.translatable("gui.highlighter.menu.prefix_edit.form.chat_sound.label"));
+        //chatSoundLabel.sizing(Sizing.content(), Sizing.fixed(10));
 
         FlowLayout chatPatternLayout = Containers.verticalFlow(Sizing.content(), Sizing.content());
         this.chatPattern = Components.textBox(Sizing.fill());
@@ -171,8 +176,8 @@ public class HighlighterPrefixEditWidget extends FlowLayout {
         }
         this.chatPattern.setPlaceholder(Text.translatable("gui.highlighter.menu.prefix_edit.form.chat_pattern.placeholder"));
         this.chatPattern.tooltip(Text.translatable("gui.highlighter.menu.prefix_edit.form.chat_pattern.tooltip"));
-        LabelComponent chatPatternLabel = Components.label(Text.translatable("gui.highlighter.menu.prefix_edit.form.chat_pattern.label"));
-        chatPatternLayout.child(chatPatternLabel).child(this.chatPattern);
+        //LabelComponent chatPatternLabel = Components.label(Text.translatable("gui.highlighter.menu.prefix_edit.form.chat_pattern.label"));
+        chatPatternLayout.child(this.chatPattern);
         this.saveButton = Components.button(Text.translatable("gui.highlighter.menu.prefix_edit.button.save"), (button) -> {
 
             String prefixName = this.name.getText().trim();
@@ -216,22 +221,28 @@ public class HighlighterPrefixEditWidget extends FlowLayout {
         int labelHeight = 10;
 
         this
-                .child(this.chatSoundDropdown.allowOverflow(true).positioning(Positioning.absolute(startX, startY + spacing * 4 + labelHeight)).sizing(Sizing.fixed(width-15), Sizing.fixed(20)))
-                .child(nameLayout.positioning(Positioning.absolute(startX, startY)).sizing(Sizing.fixed(width-14), Sizing.fixed(30)))
-                .child(tagLayout.positioning(Positioning.absolute(startX,startY+spacing)).sizing(Sizing.fixed(width-14), Sizing.fixed(30)))
-                .child(nameColorLabel.positioning(Positioning.absolute(startX,startY+spacing*2)))
+                .child(nameLayout.positioning(Positioning.absolute(startX, startY+labelHeight)).sizing(Sizing.fixed(width-14), Sizing.fixed(30)))
+                .child(tagLayout.positioning(Positioning.absolute(startX,startY+labelHeight+spacing)).sizing(Sizing.fixed(width-14), Sizing.fixed(30)))
                 .child(this.nameColorField.positioning(Positioning.absolute(startX, startY+spacing*2+labelHeight)))
-                .child(tagColorLabel.positioning(Positioning.absolute(startX, startY+spacing*3)))
                 .child(this.tagColorField.positioning(Positioning.absolute(startX, startY+spacing*3+labelHeight)))
-                .child(chatSoundLabel.positioning(Positioning.absolute(startX, startY+spacing*4)))
-                .child(chatPatternLayout.positioning(Positioning.absolute(startX, startY + spacing * 5)).sizing(Sizing.fixed(width-14), Sizing.fixed(30)))
-                .child(this.saveButton.positioning(Positioning.absolute(startX, startY + spacing * 6 + 10)).sizing(Sizing.fixed(width-14), Sizing.fixed(20)));
+                .child(this.chatSoundDropdown.allowOverflow(true).positioning(Positioning.absolute(startX, startY + spacing * 4 + labelHeight)).sizing(Sizing.fixed(width-15), Sizing.fixed(20)))
+                .child(chatPatternLayout.positioning(Positioning.absolute(startX, startY+labelHeight + spacing * 5)).sizing(Sizing.fixed(width-14), Sizing.fixed(30)))
+                .child(this.saveButton.positioning(Positioning.absolute(startX, startY+labelHeight + spacing * 6 + 10)).sizing(Sizing.fixed(width-14), Sizing.fixed(20)));
     }
 
     @Override
     public void draw(OwoUIDrawContext context, int mouseX, int mouseY, float partialTicks, float delta) {
         super.draw(context, mouseX, mouseY, partialTicks, delta);
         renderBackground(context);
+        int startX = this.x + 9;
+        int startY = this.y + 9;
+        int spacing = 32;
+        GuiAdapter.drawTextWithShadow(context,MinecraftClient.getInstance(),Text.translatable("gui.highlighter.menu.prefix_edit.form.prefix_name.label"), startX, startY, 0xFFFFFF);
+        GuiAdapter.drawTextWithShadow(context,MinecraftClient.getInstance(),Text.translatable("gui.highlighter.menu.prefix_edit.form.prefix_tag.label"), startX, startY+spacing, 0xFFFFFF);
+        GuiAdapter.drawTextWithShadow(context,MinecraftClient.getInstance(),Text.translatable("gui.highlighter.menu.prefix_edit.form.player_name_color.label"), startX, startY+spacing*2, 0xFFFFFF);
+        GuiAdapter.drawTextWithShadow(context,MinecraftClient.getInstance(),Text.translatable("gui.highlighter.menu.prefix_edit.form.prefix_color.label"), startX, startY+spacing*3, 0xFFFFFF);
+        GuiAdapter.drawTextWithShadow(context,MinecraftClient.getInstance(),Text.translatable("gui.highlighter.menu.prefix_edit.form.chat_sound.label"), startX, startY+spacing * 4, 0xFFFFFF);
+        GuiAdapter.drawTextWithShadow(context,MinecraftClient.getInstance(),Text.translatable("gui.highlighter.menu.prefix_edit.form.chat_pattern.label"), startX, startY+spacing*5, 0xFFFFFF);
     }
 
     private void renderBackground(DrawContext context) {

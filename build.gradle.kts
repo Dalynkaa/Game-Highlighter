@@ -1,3 +1,5 @@
+import org.gradle.kotlin.dsl.get
+
 plugins {
     id("java-library")
     id("fabric-loom") version "1.10-SNAPSHOT"
@@ -46,7 +48,7 @@ modrinth {
 
     // Read changelog from file
     changelog.set(provider {
-        val changelogFile = file("../changelog/${mod.version}.md")
+        val changelogFile = file("../changelogs/${mod.version}.md")
         if (changelogFile.exists()) {
             changelogFile.readText()
         } else {
@@ -70,6 +72,10 @@ repositories {
         mavenContent { snapshotsOnly() }
     }
     mavenCentral()
+    maven {
+        name = "ParchmentMC"
+        url = uri("https://maven.parchmentmc.org")
+    }
 
     // Dev only
     maven { url = uri("https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1") }

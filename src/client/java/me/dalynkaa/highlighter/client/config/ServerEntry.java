@@ -45,9 +45,11 @@ public class ServerEntry {
 
     @SerializedName("version")
     @Expose
+    @Getter
+    @Setter
     private String version;
 
-    @Expose private String serverName;
+    @Expose @Getter private String serverName;
 
 
     @Expose
@@ -104,8 +106,8 @@ public class ServerEntry {
         File configFile = ServerStorage.serverConfigPath.resolve(serverName+".json").toFile();
         try (OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(configFile), StandardCharsets.UTF_8)){
             writer.write(gson.toJson(this));
-            Highlighter.LOGGER.info("[Configuration] ServerEntry успешно сохранен в {}", configFile.getAbsolutePath());
-            Highlighter.LOGGER.info("[Configuration] {}", gson.toJson(this));
+            Highlighter.LOGGER.debug("[Configuration] ServerEntry успешно сохранен в {}", configFile.getAbsolutePath());
+            Highlighter.LOGGER.debug("[Configuration] {}", gson.toJson(this));
         } catch (Exception ignored) {
         }
     }
@@ -188,7 +190,9 @@ public class ServerEntry {
             return uuids;
         }
         for (HighlightedPlayer player: this.highlightedPlayers){
-            if (player.isHighlighted()){
+            if (player.isHighlighted() && player.getPrefixId() != null) {
+                Highlighter.LOGGER.debug("[Configuration] {}", player.getPrefixId());
+                Highlighter.LOGGER.debug("[Configuration] {}", player.getUuid());
                 uuids.add(player.getUuid());
             }
         }

@@ -80,28 +80,28 @@ public class GuiAdapter {
      */
     public static void drawGuiTexture(DrawContext context, Identifier texture, int x, int y, int width, int height) {
         //? if =1.21.1 {
-        context.drawGuiTexture(texture, x, y, width, height);
-        //?} else {
-        /*context.drawGuiTexture(RenderLayer::getGuiTextured,texture, x, y, width, height);
-        *///?}
+        /*context.drawGuiTexture(texture, x, y, width, height);
+        *///?} else {
+        context.drawGuiTexture(RenderLayer::getGuiTextured,texture, x, y, width, height);
+        //?}
     }
 
     public static void drawTexture(DrawContext context, Identifier texture, int x, int y,int u,int v,int width,int height, int textureWidth, int textureHeight) {
         //? if =1.21.1 {
-        context.drawTexture(texture,
+        /*context.drawTexture(texture,
                 x , y,
                 u, v,
                 width, height,
                 textureWidth, textureHeight
         );
-        //?} else {
-        /*context.drawTexture(RenderLayer::getGuiTextured, texture,
+        *///?} else {
+        context.drawTexture(RenderLayer::getGuiTextured, texture,
                 x, y,
                 u, v,
                 width, height,
                 textureWidth, textureHeight
         );
-        *///?}
+        //?}
     }
     
     /**

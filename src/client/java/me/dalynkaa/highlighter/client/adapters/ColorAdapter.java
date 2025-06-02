@@ -140,21 +140,24 @@ public class ColorAdapter {
             float greenc = ((float) (cmax - g)) / ((float) (cmax - cmin));
             float bluec = ((float) (cmax - b)) / ((float) (cmax - cmin));
 
-            if (r == cmax)
+            if (r == cmax) {
                 hue = bluec - greenc;
-            else if (g == cmax)
+            } else if (g == cmax) {
                 hue = 2.0f + redc - bluec;
-            else
+            } else {
                 hue = 4.0f + greenc - redc;
+            }
 
             hue = hue / 6.0f;
-            if (hue < 0)
+            if (hue < 0) {
                 hue = hue + 1.0f;
+            }
         }
 
         hsbvals[0] = hue;
         hsbvals[1] = saturation;
         hsbvals[2] = brightness;
+
         return hsbvals;
     }
 

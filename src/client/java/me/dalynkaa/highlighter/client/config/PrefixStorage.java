@@ -8,7 +8,10 @@ import com.google.gson.annotations.SerializedName;
 import com.google.gson.stream.JsonReader;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 import me.dalynkaa.highlighter.Highlighter;
+import me.dalynkaa.highlighter.client.HighlighterClient;
+import me.dalynkaa.highlighter.client.utilities.data.HighlightedPlayer;
 import me.dalynkaa.highlighter.client.utilities.data.Prefix;
 
 import java.io.*;
@@ -26,6 +29,7 @@ public class PrefixStorage {
 
     @Expose
     @SerializedName("version")
+    @Getter @Setter
     private String version;
 
     @Expose(serialize = false)
@@ -54,9 +58,9 @@ public class PrefixStorage {
                 } catch (JsonSyntaxException j) {
                     boolean isDeleted = configFile.delete();
                     if (isDeleted) {
-                        Highlighter.LOGGER.info("[Configuration] Deleted Corrupted File!");
+                        Highlighter.LOGGER.debug("[Configuration] Deleted Corrupted File!");
                     } else {
-                        Highlighter.LOGGER.info("[Configuration] Failed to Delete Corrupted File!");
+                        Highlighter.LOGGER.debug("[Configuration] Failed to Delete Corrupted File!");
                     }
                 }
             } catch (FileNotFoundException ignored) {
@@ -68,16 +72,15 @@ public class PrefixStorage {
     }
 
     public void save() {
-        Highlighter.LOGGER.info("[Configuration] Saving PrefixStorage...");
+        Highlighter.LOGGER.debug("[Configuration] Saving PrefixStorage...");
         File configFile = mainConfigPath.resolve(fileName).toFile();
         try (OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(configFile), StandardCharsets.UTF_8)) {
             String json = gson.toJson(this);
-            Highlighter.LOGGER.info("Saving PrefixStorage: {}", json);
             writer.write(json);
-            Highlighter.LOGGER.info("[Configuration] PrefixStorage успешно сохранен в {}", configFile.getAbsolutePath());
+            Highlighter.LOGGER.debug("[Configuration] Prefix saved {}", configFile.getAbsolutePath());
         } catch (Exception exception) {
             exception.printStackTrace();
-            Highlighter.LOGGER.info("[Configuration] Failed to save PrefixStorage: {}", exception.getMessage());
+            Highlighter.LOGGER.debug("[Configuration] Failed to save PrefixStorage: {}", exception.getMessage());
         }
     }
 
@@ -120,7 +123,45 @@ public class PrefixStorage {
                 break;
             }
         }
+        for (ServerEntry entry: ServerStorage.getAllServerEntries()) {
+            List<UUID> playersToUpdate = new ArrayList<>();
+
+            for (HighlightedPlayer player : entry.getAll()) {
+                if (player.getPrefixId() != null && player.getPrefixId().equals(prefix_id)) {
+                    playersToUpdate.add(player.getUuid());
+                }
+            }
+
+            for (UUID playerUuid : playersToUpdate) {
+                entry.removePlayer(playerUuid);
+                Highlighter.LOGGER.debug("[Configuration] Removed prefix {} from player {}", prefix_id, playerUuid);
+            }
+
+            entry.save();
+        }
         save();
+        repairPrefixIndexes();
+    }
+
+    public void repairPrefixIndexes() {
+        if (prefixes == null || prefixes.isEmpty()) {
+            return;
+        }
+
+        // Сортируем префиксы по текущим индексам
+        List<Prefix> sortedPrefixes = new ArrayList<>(prefixes);
+        sortedPrefixes.sort(Comparator.comparingInt(Prefix::getIndex));
+
+        int newIndex = 0;
+        for (Prefix prefix : sortedPrefixes) {
+            prefix.setIndex(newIndex++);
+        }
+
+        prefixes.clear();
+        prefixes.addAll(sortedPrefixes);
+        save();
+
+        Highlighter.LOGGER.debug("[Configuration] Repaired prefix indexes successfully.");
     }
 
     public Prefix getPrefix(UUID prefix_id) {

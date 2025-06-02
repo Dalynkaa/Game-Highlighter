@@ -49,7 +49,7 @@ public class Prefix {
         this.prefixContent = prefixContent;
         this.playerColor = playerColor;
         this.prefixColor = prefixColor;
-        this.index = Prefix.gelLatestPrefixIndex()+1;
+        this.index = gelLatestPrefixIndex() + 1;
     }
 
     public UUID getPrefixId() {
@@ -139,7 +139,7 @@ public class Prefix {
                 .stream()
                 .mapToInt(Prefix::getIndex)
                 .max()
-                .orElse(0);
+                .orElse(-1);
     }
 
     public void movePrefixTop() {

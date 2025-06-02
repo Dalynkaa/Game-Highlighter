@@ -5,16 +5,9 @@
   "text.autoconfig.highlighter.option.tabSettings": "Player list",
   "text.autoconfig.highlighter.option.tabSettings.useExtendedTab": "Extended tab",
 
-  "text.autoconfig.highlighter.option.playerHiderSettings": "Player hider settings",
-  "text.autoconfig.highlighter.option.playerHiderSettings.url": "URL for online blacklist",
-  "text.autoconfig.highlighter.option.playerHiderSettings.hideType": "Hide type",
-  "text.autoconfig.highlighter.option.playerHiderSettings.radius": "Radius",
-
   "key.category.highlighter": "highlighter",
-  "key.highlighter.togglehide": "Toggle player hider",
-  "key.highlighter.hide": "Hide player",
-  "key.highlighter.hidetype": "Change HideType",
   "key.highlighter.tabkey": "Show highlighted tab",
+  "key.highlighter.open_menu": "Open Highlight menu",
 
   "gui.highlighter.menu.tab.players": "Players",
   "gui.highlighter.menu.tab.prefixes": "Prefixes",
@@ -22,7 +15,8 @@
   "gui.highlighter.menu.search_empty": "No results",
   "gui.highlighter.menu.create_prefix": "Create prefix",
   "gui.highlighter.menu.button.edit": "Edit",
-  "gui.highlighter.menu.button.edit.tooltip": "Edit",
+  "gui.highlighter.menu.button.edit.tooltip": "Shift + Click to remove the prefix.",
+  "gui.highlighter.menu.button.delete": "Delete",
   "gui.highlighter.menu.button.move_up": "Up",
   "gui.highlighter.menu.button.move_up.tooltip": "Move prefix up in priority",
   "gui.highlighter.menu.button.move_down": "Down",
@@ -53,8 +47,8 @@
   "gui.highlighter.menu.prefix_edit.button.save": "Save",
   "gui.highlighter.menu.prefix_edit.button.save.tooltip": "Save the changes",
 
-  "gui.highlighter.menu.server_settings.button": "Server settings",
-  "gui.highlighter.menu.server_settings.title": "Server settings",
+  "gui.highlighter.menu.server_settings.button": "Highlighter settings",
+  "gui.highlighter.menu.server_settings.title": "Highlighter settings",
   "gui.highlighter.menu.server_settings.yes": "Yes",
   "gui.highlighter.menu.server_settings.no": "No",
   "gui.highlighter.menu.server_settings.save": "Save",
@@ -65,13 +59,5 @@
   "gui.highlighter.menu.server_settings.regex_filters.label": "Regex Filters: ",
   "gui.highlighter.menu.server_settings.regex_filters.field": "Regex",
   "gui.highlighter.menu.server_settings.regex_filter.add.tooltip": "Add Regex",
-  "gui.highlighter.menu.server_settings.regex_filter.remove.tooltip": "Remove Regex",
-
-  "messages.highlighter.player_hider.enabled": "Hide players enabled",
-  "messages.highlighter.player_hider.disabled": "Hide players disabled",
-  "messages.highlighter.player_hider.type": "Change hide type to ",
-  "messages.highlighter.player_hider.type.minecraft": "Hide list",
-  "messages.highlighter.player_hider.type.radius": "Radius",
-  "messages.highlighter.player_hider.type.all": "All",
-  "messages.highlighter.player_hider.playerHided": "Player &p hided"
+  "gui.highlighter.menu.server_settings.regex_filter.remove.tooltip": "Remove Regex"
 }

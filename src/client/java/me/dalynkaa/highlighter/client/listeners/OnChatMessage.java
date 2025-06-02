@@ -87,7 +87,13 @@ public class OnChatMessage {
         if (isHighlighted) {
             HighlightedPlayer highlightedPlayer = HighlighterClient.getServerEntry().getHighlitedPlayer(playerListEntry.getProfile().getId());
             Prefix prefix = highlightedPlayer.getPrefix();
+            if (prefix == null) {
+                return false;
+            }
             String template = prefix.getChatTemplate();
+            if (template == null || template.isEmpty()) {
+                return false;
+            }
             Component formattedMessage = MiniMessage.miniMessage()
                     .deserialize(template,
                             Placeholder.unparsed("nickname", nickname),

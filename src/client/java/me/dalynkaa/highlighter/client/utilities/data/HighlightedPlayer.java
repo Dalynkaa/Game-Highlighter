@@ -41,6 +41,9 @@ public class HighlightedPlayer {
     public Prefix getPrefix() {
         return HighlighterClient.STORAGE_MANAGER.getPrefixStorage().getPrefix(prefix);
     }
+    public UUID getPrefixId() {
+        return prefix;
+    }
     public HighlightedPlayer setPrefix(UUID prefix_id) {
         this.prefix = prefix_id;
         return this;
@@ -67,7 +70,7 @@ public class HighlightedPlayer {
     public void unhighlight() {
         this.isHighlighted = false;
         this.prefix = null;
-        HighlighterClient.getServerEntry().setPlayer(this);
+        HighlighterClient.getServerEntry().removePlayer(this.uuid);
     }
 
 

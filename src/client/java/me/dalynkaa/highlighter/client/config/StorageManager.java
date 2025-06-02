@@ -21,7 +21,7 @@ public class StorageManager {
         if (!mainConfigPath.toFile().exists()) {
             boolean created = mainConfigPath.toFile().mkdirs();
             if (created) {
-                Highlighter.LOGGER.info("Created CONFIG directory: {}", mainConfigPath);
+                Highlighter.LOGGER.debug("Created CONFIG directory: {}", mainConfigPath);
             } else {
                 Highlighter.LOGGER.error("Failed to create CONFIG directory: {}", mainConfigPath);
                 throw new RuntimeException("Failed to create CONFIG directory: " + mainConfigPath);

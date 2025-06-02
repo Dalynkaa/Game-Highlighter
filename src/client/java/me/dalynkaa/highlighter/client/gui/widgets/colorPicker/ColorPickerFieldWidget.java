@@ -142,12 +142,8 @@ public class ColorPickerFieldWidget extends TextFieldWidget {
             }
         }
 
-        if (mouseX > getX() + getWidth() - COLOR_PREVIEW_SIZE - PADDING) {
-            boolean result = super.mouseClicked(mouseX, mouseY, button);
-            return result;
-        }
-
-        return false;
+        // Возвращаем управление родительскому классу только для обработки клика по текстовому полю
+        return super.mouseClicked(mouseX, mouseY, button);
     }
 
     @Override
@@ -259,6 +255,7 @@ public class ColorPickerFieldWidget extends TextFieldWidget {
                 popupY = getY() - ColorPickerPopup.POPUP_HEIGHT - 2;
             }
 
+            // Обязательно передаем текущий выбранный цвет, чтобы он не сбрасывался
             popup = new ColorPickerPopup(popupX, popupY, selectedColor,
                     this::onColorSelected, this::closePopup);
             popupOpen = true;
@@ -389,32 +386,23 @@ public class ColorPickerFieldWidget extends TextFieldWidget {
             context.fill(x, y, x + POPUP_WIDTH, y + POPUP_HEIGHT, 0xF0202020);
             context.drawBorder(x, y, POPUP_WIDTH, POPUP_HEIGHT, 0xFF404040);
 
-            // Используем transform для масштабирования рендера пикера
             context.getMatrices().push();
             context.getMatrices().scale(SCALE_FACTOR, SCALE_FACTOR, 1.0f);
 
-            // Преобразуем координаты для рендера
             float scaledX = (x + 8) / SCALE_FACTOR;
             float scaledY = (y + 8) / SCALE_FACTOR;
             float scaledMouseX = mouseX / SCALE_FACTOR;
             float scaledMouseY = mouseY / SCALE_FACTOR;
 
-            // Рендерим пикер с масштабированием
             colorPicker.renderWidget(context, (int) scaledMouseX, (int) scaledMouseY, delta);
 
             context.getMatrices().pop();
 
-            // Рисуем предустановленные цвета в правой части попапа
             int presetsStartX = x + POPUP_WIDTH - PRESET_PANEL_WIDTH - 4;
             int presetsStartY = y + 8;
 
-            // Рисуем фон для панели пресетов
             context.fill(presetsStartX, y+8, x + POPUP_WIDTH - 4, y + POPUP_HEIGHT - 8, 0x40000000);
 
-            // Рисуем заголовок
-
-
-            // Рисуем все пресеты
             for (int i = 0; i < COLOR_PRESETS.length; i++) {
                 int col = i / PRESET_ROWS;
                 int row = i % PRESET_ROWS;
@@ -422,27 +410,22 @@ public class ColorPickerFieldWidget extends TextFieldWidget {
                 int presetX = presetsStartX + col * (PRESET_SIZE + PRESET_SPACING) + PRESET_SPACING;
                 int presetY = presetsStartY + row * (PRESET_SIZE + PRESET_SPACING) + PRESET_SPACING;
 
-                // Рисуем фон (шахматку для прозрачных цветов)
                 drawCheckerboard(context, presetX, presetY, PRESET_SIZE, PRESET_SIZE);
 
-                // Рисуем цвет
                 context.fill(presetX, presetY, presetX + PRESET_SIZE,
                         presetY + PRESET_SIZE, COLOR_PRESETS[i]);
 
-                // Рисуем рамку (подсвечиваем при наведении)
                 boolean hovered = mouseX >= presetX && mouseX < presetX + PRESET_SIZE &&
                         mouseY >= presetY && mouseY < presetY + PRESET_SIZE;
                 int borderColor = hovered ? 0xFFFFFFFF : 0xFF606060;
                 context.drawBorder(presetX, presetY, PRESET_SIZE, PRESET_SIZE, borderColor);
 
-                // Показываем индикатор выбора, если это текущий цвет
                 if (COLOR_PRESETS[i] == colorPicker.getColor()) {
                     context.drawBorder(presetX - 1, presetY - 1, PRESET_SIZE + 2, PRESET_SIZE + 2, 0xFFFFFF00);
                 }
             }
         }
 
-        // Метод для рисования шахматки для фона цветов
         private void drawCheckerboard(DrawContext context, int x, int y, int width, int height) {
             int checkSize = 3;
             for (int cx = 0; cx < width; cx += checkSize) {
@@ -458,7 +441,6 @@ public class ColorPickerFieldWidget extends TextFieldWidget {
 
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
             if (button != 0) return false;
-            // Проверяем клик по предустановленным цветам
             int presetsStartX = x + POPUP_WIDTH - PRESET_PANEL_WIDTH - 4;
             int presetsStartY = y + 8;
 
@@ -477,7 +459,6 @@ public class ColorPickerFieldWidget extends TextFieldWidget {
                 }
             }
 
-            // Масштабируем координаты и добавляем смещение
             double scaledX = scaleCoordinate(mouseX);
             double scaledY = scaleCoordinate(mouseY);
 
@@ -485,7 +466,6 @@ public class ColorPickerFieldWidget extends TextFieldWidget {
         }
 
         public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
-            // Масштабируем все координаты
             double scaledX = scaleCoordinate(mouseX);
             double scaledY = scaleCoordinate(mouseY);
             double scaledDeltaX = scaleCoordinate(deltaX);
