@@ -20,9 +20,7 @@ public class MigrationManager {
 
     private void registerMigrations() {
         migrations.add(new M201());
-        // При добавлении новых миграций просто добавляйте их сюда
-        // migrations.add(new M202());
-        // migrations.add(new M203());
+        migrations.add(new M202());
 
         migrations.sort(Comparator.comparing(Migration::getVersion, this::compareVersions));
         logger.debug("Registered {} migrations", migrations.size());

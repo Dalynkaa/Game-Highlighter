@@ -13,10 +13,12 @@ import me.dalynkaa.highlighter.Highlighter;
 import me.dalynkaa.highlighter.client.HighlighterClient;
 import me.dalynkaa.highlighter.client.utilities.data.HighlightedPlayer;
 import me.dalynkaa.highlighter.client.utilities.data.Prefix;
+import me.dalynkaa.highlighter.client.utilities.data.PrefixSource;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static me.dalynkaa.highlighter.Highlighter.MOD_VERSION;
 import static me.dalynkaa.highlighter.client.config.StorageManager.mainConfigPath;
@@ -84,6 +86,9 @@ public class PrefixStorage {
         }
     }
 
+    /**
+     * Добавляет префикс в хранилище
+     */
     public void addPrefix(Prefix prefix) {
         if (prefixes == null) {
             prefixes = new LinkedHashSet<>();
@@ -92,6 +97,9 @@ public class PrefixStorage {
         save();
     }
 
+    /**
+     * Обновляет или добавляет префикс в хранилище
+     */
     public void setPrefix(Prefix prefix) {
         if (!containsPrefix(prefix.getPrefixId())) {
             addPrefix(prefix);
@@ -107,6 +115,59 @@ public class PrefixStorage {
         save();
     }
 
+    /**
+     * Добавляет или обновляет префиксы из загруженной конфигурации
+     * Локальные префиксы с тем же ID будут перезаписаны, если они имеют приоритет ниже
+     */
+    public void mergeServerPrefixes(Collection<Prefix> serverPrefixes) {
+        if (serverPrefixes == null || serverPrefixes.isEmpty()) {
+            return;
+        }
+
+        // Устанавливаем источник для всех серверных префиксов
+        for (Prefix serverPrefix : serverPrefixes) {
+            serverPrefix.setSource(PrefixSource.SERVER);
+
+            // Проверяем, существует ли такой префикс локально
+            Prefix existingPrefix = getPrefix(serverPrefix.getPrefixId());
+
+            if (existingPrefix == null) {
+                addPrefix(serverPrefix);
+            } else if (existingPrefix.getSource() == PrefixSource.LOCAL &&
+                      existingPrefix.getPriority() <= serverPrefix.getPriority()) {
+                setPrefix(serverPrefix);
+            }
+        }
+
+        // Ремонтируем индексы после слияния
+        repairPrefixIndexes();
+        save();
+
+        Highlighter.LOGGER.debug("[Configuration] Merged {} server prefixes", serverPrefixes.size());
+    }
+
+    /**
+     * Удаляет все серверные префиксы
+     */
+    public void removeAllServerPrefixes() {
+        List<Prefix> toRemove = prefixes.stream()
+                .filter(p -> p.getSource() == PrefixSource.SERVER)
+                .collect(Collectors.toList());
+
+        if (toRemove.isEmpty()) {
+            return;
+        }
+
+        for (Prefix prefix : toRemove) {
+            removePrefix(prefix.getPrefixId());
+        }
+
+        Highlighter.LOGGER.debug("[Configuration] Removed {} server prefixes", toRemove.size());
+    }
+
+    /**
+     * Проверяет, содержит ли хранилище префикс с указанным ID
+     */
     public boolean containsPrefix(UUID prefix_id) {
         for (Prefix prefix : this.prefixes) {
             if (prefix.getPrefixId().equals(prefix_id)) {
@@ -116,6 +177,9 @@ public class PrefixStorage {
         return false;
     }
 
+    /**
+     * Удаляет префикс и обновляет всех игроков, которые его использовали
+     */
     public void removePrefix(UUID prefix_id) {
         for (Prefix prefix : this.prefixes) {
             if (prefix.getPrefixId().equals(prefix_id)) {
@@ -123,6 +187,8 @@ public class PrefixStorage {
                 break;
             }
         }
+
+        // Обновляем всех игроков, которые использовали этот префикс
         for (ServerEntry entry: ServerStorage.getAllServerEntries()) {
             List<UUID> playersToUpdate = new ArrayList<>();
 
@@ -139,18 +205,24 @@ public class PrefixStorage {
 
             entry.save();
         }
+
         save();
         repairPrefixIndexes();
     }
 
+    /**
+     * Восстанавливает порядок индексов префиксов
+     */
     public void repairPrefixIndexes() {
         if (prefixes == null || prefixes.isEmpty()) {
             return;
         }
 
-        // Сортируем префиксы по текущим индексам
+        // Сортируем префиксы сначала по источнику (SERVER перед LOCAL), затем по индексам
         List<Prefix> sortedPrefixes = new ArrayList<>(prefixes);
-        sortedPrefixes.sort(Comparator.comparingInt(Prefix::getIndex));
+        sortedPrefixes.sort(Comparator
+                .<Prefix, PrefixSource>comparing(Prefix::getSource)
+                .thenComparingInt(Prefix::getIndex));
 
         int newIndex = 0;
         for (Prefix prefix : sortedPrefixes) {
@@ -164,6 +236,9 @@ public class PrefixStorage {
         Highlighter.LOGGER.debug("[Configuration] Repaired prefix indexes successfully.");
     }
 
+    /**
+     * Возвращает префикс по его ID
+     */
     public Prefix getPrefix(UUID prefix_id) {
         for (Prefix prefix : this.prefixes) {
             if (prefix.getPrefixId().equals(prefix_id)) {
@@ -173,6 +248,29 @@ public class PrefixStorage {
         return null;
     }
 
+    /**
+     * Получает все локальные префиксы
+     */
+    public List<Prefix> getLocalPrefixes() {
+        return prefixes.stream()
+                .filter(p -> p.getSource() == PrefixSource.LOCAL)
+                .sorted(Comparator.comparingInt(Prefix::getIndex))
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Получает все серверные префиксы
+     */
+    public List<Prefix> getServerPrefixes() {
+        return prefixes.stream()
+                .filter(p -> p.getSource() == PrefixSource.SERVER)
+                .sorted(Comparator.comparingInt(Prefix::getIndex))
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Перемещает префикс вверх в списке
+     */
     public void movePrefixTop(Prefix prefix) {
         if (prefix == null || !prefixes.contains(prefix)) {
             return;
@@ -191,6 +289,9 @@ public class PrefixStorage {
         save();
     }
 
+    /**
+     * Перемещает префикс вниз в списке
+     */
     public void movePrefixDown(Prefix prefix) {
         if (prefix == null || !prefixes.contains(prefix)) {
             return;
@@ -205,6 +306,7 @@ public class PrefixStorage {
         if (currentIndex >= maxIndex) {
             return;
         }
+
         prefix.setIndex(currentIndex + 1);
         for (Prefix otherPrefix : prefixes) {
             if (otherPrefix != prefix && otherPrefix.getIndex() == currentIndex + 1) {

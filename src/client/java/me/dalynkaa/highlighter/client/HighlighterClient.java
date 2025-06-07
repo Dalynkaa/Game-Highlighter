@@ -1,6 +1,8 @@
 package me.dalynkaa.highlighter.client;
 
 import io.wispforest.owo.Owo;
+import me.dalynkaa.highlighter.Highlighter;
+import me.dalynkaa.highlighter.client.config.PastebinPrefixLoader;
 import me.dalynkaa.highlighter.client.config.ServerEntry;
 import me.dalynkaa.highlighter.client.config.StorageManager;
 import me.dalynkaa.highlighter.client.config.migrations.MigrationManager;
@@ -27,6 +29,7 @@ public class HighlighterClient implements ClientModInitializer {
 
 		STORAGE_MANAGER = new StorageManager();
 		STORAGE_MANAGER.initialize();
+		STORAGE_MANAGER.getPrefixStorage().removeAllServerPrefixes();
 
 		MigrationManager migrationManager = new MigrationManager(STORAGE_MANAGER);
 		migrationManager.runMigrations();
@@ -36,8 +39,19 @@ public class HighlighterClient implements ClientModInitializer {
 		new OnChatMessage();
 
 		ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
+			if (client.getServer() == null || client.getNetworkHandler() == null) {
+				cachedServerEntry = null;
+				return;
+			}
+			if (client.getServer().isDedicated()){
+				cachedServerEntry = null;
+				return;
+			}
 			cacheCurrentServer(client);
+			PastebinPrefixLoader.loadConfigurationFromUrl("https://pastebin.com/raw/rWSdgqc8");
 		});
+
+		PastebinPrefixLoader.init();
 	}
 
 	public static ServerEntry getServerEntry() {

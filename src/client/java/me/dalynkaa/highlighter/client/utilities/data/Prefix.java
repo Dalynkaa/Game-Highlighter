@@ -4,7 +4,6 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import me.dalynkaa.highlighter.client.HighlighterClient;
 import me.dalynkaa.highlighter.client.utilities.CustomNotificationEffects;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TextColor;
@@ -39,8 +38,14 @@ public class Prefix {
     @Expose
     @SerializedName("index")
     private Integer index;
+    @Expose
+    @SerializedName("priority")
+    private int priority;
+    @Expose
+    @SerializedName("source")
+    private PrefixSource source;
 
-    public Prefix(UUID prefixId, String prefixTag,String chatTemplate,String chatSound,String prefixContent, String playerColor, String prefixColor) {
+    public Prefix(UUID prefixId, String prefixTag, String chatTemplate, String chatSound, String prefixContent, String playerColor, String prefixColor) {
         this.prefixId = prefixId;
         this.prefixTag = prefixTag;
         this.chatHighlightingEnabled = false;
@@ -50,6 +55,23 @@ public class Prefix {
         this.playerColor = playerColor;
         this.prefixColor = prefixColor;
         this.index = gelLatestPrefixIndex() + 1;
+        this.priority = 0;
+        this.source = PrefixSource.LOCAL;
+    }
+
+    public Prefix(UUID prefixId, String prefixTag, String chatTemplate, String chatSound, String prefixContent,
+                  String playerColor, String prefixColor, int priority, PrefixSource source) {
+        this.prefixId = prefixId;
+        this.prefixTag = prefixTag;
+        this.chatHighlightingEnabled = false;
+        this.chatTemplate = chatTemplate;
+        this.chatSound = chatSound;
+        this.prefixContent = prefixContent;
+        this.playerColor = playerColor;
+        this.prefixColor = prefixColor;
+        this.index = gelLatestPrefixIndex() + 1;
+        this.priority = priority;
+        this.source = source;
     }
 
     public UUID getPrefixId() {
@@ -120,6 +142,22 @@ public class Prefix {
         this.index = index;
     }
 
+    public int getPriority() {
+        return this.priority;
+    }
+
+    public void setPriority(int priority) {
+        this.priority = priority;
+    }
+
+    public PrefixSource getSource() {
+        return this.source;
+    }
+
+    public void setSource(PrefixSource source) {
+        this.source = source;
+    }
+
     public CustomNotificationEffects getChatSoundEffect() {
         return CustomNotificationEffects.getEffectByName(this.chatSound);
     }
@@ -127,6 +165,7 @@ public class Prefix {
     public static Prefix getPrefix(UUID prefixId) {
         return HighlighterClient.STORAGE_MANAGER.getPrefixStorage().getPrefix(prefixId);
     }
+
     public MutableText getPrefixText(Text displayName) {
         MutableText mutableText = Text.literal("");
         mutableText.append(getPrefixChar()).styled(style -> style.withColor(TextColor.parse(getPrefixColor()).getOrThrow()));
@@ -145,12 +184,15 @@ public class Prefix {
     public void movePrefixTop() {
         HighlighterClient.STORAGE_MANAGER.getPrefixStorage().movePrefixTop(this);
     }
+
     public void movePrefixDown() {
         HighlighterClient.STORAGE_MANAGER.getPrefixStorage().movePrefixDown(this);
     }
+
     public boolean isLatestPrefix() {
         return this.index.equals(gelLatestPrefixIndex());
     }
+
     public boolean isFirstPrefix() {
         return this.index.equals(0);
     }
@@ -164,6 +206,7 @@ public class Prefix {
                 ", playerColor='" + this.playerColor + '\'' +
                 ", prefixColor='" + this.prefixColor + '\'' +
                 ", chatTemplate='" + this.chatTemplate + '\'' +
+                ", source=" + this.source +
                 '}';
     }
 }

@@ -6,6 +6,7 @@ import me.dalynkaa.highlighter.client.adapters.ColorAdapter;
 import me.dalynkaa.highlighter.client.gui.HighlightScreen;
 import me.dalynkaa.highlighter.client.utilities.data.HighlightPlayer;
 import me.dalynkaa.highlighter.client.utilities.data.Prefix;
+import me.dalynkaa.highlighter.client.utilities.data.PrefixSource;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Element;
@@ -32,10 +33,12 @@ public class HighlighterPrefixListEntry extends ElementListWidget.Entry<Highligh
     public static final int LIGHT_GRAY_COLOR;
     private static final Identifier HIGHLIGHT_ICON = Identifier.of(Highlighter.MOD_ID,"edit");
     private static final Identifier HIGHLIGHT_ICON_FOCUSED = Identifier.of(Highlighter.MOD_ID,"edit-hovered");
+    private static final Identifier HIGHLIGHT_ICON_DISABLED = Identifier.of(Highlighter.MOD_ID,"edit-disabled");
     private static final Identifier DELETE_ICON = Identifier.of(Highlighter.MOD_ID,"delete");
     private static final Identifier DELETE_ICON_FOCUSED = Identifier.of(Highlighter.MOD_ID,"delete-hovered");
     private static final ButtonTextures HIGHLIGHT_BUTTON_ICON = new ButtonTextures(
             HIGHLIGHT_ICON,
+            HIGHLIGHT_ICON_DISABLED,
             HIGHLIGHT_ICON_FOCUSED
     );
     private static final ButtonTextures DELETE_BUTTON_ICON = new ButtonTextures(
@@ -90,10 +93,14 @@ public class HighlighterPrefixListEntry extends ElementListWidget.Entry<Highligh
             parent.updatePrefixList();
         }, Text.translatable("gui.highlighter.menu.button.move_down"));
         this.downButton.setTooltip(Tooltip.of(Text.translatable("gui.highlighter.menu.button.move_down.tooltip")));
-        this.buttons.add(this.highlightButton);
-        this.buttons.add(this.deleteButton);
-        this.buttons.add(this.upButton);
-        this.buttons.add(this.downButton);
+        if (prefix.getSource().equals(PrefixSource.LOCAL)){
+            this.buttons.add(this.highlightButton);
+            this.buttons.add(this.deleteButton);
+            this.buttons.add(this.upButton);
+            this.buttons.add(this.downButton);
+        }
+
+
     }
 
     @Override
@@ -141,34 +148,36 @@ public class HighlighterPrefixListEntry extends ElementListWidget.Entry<Highligh
 //        context.drawTextWithShadow(this.client.textRenderer, this.prefix.getPrefixTag(),
 //            nameX, nameY, WHITE_COLOR);
         int offset = parent.isPrefixAlone() ? 4 : 14;
-        if (InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(),InputUtil.GLFW_KEY_LEFT_SHIFT)){
-            if (highlightButton!=null){
-                highlightButton.active = false;
+        if (prefix.getSource().equals(PrefixSource.LOCAL)){
+            if (InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(),InputUtil.GLFW_KEY_LEFT_SHIFT)){
+                if (highlightButton!=null){
+                    highlightButton.active = false;
+                }
+                if (this.deleteButton != null) {
+                    this.deleteButton.setX(x + (entryWidth - this.deleteButton.getWidth()- 4) - offset);
+                    this.deleteButton.setY(y + (entryHeight - this.deleteButton.getHeight()) / 2);
+                    this.deleteButton.render(context, mouseX, mouseY, tickDelta);
+                }
+            }else {
+                if (this.highlightButton != null) {
+                    highlightButton.active = true;
+                    this.highlightButton.setX(x + (entryWidth - this.highlightButton.getWidth() - 4) - offset);
+                    this.highlightButton.setY(y + (entryHeight - this.highlightButton.getHeight()) / 2);
+                    this.highlightButton.render(context, mouseX, mouseY, tickDelta);
+                }
             }
-            if (this.deleteButton != null) {
-                this.deleteButton.setX(x + (entryWidth - this.deleteButton.getWidth()- 4) - offset);
-                this.deleteButton.setY(y + (entryHeight - this.deleteButton.getHeight()) / 2);
-                this.deleteButton.render(context, mouseX, mouseY, tickDelta);
-            }
-        }else {
-            if (this.highlightButton != null) {
-                highlightButton.active = true;
-                this.highlightButton.setX(x + (entryWidth - this.highlightButton.getWidth() - 4) - offset);
-                this.highlightButton.setY(y + (entryHeight - this.highlightButton.getHeight()) / 2);
-                this.highlightButton.render(context, mouseX, mouseY, tickDelta);
-            }
-        }
 
-        if (!parent.isPrefixAlone()) {
-            if (this.upButton != null && !prefix.isFirstPrefix()) {
-                this.upButton.setX(x + (entryWidth - this.upButton.getWidth() - 4)-2);
-                this.upButton.setY(y + ((entryHeight - this.upButton.getHeight()) / 2)-upButton.getHeight()/2);
-                this.upButton.render(context, mouseX, mouseY, tickDelta);
-            }
-            if (this.downButton != null && !prefix.isLatestPrefix()) {
-                this.downButton.setX(x + (entryWidth - this.downButton.getWidth() - 4)-2);
-                this.downButton.setY(y + ((entryHeight - this.downButton.getHeight()) / 2)+downButton.getHeight()/2);
-                this.downButton.render(context, mouseX, mouseY, tickDelta);
+            if (!parent.isPrefixAlone()) {
+                if (this.upButton != null && !prefix.isFirstPrefix()) {
+                    this.upButton.setX(x + (entryWidth - this.upButton.getWidth() - 4)-2);
+                    this.upButton.setY(y + ((entryHeight - this.upButton.getHeight()) / 2)-upButton.getHeight()/2);
+                    this.upButton.render(context, mouseX, mouseY, tickDelta);
+                }
+                if (this.downButton != null && !prefix.isLatestPrefix()) {
+                    this.downButton.setX(x + (entryWidth - this.downButton.getWidth() - 4)-2);
+                    this.downButton.setY(y + ((entryHeight - this.downButton.getHeight()) / 2)+downButton.getHeight()/2);
+                    this.downButton.render(context, mouseX, mouseY, tickDelta);
+                }
             }
         }
     }
