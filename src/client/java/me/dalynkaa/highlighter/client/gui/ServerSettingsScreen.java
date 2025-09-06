@@ -19,11 +19,14 @@ public class ServerSettingsScreen extends Screen {
     private boolean enabled;
     private boolean tabHighlight;
     private boolean chatHighlight;
+    private boolean useServerSettings;
 
     private ButtonWidget enabledButton;
     private ButtonWidget tabHighlightButton;
     private ButtonWidget chatHighlightButton;
+    private ButtonWidget useServerSettingsButton;
     private ButtonWidget addFieldButton;
+    private TextFieldWidget manualSlugField;
 
     private final List<RegexField> regexFields = new ArrayList<>();
 
@@ -35,6 +38,7 @@ public class ServerSettingsScreen extends Screen {
         this.enabled = serverEntry.isEnabled();
         this.tabHighlight = serverEntry.isUseTabHighlighter();
         this.chatHighlight = serverEntry.isUseChatHighlighter();
+        this.useServerSettings = serverEntry.isUseServerSettings();
     }
 
     @Override
@@ -65,7 +69,26 @@ public class ServerSettingsScreen extends Screen {
             button.setMessage(settingText("gui.highlighter.menu.server_settings.chat_highlight", chatHighlight));
         }).position(this.width / 2 - 100, y).size(200, 20).build();
         this.addDrawableChild(chatHighlightButton);
+        y += 25 + padding;
+
+        // Use Server Settings toggle
+        useServerSettingsButton = ButtonWidget.builder(settingText("gui.highlighter.menu.server_settings.use_server_settings", useServerSettings), button -> {
+            useServerSettings = !useServerSettings;
+            button.setMessage(settingText("gui.highlighter.menu.server_settings.use_server_settings", useServerSettings));
+            updateManualSlugFieldVisibility();
+        }).position(this.width / 2 - 100, y).size(200, 20).build();
+        this.addDrawableChild(useServerSettingsButton);
         y += 30 + padding;
+
+        // Manual slug field (only visible when useServerSettings is false)
+        manualSlugField = new TextFieldWidget(this.textRenderer, this.width / 2 - 100, y, 200, 20, Text.translatable("gui.highlighter.menu.server_settings.manual_slug"));
+        manualSlugField.setMaxLength(100);
+        manualSlugField.setText(serverEntry.getConfigurationSlug() != null ? serverEntry.getConfigurationSlug() : "");
+        manualSlugField.setPlaceholder(Text.translatable("gui.highlighter.menu.server_settings.manual_slug.placeholder"));
+        this.addDrawableChild(manualSlugField);
+        y += 30 + padding;
+
+        updateManualSlugFieldVisibility();
 
 
         // Load or create regex fields
@@ -100,6 +123,14 @@ public class ServerSettingsScreen extends Screen {
             serverEntry.setEnabled(enabled);
             serverEntry.setUseTabHighlighter(tabHighlight);
             serverEntry.setUseChatHighlighter(chatHighlight);
+            serverEntry.setUseServerSettings(useServerSettings);
+            
+            // Save manual slug only when not using server settings
+            if (!useServerSettings && manualSlugField != null) {
+                String manualSlug = manualSlugField.getText().trim();
+                serverEntry.setConfigurationSlug(manualSlug.isEmpty() ? null : manualSlug);
+            }
+            
             serverEntry.setChatRegex(regexList.toArray(new String[0]));
 
             this.client.setScreen(parent);
@@ -147,7 +178,7 @@ public class ServerSettingsScreen extends Screen {
     }
 
     private void updateRegexFieldPositions() {
-        int START_Y = 130;
+        int START_Y = 200;
         int y = START_Y;
         boolean showX = regexFields.size() > 1;
 
@@ -170,6 +201,12 @@ public class ServerSettingsScreen extends Screen {
         }
     }
 
+    private void updateManualSlugFieldVisibility() {
+        if (manualSlugField != null) {
+            manualSlugField.visible = !useServerSettings;
+        }
+    }
+
     private Text settingText(String name, boolean value) {
         return Text.translatable(name, value ? Text.translatable("gui.highlighter.menu.server_settings.yes") : Text.translatable("gui.highlighter.menu.server_settings.no"));
     }
@@ -183,7 +220,12 @@ public class ServerSettingsScreen extends Screen {
         super.render(context, mouseX, mouseY, delta);
         context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 10, 0xFFFFFF);
 
-        context.drawText(this.textRenderer, Text.translatable("gui.highlighter.menu.server_settings.regex_filters.label"), this.width / 2 - 100, 120, 0xFFFFFF, false);
+        context.drawText(this.textRenderer, Text.translatable("gui.highlighter.menu.server_settings.regex_filters.label"), this.width / 2 - 100, 190, 0xFFFFFF, false);
+        
+        // Draw manual slug label when field is visible
+        if (manualSlugField != null && manualSlugField.visible) {
+            context.drawText(this.textRenderer, Text.translatable("gui.highlighter.menu.server_settings.manual_slug.label"), this.width / 2 - 100, manualSlugField.getY() - 12, 0xFFFFFF, false);
+        }
 
 
     }

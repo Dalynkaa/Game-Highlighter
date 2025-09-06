@@ -49,6 +49,24 @@ public class ServerEntry {
     @Setter
     private String version;
 
+    @SerializedName("configurationSlug")
+    @Expose
+    @Getter
+    @Setter
+    private String configurationSlug;
+
+    @SerializedName("lastConfigUpdate")
+    @Expose
+    @Getter
+    @Setter
+    private long lastConfigUpdate;
+
+    @SerializedName("useServerSettings")
+    @Expose
+    @Getter
+    @Setter
+    private boolean useServerSettings;
+
     @Expose @Getter private String serverName;
 
 
@@ -63,6 +81,9 @@ public class ServerEntry {
         this.useChatHighlighter = useChatHighlighter;
         this.useTabHighlighter = useTabHighlighter;
         this.serverName = serverName;
+        this.configurationSlug = null;
+        this.lastConfigUpdate = 0;
+        this.useServerSettings = true;
     }
 
 
@@ -100,6 +121,21 @@ public class ServerEntry {
     public void setChatRegex(String[] chatRegex) {
         this.chatRegex = chatRegex;
         save();
+    }
+
+    public void updateConfigurationSlug(String slug) {
+        this.configurationSlug = slug;
+        this.lastConfigUpdate = System.currentTimeMillis();
+        save();
+    }
+
+    public boolean hasConfigurationSlug() {
+        return this.configurationSlug != null && !this.configurationSlug.trim().isEmpty();
+    }
+
+    public boolean needsConfigurationUpdate(long updateIntervalMs) {
+        if (lastConfigUpdate == 0) return true;
+        return (System.currentTimeMillis() - lastConfigUpdate) > updateIntervalMs;
     }
 
     public void save() {

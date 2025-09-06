@@ -167,10 +167,10 @@ public class HighlightScreen extends BaseOwoScreen<FlowLayout> {
     }
     protected void applyBlur(float delta) {
         //? if =1.21.1 {
-        /*this.client.gameRenderer.renderBlur(delta);
-        *///?} else {
-        this.client.gameRenderer.renderBlur();
-        //?}
+        this.client.gameRenderer.renderBlur(delta);
+        //?} else {
+        /*this.client.gameRenderer.renderBlur();
+        *///?}
         //? if <=1.21.4 {
         this.client.getFramebuffer().beginWrite(false);
         //?}

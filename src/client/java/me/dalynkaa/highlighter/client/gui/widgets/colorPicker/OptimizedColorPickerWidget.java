@@ -127,10 +127,10 @@ public class OptimizedColorPickerWidget extends ClickableWidget {
 
                 int color = 0xFF000000 | (rgb[2] << 16) | (rgb[1] << 8) | rgb[0];
                 //? if =1.21.1 {
-                /*image.setColor(x, y, color);
-                *///?} else {
-                image.setColorArgb(x, y, color);
-                //?}
+                image.setColor(x, y, color);
+                //?} else {
+                /*image.setColorArgb(x, y, color);
+                *///?}
             }
         }
 
@@ -149,10 +149,10 @@ public class OptimizedColorPickerWidget extends ClickableWidget {
 
             for (int x = 0; x < HUE_BAR_WIDTH; x++) {
                 //? if =1.21.1 {
-                /*image.setColor(x, y, color);
-                *///?} else {
-                image.setColorArgb(x, y, color);
-                //?}
+                image.setColor(x, y, color);
+                //?} else {
+                /*image.setColorArgb(x, y, color);
+                *///?}
             }
         }
 

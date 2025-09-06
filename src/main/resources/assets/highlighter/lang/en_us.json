@@ -4,6 +4,15 @@
   "text.autoconfig.highlighter.option.player_hider": "Player hider enabled",
   "text.autoconfig.highlighter.option.tabSettings": "Player list",
   "text.autoconfig.highlighter.option.tabSettings.useExtendedTab": "Extended tab",
+  "text.autoconfig.highlighter.option.backendSettings": "Backend Settings",
+  "text.autoconfig.highlighter.option.backendSettings.apiBaseUrl": "API Base URL",
+  "text.autoconfig.highlighter.option.backendSettings.apiBaseUrl.@Tooltip": "Base URL for the backend API that provides server configurations and prefix data",
+  "text.autoconfig.highlighter.option.backendSettings.autoLoadEnabled": "Auto Load Enabled",
+  "text.autoconfig.highlighter.option.backendSettings.autoLoadEnabled.@Tooltip": "Automatically load configurations from the backend when joining servers",
+  "text.autoconfig.highlighter.option.backendSettings.manualSlug": "Manual Slug",
+  "text.autoconfig.highlighter.option.backendSettings.manualSlug.@Tooltip": "Manual configuration slug to use globally (overrides server settings when enabled)",
+  "text.autoconfig.highlighter.option.backendSettings.preferManualSlug": "Prefer Manual Slug",
+  "text.autoconfig.highlighter.option.backendSettings.preferManualSlug.@Tooltip": "Use the manual slug instead of server-specific configurations",
 
   "key.category.highlighter": "highlighter",
   "key.highlighter.tabkey": "Show highlighted tab",
@@ -56,8 +65,16 @@
   "gui.highlighter.menu.server_settings.enabled": "Enabled: %s",
   "gui.highlighter.menu.server_settings.tab_highlight": "Tab Highlight: %s",
   "gui.highlighter.menu.server_settings.chat_highlight": "Chat Highlight: %s",
+  "gui.highlighter.menu.server_settings.use_server_settings": "Use Server Settings: %s",
+  "gui.highlighter.menu.server_settings.manual_slug": "Manual Configuration Slug",
+  "gui.highlighter.menu.server_settings.manual_slug.label": "Manual Configuration Slug:",
+  "gui.highlighter.menu.server_settings.manual_slug.placeholder": "Enter configuration slug...",
   "gui.highlighter.menu.server_settings.regex_filters.label": "Regex Filters: ",
   "gui.highlighter.menu.server_settings.regex_filters.field": "Regex",
   "gui.highlighter.menu.server_settings.regex_filter.add.tooltip": "Add Regex",
-  "gui.highlighter.menu.server_settings.regex_filter.remove.tooltip": "Remove Regex"
+  "gui.highlighter.menu.server_settings.regex_filter.remove.tooltip": "Remove Regex",
+
+  "highlighter.notification.server_settings_updated": "Server settings updated",
+  "highlighter.notification.prefix_config_loaded": "Prefix configuration loaded: %s",
+  "highlighter.notification.manual_config_loaded": "Manual configuration loaded: %s"
 }

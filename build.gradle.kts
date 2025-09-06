@@ -1,8 +1,9 @@
 import org.gradle.kotlin.dsl.get
+import org.gradle.jvm.toolchain.JavaLanguageVersion
 
 plugins {
     id("java-library")
-    id("fabric-loom") version "1.10-SNAPSHOT"
+    id("fabric-loom") version "1.11-SNAPSHOT"
     id("com.modrinth.minotaur") version "2.+"
 }
 
@@ -93,6 +94,9 @@ loom {
         named("client") {
             ideConfigGenerated(true)
             runDir = "../../runs/${stonecutter.current.version}"
+            vmArgs("-Dminecraft.suppressGLErrors=true")
+            vmArgs("-Dfabric.development=true")
+            vmArgs("-Ddevauth.enabled=true")
         }
 
         all {
@@ -194,6 +198,9 @@ tasks.register("chiseledPublish") {
 }
 
 java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(21))
+    }
     withSourcesJar()
     sourceCompatibility = JavaVersion.VERSION_21
     targetCompatibility = JavaVersion.VERSION_21

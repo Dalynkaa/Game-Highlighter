@@ -12,11 +12,27 @@ public class ModConfig implements ConfigData {
     boolean tab_enabled = true;
 
     @ConfigEntry.Gui.CollapsibleObject
-    public
-    TabSettings tabSettings = new TabSettings();
+    public TabSettings tabSettings = new TabSettings();
+
+    @ConfigEntry.Gui.CollapsibleObject
+    public BackendSettings backendSettings = new BackendSettings();
 
     public static class TabSettings {
         public boolean useExtendedTab = false;
+    }
+
+    public static class BackendSettings {
+        @ConfigEntry.Gui.Tooltip
+        public String apiBaseUrl = "https://your-api-domain.com/api/v1";
+        
+        @ConfigEntry.Gui.Tooltip
+        public boolean autoLoadEnabled = true;
+        
+        @ConfigEntry.Gui.Tooltip
+        public String manualSlug = "";
+        
+        @ConfigEntry.Gui.Tooltip
+        public boolean preferManualSlug = false;
     }
 
     public Boolean hasTabEnable(){
