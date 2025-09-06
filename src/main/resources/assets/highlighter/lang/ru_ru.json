@@ -14,6 +14,7 @@
   "gui.highlighter.menu.search_hint": "Поиск...",
   "gui.highlighter.menu.search_empty": "Ничего не найдено",
   "gui.highlighter.menu.create_prefix": "Создать префикс",
+  "gui.highlighter.menu.export_config": "Экспорт конфигурации",
   "gui.highlighter.menu.button.edit": "Редактировать",
   "gui.highlighter.menu.button.edit.tooltip": "Shift + Клик для удаления префикса.",
   "gui.highlighter.menu.button.delete": "Удалить",

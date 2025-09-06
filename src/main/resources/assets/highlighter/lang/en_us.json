@@ -23,6 +23,7 @@
   "gui.highlighter.menu.search_hint": "Search...",
   "gui.highlighter.menu.search_empty": "No results",
   "gui.highlighter.menu.create_prefix": "Create prefix",
+  "gui.highlighter.menu.export_config": "Export Config",
   "gui.highlighter.menu.button.edit": "Edit",
   "gui.highlighter.menu.button.edit.tooltip": "Shift + Click to remove the prefix.",
   "gui.highlighter.menu.button.delete": "Delete",

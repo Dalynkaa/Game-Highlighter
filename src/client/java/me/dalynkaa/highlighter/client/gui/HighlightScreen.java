@@ -13,6 +13,7 @@ import io.wispforest.owo.ui.core.Surface;
 import me.dalynkaa.highlighter.Highlighter;
 import me.dalynkaa.highlighter.client.HighlighterClient;
 import me.dalynkaa.highlighter.client.adapters.GuiAdapter;
+import me.dalynkaa.highlighter.client.config.PrefixConfiguration;
 import me.dalynkaa.highlighter.client.gui.widgets.HighlighterPlayerEditWidget;
 import me.dalynkaa.highlighter.client.gui.widgets.HighlighterPrefixEditWidget;
 import me.dalynkaa.highlighter.client.gui.widgets.lists.HighlighterPlayerListWidget;
@@ -28,6 +29,7 @@ import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Locale;
 import java.util.UUID;
@@ -37,6 +39,7 @@ public class HighlightScreen extends BaseOwoScreen<FlowLayout> {
     private static final Text PLAYERS_TAB_TITLE;
     private static final Text PREFIXES_TAB_TITLE;
     private static final Text CREATE_PREFIX_BUTON_TEXT;
+    private static final Text EXPORT_CONFIG_BUTTON_TEXT;
     private static final Text SELECTED_PLAYERS_TAB_TITLE;
     private static final Text SELECTED_PREFIXES_TAB_TITLE;
     private static final Text SEARCH_TEXT;
@@ -57,6 +60,7 @@ public class HighlightScreen extends BaseOwoScreen<FlowLayout> {
     private ButtonWidget playersTabButton;
     private ButtonWidget prefixesTabButton;
     private ButtonWidget createPrefixButton;
+    private ButtonWidget exportConfigButton;
     private TextFieldWidget searchBox;
     private String currentSearch;
 
@@ -117,9 +121,14 @@ public class HighlightScreen extends BaseOwoScreen<FlowLayout> {
             }
         }).dimensions(getScreenStartX()+1, getPlayerListBottom()+10, SCREEN_WIDTH, 20).build());
 
+        this.exportConfigButton = this.addDrawableChild(ButtonWidget.builder(EXPORT_CONFIG_BUTTON_TEXT, (button) -> {
+            this.exportConfiguration();
+        }).dimensions(getScreenStartX()+1, getPlayerListBottom()+32, SCREEN_WIDTH, 20).build());
+
         this.playersTabButton = (ButtonWidget) this.playersTabButton.positioning(Positioning.absolute(getScreenStartX()+1, 42));
         this.prefixesTabButton = (ButtonWidget) this.prefixesTabButton.positioning(Positioning.absolute(getScreenStartX()+1+buttonsWidth, 42));
         this.createPrefixButton = (ButtonWidget) this.createPrefixButton.positioning(Positioning.absolute(getScreenStartX()+1, getPlayerListBottom()+10));
+        this.exportConfigButton = (ButtonWidget) this.exportConfigButton.positioning(Positioning.absolute(getScreenStartX()+1, getPlayerListBottom()+32));
 
 
         // --- search bar ---
@@ -146,6 +155,7 @@ public class HighlightScreen extends BaseOwoScreen<FlowLayout> {
         flowLayout.child(this.playersTabButton);
         flowLayout.child(this.prefixesTabButton);
         flowLayout.child(this.createPrefixButton);
+        flowLayout.child(this.exportConfigButton);
         flowLayout.child(this.searchBox);
         flowLayout.child(playerList);
         setCurrentTab(Tab.PLAYERS);
@@ -293,6 +303,47 @@ public class HighlightScreen extends BaseOwoScreen<FlowLayout> {
         }
     }
 
+    /**
+     * Экспортирует текущую конфигурацию и отправляет её в чат с кликабельными ссылками
+     */
+    private void exportConfiguration() {
+        try {
+            // Создаем новую конфигурацию
+            PrefixConfiguration config = new PrefixConfiguration();
+
+            // Добавляем все префиксы из хранилища
+            Collection<Prefix> prefixes = HighlighterClient.STORAGE_MANAGER.getPrefixStorage().getPrefixes();
+            config.setPrefixes(prefixes.stream().toList());
+
+            // Добавляем всех выделенных игроков из серверного входа
+            var serverEntry = HighlighterClient.getServerEntry();
+            if (serverEntry != null) {
+                var highlightedPlayers = serverEntry.getAll();
+                config.setPlayers(new ArrayList<>(highlightedPlayers));
+            }
+
+            // Устанавливаем метаданные конфигурации
+            config.setConfigName("Exported Highlighter Configuration");
+            if (this.client != null && this.client.getSession() != null) {
+                config.setAuthor(this.client.getSession().getUsername());
+            } else {
+                config.setAuthor("Unknown");
+            }
+            config.setVersion("1.0.0");
+
+            // Отправляем конфигурацию в чат с кликабельными ссылками
+            config.sendConfigInfoToLocalChat();
+
+        } catch (Exception e) {
+            Highlighter.LOGGER.error("Failed to export configuration", e);
+
+            // Отправляем сообщение об ошибке в локальный чат
+            if (this.client != null && this.client.player != null) {
+                this.client.player.sendMessage(Text.literal("§c[Highlighter] Ошибка при экспорте конфигурации: " + e.getMessage()), false);
+            }
+        }
+    }
+
     public enum Tab{
         PLAYERS,
         PREFIXES
@@ -306,5 +357,6 @@ public class HighlightScreen extends BaseOwoScreen<FlowLayout> {
         EMPTY_SEARCH_TEXT = Text.translatable("gui.highlighter.menu.search_empty").formatted(Formatting.GRAY);
         SEARCH_TEXT = Text.translatable("gui.highlighter.menu.search_hint").formatted(Formatting.GRAY);
         CREATE_PREFIX_BUTON_TEXT = Text.translatable("gui.highlighter.menu.create_prefix");
+        EXPORT_CONFIG_BUTTON_TEXT = Text.translatable("gui.highlighter.menu.export_config");
     }
 }
