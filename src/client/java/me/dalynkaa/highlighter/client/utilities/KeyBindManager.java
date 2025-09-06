@@ -47,6 +47,10 @@ public class KeyBindManager {
     public static void initKeysListeners() {
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             while (OPEN_HIGHLIGHTS_KEYBIND.isPressed()) {
+                // Проверяем что мы на мультиплеерном сервере
+                if (!HighlighterClient.isMultiplayerServer(client)) {
+                    return;
+                }
                 client.setScreen(new HighlightScreen());
             }
         });

@@ -43,31 +43,42 @@ public class HighlighterPlayerEditWidget extends FlowLayout {
     private int width;
     private int height;
 
-    private final HighlighterScrollDropdownComponent dropdown;
+    private HighlighterScrollDropdownComponent dropdown;
 
 
     public HighlighterPlayerEditWidget(int x, int y, int width, int height, HighlightPlayer highlightPlayer) {
         super(Sizing.fixed(width), Sizing.fill(),Algorithm.VERTICAL);
         this.highlightPlayer = highlightPlayer;
-        HighlightedPlayer highlightedPlayer = HighlighterClient.getServerEntry().getHighlitedPlayer(highlightPlayer.uuid());
+        this.textRenderer = MinecraftClient.getInstance().textRenderer;
+        
+        var serverEntry = HighlighterClient.getServerEntry();
+        if (serverEntry == null) {
+            return; // Не создаем виджет если нет серверного контекста
+        }
+        
+        HighlightedPlayer highlightedPlayer = serverEntry.getHighlitedPlayer(highlightPlayer.uuid());
         this.positioning(Positioning.absolute(x, y));
         this.x = x;
         this.y = y;
         this.width = width;
         this.height = height;
-        this.textRenderer = MinecraftClient.getInstance().textRenderer;
         this.dropdown = new HighlighterScrollDropdownComponent(Sizing.fixed(width - 16), Sizing.content(), highlightedPlayer.getPrefix() == null ? Text.translatable("gui.highlighter.menu.player_edit.prefix_select.title"):Text.literal(highlightedPlayer.getPrefix().getPrefixTag()), false);
         this.dropdown.tooltip(Text.translatable("gui.highlighter.menu.player_edit.prefix_select.tooltip"));
         HashSet<Prefix> prefixes = HighlighterClient.STORAGE_MANAGER.getPrefixStorage().getPrefixes();
         for (Prefix prefix : prefixes) {
             dropdown.button(Text.literal(prefix.getPrefixTag()), (comp) -> {
                 highlightedPlayer.highlight(prefix.getPrefixId());
-                HighlighterClient.getServerEntry().setPlayer(highlightedPlayer);
+                if (serverEntry != null) {
+                    serverEntry.setPlayer(highlightedPlayer);
+                }
                 this.dropdown.title(Text.literal(prefix.getPrefixTag()));
             });
         }
         dropdown.button(Text.literal("None"), (comp) -> {
             highlightedPlayer.unhighlight();
+            if (serverEntry != null) {
+                serverEntry.setPlayer(highlightedPlayer);
+            }
             this.dropdown.title(Text.translatable("gui.highlighter.menu.player_edit.prefix_select.title"));
         });
         this.child(dropdown.positioning(Positioning.absolute(8,42)));}

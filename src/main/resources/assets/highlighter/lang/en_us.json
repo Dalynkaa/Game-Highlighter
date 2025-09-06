@@ -76,5 +76,11 @@
 
   "highlighter.notification.server_settings_updated": "Server settings updated",
   "highlighter.notification.prefix_config_loaded": "Prefix configuration loaded: %s",
-  "highlighter.notification.manual_config_loaded": "Manual configuration loaded: %s"
+  "highlighter.notification.manual_config_loaded": "Manual configuration loaded: %s",
+
+  "highlighter.dialog.server_config.title": "Server Configuration",
+  "highlighter.dialog.server_config.message": "The server '%s' has its own Highlighter configuration. Would you like to use it?",
+  "highlighter.dialog.server_config.yes": "Yes",
+  "highlighter.dialog.server_config.no": "No",
+  "highlighter.dialog.server_config.later": "Ask Later"
 }

@@ -29,7 +29,8 @@ public abstract class ClientPlayNetworkHandlerMixin  {
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/network/NetworkThreadUtils;forceMainThread(Lnet/minecraft/network/packet/Packet;Lnet/minecraft/network/listener/PacketListener;Lnet/minecraft/util/thread/ThreadExecutor;)V", shift = At.Shift.AFTER ), method = "onGameMessage", cancellable = true)
     public void onGameMessage(GameMessageS2CPacket packet, CallbackInfo ci) {
-        if (!HighlighterClient.getServerEntry().isEnabled() || !HighlighterClient.getServerEntry().isUseChatHighlighter()) {
+        var serverEntry = HighlighterClient.getServerEntry();
+        if (serverEntry == null || !serverEntry.isEnabled() || !serverEntry.isUseChatHighlighter()) {
             return;
         }
         ChatMessage chatMessage = new ChatMessage(packet.content(),packet.overlay() ? ChatMessageType.SYSTEM : ChatMessageType.CHAT);

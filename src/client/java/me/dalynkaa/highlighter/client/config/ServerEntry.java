@@ -67,6 +67,12 @@ public class ServerEntry {
     @Setter
     private boolean useServerSettings;
 
+    @SerializedName("serverConfigDialogShown")
+    @Expose
+    @Getter
+    @Setter
+    private boolean serverConfigDialogShown;
+
     @Expose @Getter private String serverName;
 
 
@@ -84,6 +90,7 @@ public class ServerEntry {
         this.configurationSlug = null;
         this.lastConfigUpdate = 0;
         this.useServerSettings = true;
+        this.serverConfigDialogShown = false;
     }
 
 

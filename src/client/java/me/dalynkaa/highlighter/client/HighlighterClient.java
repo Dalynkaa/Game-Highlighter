@@ -10,6 +10,7 @@ import me.dalynkaa.highlighter.client.config.migrations.MigrationManager;
 import me.dalynkaa.highlighter.client.listeners.OnChatMessage;
 import me.dalynkaa.highlighter.client.utilities.KeyBindManager;
 import me.dalynkaa.highlighter.client.config.ModConfig;
+import me.dalynkaa.highlighter.client.gui.ServerConfigConfirmationScreen;
 import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.serializer.GsonConfigSerializer;
 import net.fabricmc.api.ClientModInitializer;
@@ -47,8 +48,14 @@ public class HighlighterClient implements ClientModInitializer {
 
 		// При подключении к серверу - обновляем конфигурацию сервера
 		ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
-
+			// Проверяем что это не локальный сервер (одиночная игра или LAN)
+			if (!HighlighterClient.isMultiplayerServer(client)) {
+				resetConnectionState();
+				Highlighter.LOGGER.debug("[HighlighterClient] Skipping backend configuration - not a multiplayer server");
+				return;
+			}
 			
+			// Кешируем сервер только для мультиплеерных серверов
 			cacheCurrentServer(client);
 			
 			// Получаем IP сервера и обновляем конфигурацию сервера
@@ -60,21 +67,15 @@ public class HighlighterClient implements ClientModInitializer {
 				hasUpdatedServerConfig = false;
 				hasAppliedServerConfig = false;
 				
-				// Этап 1: Обновляем конфигурацию сервера (получаем слаг)
-				ConfigurationManager.updateServerConfiguration()
-					.thenAccept(success -> {
-						hasUpdatedServerConfig = true;
-						if (success) {
-							Highlighter.LOGGER.info("[HighlighterClient] Server configuration updated successfully");
-						} else {
-							Highlighter.LOGGER.debug("[HighlighterClient] No server configuration update needed");
-						}
-					})
-					.exceptionally(throwable -> {
-						hasUpdatedServerConfig = true;
-						Highlighter.LOGGER.error("[HighlighterClient] Failed to update server configuration", throwable);
-						return null;
-					});
+				// Проверяем нужно ли показать диалог подтверждения
+				ServerEntry serverEntry = HighlighterClient.getServerEntry();
+				if (serverEntry != null && !serverEntry.isServerConfigDialogShown()) {
+					// Показываем диалог выбора использования серверной конфигурации
+					showServerConfigDialog(serverEntry, serverIp);
+				} else {
+					// Диалог уже был показан, продолжаем стандартную логику
+					updateServerConfiguration(serverIp);
+				}
 			}
 		});
 
@@ -89,7 +90,8 @@ public class HighlighterClient implements ClientModInitializer {
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
 			// Применяем конфигурацию префиксов когда мир полностью загрузился
 			if (client.world != null && client.player != null && 
-				hasUpdatedServerConfig && !hasAppliedServerConfig) {
+				hasUpdatedServerConfig && !hasAppliedServerConfig &&
+				HighlighterClient.isMultiplayerServer(client)) {
 				
 				hasAppliedServerConfig = true;
 				
@@ -129,5 +131,101 @@ public class HighlighterClient implements ClientModInitializer {
 		hasAppliedServerConfig = false;
 		currentServerIp = null;
 		Highlighter.LOGGER.debug("[HighlighterClient] Connection state reset");
+	}
+	
+	/**
+	 * Проверяет, подключен ли игрок к реальному мультиплеерному серверу
+	 * (исключает одиночную игру и локальные серверы)
+	 */
+	public static boolean isMultiplayerServer(MinecraftClient client) {
+		// Проверяем что есть интегрированный сервер (одиночная игра или Open to LAN)
+		if (client.getServer() != null) {
+			return false; // Это интегрированный сервер (одиночная игра или LAN)
+		}
+		
+		// Проверяем что есть информация о сервере
+		if (client.getCurrentServerEntry() == null) {
+			return false; // Нет информации о сервере
+		}
+		
+		// Проверяем что есть network handler (активное подключение)
+		if (client.getNetworkHandler() == null) {
+			return false; // Нет активного подключения
+		}
+		
+		// Проверяем что это не localhost или локальный IP
+		String address = client.getCurrentServerEntry().address;
+		if (address != null) {
+			String lowerAddress = address.toLowerCase();
+			if (lowerAddress.startsWith("localhost") || 
+				lowerAddress.startsWith("127.0.0.1") ||
+				lowerAddress.startsWith("192.168.") ||
+				lowerAddress.startsWith("10.") ||
+				lowerAddress.startsWith("172.")) {
+				return false; // Локальный адрес
+			}
+		}
+		
+		return true; // Это настоящий мультиплеерный сервер
+	}
+	
+	/**
+	 * Показывает диалог выбора использования серверной конфигурации
+	 */
+	private static void showServerConfigDialog(ServerEntry serverEntry, String serverIp) {
+		MinecraftClient client = MinecraftClient.getInstance();
+		if (client == null) return;
+		
+		String serverName = serverEntry.getServerName() != null ? serverEntry.getServerName() : serverIp;
+		
+		// Показываем диалог в главном потоке
+		client.execute(() -> {
+			ServerConfigConfirmationScreen dialog = new ServerConfigConfirmationScreen(
+				client.currentScreen, 
+				serverName,
+				(choice) -> {
+					serverEntry.setServerConfigDialogShown(true);
+					
+					if (choice == null) {
+						// Пользователь выбрал "Спросить позже" - не делаем ничего
+						Highlighter.LOGGER.info("[HighlighterClient] User chose to ask later for server config");
+						serverEntry.setServerConfigDialogShown(false); // Спросим еще раз в следующий раз
+					} else if (choice) {
+						// Пользователь согласился использовать серверную конфигурацию
+						Highlighter.LOGGER.info("[HighlighterClient] User agreed to use server configuration");
+						serverEntry.setUseServerSettings(true);
+						updateServerConfiguration(serverIp);
+					} else {
+						// Пользователь отказался от серверной конфигурации
+						Highlighter.LOGGER.info("[HighlighterClient] User declined server configuration");
+						serverEntry.setUseServerSettings(false);
+						serverEntry.setConfigurationSlug(null); // Очищаем слаг
+						hasUpdatedServerConfig = true; // Помечаем как обновленное, чтобы не ждать
+					}
+					serverEntry.save();
+				}
+			);
+			client.setScreen(dialog);
+		});
+	}
+	
+	/**
+	 * Обновляет конфигурацию сервера (стандартная логика)
+	 */
+	private static void updateServerConfiguration(String serverIp) {
+		ConfigurationManager.updateServerConfiguration()
+			.thenAccept(success -> {
+				hasUpdatedServerConfig = true;
+				if (success) {
+					Highlighter.LOGGER.info("[HighlighterClient] Server configuration updated successfully");
+				} else {
+					Highlighter.LOGGER.debug("[HighlighterClient] No server configuration update needed");
+				}
+			})
+			.exceptionally(throwable -> {
+				hasUpdatedServerConfig = true;
+				Highlighter.LOGGER.error("[HighlighterClient] Failed to update server configuration", throwable);
+				return null;
+			});
 	}
 }

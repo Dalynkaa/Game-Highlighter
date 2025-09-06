@@ -40,11 +40,16 @@ public class OnChatMessage {
     }
 
     public boolean onChatMessage(ChatMessage chatMessage) {
-        String[] patterns = HighlighterClient.getServerEntry().getChatRegex();
+        var serverEntry = HighlighterClient.getServerEntry();
+        if (serverEntry == null) {
+            return false;
+        }
+        
+        String[] patterns = serverEntry.getChatRegex();
         if (patterns == null || patterns.length == 0) {
             return false;
         }
-        if (!HighlighterClient.getServerEntry().isEnabled() || !HighlighterClient.getServerEntry().isUseChatHighlighter()) {
+        if (!serverEntry.isEnabled() || !serverEntry.isUseChatHighlighter()) {
             return false;
         }
 
@@ -82,10 +87,10 @@ public class OnChatMessage {
             return false;
         }
 
-        boolean isHighlighted = HighlighterClient.getServerEntry().isHighlighted(playerListEntry.getProfile().getId());
+        boolean isHighlighted = serverEntry.isHighlighted(playerListEntry.getProfile().getId());
 
         if (isHighlighted) {
-            HighlightedPlayer highlightedPlayer = HighlighterClient.getServerEntry().getHighlitedPlayer(playerListEntry.getProfile().getId());
+            HighlightedPlayer highlightedPlayer = serverEntry.getHighlitedPlayer(playerListEntry.getProfile().getId());
             Prefix prefix = highlightedPlayer.getPrefix();
             if (prefix == null) {
                 return false;
