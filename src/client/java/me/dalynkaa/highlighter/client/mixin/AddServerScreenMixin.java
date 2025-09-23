@@ -1,9 +1,7 @@
 package me.dalynkaa.highlighter.client.mixin;
 
-import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
 import me.dalynkaa.highlighter.client.gui.ServerSettingsScreen;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.ServerLinksScreen;
 import net.minecraft.client.gui.screen.multiplayer.AddServerScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
