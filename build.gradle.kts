@@ -49,11 +49,11 @@ modrinth {
 
     // Read changelog from file
     changelog.set(provider {
-        val changelogFile = file("../changelogs/${mod.version}.md")
+        val changelogFile = file("../../changelogs/${mod.version}.md")
         if (changelogFile.exists()) {
             changelogFile.readText()
         } else {
-            "No changelog available for version ${mod.version}"
+            throw GradleException("changelog file not found: ${changelogFile.path}")
         }
     })
 }
