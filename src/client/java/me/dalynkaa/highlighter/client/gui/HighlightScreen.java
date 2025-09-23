@@ -177,13 +177,13 @@ public class HighlightScreen extends BaseOwoScreen<FlowLayout> {
     }
     protected void applyBlur(float delta) {
         //? if =1.21.1 {
-        this.client.gameRenderer.renderBlur(delta);
-        //?} else {
-        /*this.client.gameRenderer.renderBlur();
-        *///?}
-        //? if <=1.21.4 {
-        this.client.getFramebuffer().beginWrite(false);
+        /*this.client.gameRenderer.renderBlur(delta);
+        *///?} else {
+        this.client.gameRenderer.renderBlur();
         //?}
+        //? if <=1.21.4 {
+        /*this.client.getFramebuffer().beginWrite(false);
+        *///?}
 
     }
 
@@ -250,10 +250,10 @@ public class HighlightScreen extends BaseOwoScreen<FlowLayout> {
     public void updatePrefixList() {
         Collection<Prefix> prefixes = HighlighterClient.STORAGE_MANAGER.getPrefixStorage().getPrefixes();
         //? if <=1.21.2 {
-        this.prefixList.update(prefixes, this.prefixList.getScrollAmount());
-        //?} else {
-        /*this.prefixList.update(prefixes, this.prefixList.getMaxScrollY());
-        *///?}
+        /*this.prefixList.update(prefixes, this.prefixList.getScrollAmount());
+        *///?} else {
+        this.prefixList.update(prefixes, this.prefixList.getMaxScrollY());
+        //?}
     }
 
     private void setCurrentTab(Tab tab) {
@@ -269,11 +269,11 @@ public class HighlightScreen extends BaseOwoScreen<FlowLayout> {
                 playersTabButton.setMessage(SELECTED_PLAYERS_TAB_TITLE);
                 Collection<UUID> collection = this.client.player.networkHandler.getPlayerUuids();
                 //? if <=1.21.2 {
-                playerList.update(collection, this.playerList.getScrollAmount(), false);
-                //?} else {
-                /*playerList.update(collection, this.playerList.getMaxScrollY(), false);
+                /*playerList.update(collection, this.playerList.getScrollAmount(), false);
+                *///?} else {
+                playerList.update(collection, this.playerList.getMaxScrollY(), false);
                 createPrefixButton.active = false;
-                *///?}
+                //?}
             }
             case PREFIXES -> {
                 this.mainLayout.child(this.prefixList);
@@ -292,10 +292,10 @@ public class HighlightScreen extends BaseOwoScreen<FlowLayout> {
                 this.playerList.setCurrentSearch(currentSearch);
                 Collection<UUID> collection = this.client.player.networkHandler.getPlayerUuids();
                 //? if <=1.21.2 {
-                playerList.update(collection, this.playerList.getScrollAmount(), false);
-                //?} else {
-                /*playerList.update(collection, this.playerList.getMaxScrollY(), false);
-                *///?}
+                /*playerList.update(collection, this.playerList.getScrollAmount(), false);
+                *///?} else {
+                playerList.update(collection, this.playerList.getMaxScrollY(), false);
+                //?}
             } else if (currentTab == Tab.PREFIXES) {
                 this.prefixList.setCurrentSearch(currentSearch);
                 updatePrefixList();

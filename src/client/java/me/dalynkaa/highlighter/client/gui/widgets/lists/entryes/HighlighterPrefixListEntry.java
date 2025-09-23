@@ -22,6 +22,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Matrix3x2f;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -132,7 +133,17 @@ public class HighlighterPrefixListEntry extends ElementListWidget.Entry<Highligh
             // Используем белый цвет по умолчанию при ошибке парсинга
         }
         
-        context.getMatrices().push();
+        //? if >=1.21.6 {
+        context.getMatrices().pushMatrix();
+        context.getMatrices().translate(iconX, iconCenterY);
+        context.getMatrices().scale(scale, scale);
+        context.getMatrices().translate(-iconX / scale, -iconCenterY / scale);
+        context.drawText(this.client.textRenderer, this.prefix.getPrefixChar(),
+                (int)(iconX / scale), (int)(iconCenterY / scale)+1, prefixColor, false);
+
+        context.getMatrices().popMatrix();
+        //?} else {
+        /*context.getMatrices().push();
         
         context.getMatrices().translate(iconX, iconCenterY, 0);
         context.getMatrices().scale(scale, scale, 1.0f);
@@ -142,6 +153,7 @@ public class HighlighterPrefixListEntry extends ElementListWidget.Entry<Highligh
             (int)(iconX / scale), (int)(iconCenterY / scale)+1, prefixColor, false);
             
         context.getMatrices().pop();
+        *///?}
         
 //        int nameX = iconX + 100;
 //        int nameY = y + (entryHeight - 8) / 2;

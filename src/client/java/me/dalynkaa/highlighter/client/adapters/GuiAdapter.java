@@ -1,7 +1,9 @@
 package me.dalynkaa.highlighter.client.adapters;
 
+import com.mojang.blaze3d.pipeline.RenderPipeline;
 import me.dalynkaa.highlighter.Highlighter;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.Screen;
@@ -79,24 +81,33 @@ public class GuiAdapter {
      * Отрисовывает текстуру GUI
      */
     public static void drawGuiTexture(DrawContext context, Identifier texture, int x, int y, int width, int height) {
-        //? if =1.21.1 {
-        context.drawGuiTexture(texture, x, y, width, height);
-        //?} else {
+        //? if >=1.21.6 {
+        context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, texture, x, y, width, height);
+        //?} elif >=1.21.2 && <1.21.6 {
         /*context.drawGuiTexture(RenderLayer::getGuiTextured,texture, x, y, width, height);
+        *///?} else {
+        /*context.drawGuiTexture(texture, x, y, width, height);
         *///?}
     }
 
     public static void drawTexture(DrawContext context, Identifier texture, int x, int y,int u,int v,int width,int height, int textureWidth, int textureHeight) {
-        //? if =1.21.1 {
-        context.drawTexture(texture,
-                x , y,
+        //? if >=1.21.6 {
+        context.drawTexture(RenderPipelines.GUI_TEXTURED, texture,
+                x, y,
                 u, v,
                 width, height,
                 textureWidth, textureHeight
         );
-        //?} else {
+        //?} elif >=1.21.2 && <1.21.6 {
         /*context.drawTexture(RenderLayer::getGuiTextured, texture,
                 x, y,
+                u, v,
+                width, height,
+                textureWidth, textureHeight
+        );
+        *///?} else {
+        /*context.drawTexture(texture,
+                x , y,
                 u, v,
                 width, height,
                 textureWidth, textureHeight

@@ -14,6 +14,9 @@ import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -211,38 +214,40 @@ public class PrefixConfiguration {
             Text base64Text = Text.literal("§7Base64: ")
                     .append(Text.literal("§f[Копировать]")
                             .styled(style -> style.withColor(Formatting.AQUA)
-                                    .withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, base64Config))
+                                    //? if >=1.21.6 {
+                                            .withClickEvent(new ClickEvent.CopyToClipboard(base64Config))
+                                            .withHoverEvent(new HoverEvent.ShowText(Text.literal("§7Нажмите, чтобы скопировать Base64")))
+                                    //?} else {
+                                    /*.withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, base64Config))
                                     .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-                                            Text.literal("§7Нажмите, чтобы скопировать Base64")))));
+                                            Text.literal("§7Нажмите, чтобы скопировать Base64")))
+                                    *///?}
+                                    ));
             client.player.sendMessage(base64Text, false);
 
             // URL с кликабельной ссылкой
             Text urlText = Text.literal("§7URL: ")
                     .append(Text.literal("§a[Открыть в браузере]")
-                            .styled(style -> style.withColor(Formatting.GREEN)
+                            .styled(style -> {
+                                        //? if >=1.21.6 {
+                                        try {
+                                            return style.withColor(Formatting.GREEN)
+                                                            .withClickEvent(new ClickEvent.OpenUrl(new URL(configUrl).toURI()))
+                                                            .withHoverEvent(new HoverEvent.ShowText(Text.literal("§7Нажмите, чтобы открыть в браузере\n§8" + configUrl)));
+                                        } catch (URISyntaxException e) {
+                                            throw new RuntimeException(e);
+                                        } catch (MalformedURLException e) {
+                                            throw new RuntimeException(e);
+                                        }
+                                    }
+                                    //?} else {
+                                    /*style.withColor(Formatting.GREEN)
                                     .withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, configUrl))
                                     .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-                                            Text.literal("§7Нажмите, чтобы открыть в браузере\n§8" + configUrl)))));
+                                            Text.literal("§7Нажмите, чтобы открыть в браузере\n§8" + configUrl)))
+                                    *///?}
+                                    ));
             client.player.sendMessage(urlText, false);
-        }
-    }
-
-    /**
-     * Отправляет кликабельный URL конфигурации в чат игры
-     */
-    public void sendClickableUrlToChat() {
-        MinecraftClient client = MinecraftClient.getInstance();
-        if (client.player != null) {
-            String configUrl = generateBackendUrlFromConfig();
-
-            // Создаем текстовый компонент с кликабельной ссылкой
-            Text message = Text.literal("§6[Highlighter] Нажмите здесь, чтобы открыть конфигурацию")
-                    .styled(style -> style.withColor(Formatting.GREEN)
-                            .withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, configUrl))
-                            .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal("§7Щелкните, чтобы открыть URL"))));
-
-            // Отправляем сообщение в чат
-            client.player.sendMessage(message, false);
         }
     }
 }

@@ -80,7 +80,7 @@ public class ServerConfigConfirmationScreen extends Screen {
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        super.renderBackground(context, mouseX, mouseY, delta);
+        //super.renderBackground(context, mouseX, mouseY, delta);
 
         int dialogX = (this.width - DIALOG_WIDTH) / 2;
         int dialogY = (this.height - DIALOG_HEIGHT) / 2;

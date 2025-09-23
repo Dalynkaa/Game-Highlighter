@@ -68,43 +68,43 @@ public class OptimizedColorPickerWidget extends ClickableWidget {
         NativeImage pickerImage = new NativeImage(PICKER_SIZE, PICKER_SIZE, false);
 
         //? if <1.21.5 {
-        pickerTexture = new NativeImageBackedTexture(pickerImage);
-         //?}
+        /*pickerTexture = new NativeImageBackedTexture(pickerImage);
+         *///?}
 
         //? if <=1.21.2 {
-        pickerTextureId = client.getTextureManager().registerDynamicTexture("color_picker", pickerTexture);
-        //?} elif =1.21.3 {
+        /*pickerTextureId = client.getTextureManager().registerDynamicTexture("color_picker", pickerTexture);
+        *///?} elif =1.21.3 {
         /*pickerTextureId = Identifier.of(Highlighter.MOD_ID, "color_picker");
         client.getTextureManager().registerTexture(pickerTextureId, pickerTexture);
         *///?} elif =1.21.4 {
         /*pickerTextureId = Identifier.of(Highlighter.MOD_ID, "color_picker");
         client.getTextureManager().registerTexture(pickerTextureId, pickerTexture);
         *///?} else {
-        /*pickerTextureId = Identifier.of(Highlighter.MOD_ID, "color_picker");
+        pickerTextureId = Identifier.of(Highlighter.MOD_ID, "color_picker");
         pickerTexture = new NativeImageBackedTexture(() -> ((Identifier)pickerTextureId).toString(),pickerImage);
         client.getTextureManager().registerTexture(pickerTextureId, pickerTexture);
-        *///?}
+        //?}
 
         // Create hue bar texture
         NativeImage hueImage = new NativeImage(HUE_BAR_WIDTH, PICKER_SIZE, false);
 
         //? if <1.21.5 {
-        hueTexture = new NativeImageBackedTexture(hueImage);
-         //?}
+        /*hueTexture = new NativeImageBackedTexture(hueImage);
+         *///?}
 
         //? if <=1.21.2 {
-        hueTextureId = client.getTextureManager().registerDynamicTexture("hue", hueTexture);
-         //?} elif =1.21.3 {
+        /*hueTextureId = client.getTextureManager().registerDynamicTexture("hue", hueTexture);
+         *///?} elif =1.21.3 {
         /*hueTextureId = Identifier.of(Highlighter.MOD_ID, "hue");
         client.getTextureManager().registerTexture(hueTextureId, hueTexture);
         *///?} elif =1.21.4 {
         /*hueTextureId = Identifier.of(Highlighter.MOD_ID, "hue");
         client.getTextureManager().registerTexture(hueTextureId, hueTexture);
         *///?} else {
-        /*hueTextureId = Identifier.of(Highlighter.MOD_ID, "hue");
+        hueTextureId = Identifier.of(Highlighter.MOD_ID, "hue");
         hueTexture = new NativeImageBackedTexture(() -> ((Identifier)hueTextureId).toString(),hueImage);
         client.getTextureManager().registerTexture(hueTextureId, hueTexture);
-        *///?}
+        //?}
 
         updateTextures();
     }
@@ -127,10 +127,10 @@ public class OptimizedColorPickerWidget extends ClickableWidget {
 
                 int color = 0xFF000000 | (rgb[2] << 16) | (rgb[1] << 8) | rgb[0];
                 //? if =1.21.1 {
-                image.setColor(x, y, color);
-                //?} else {
-                /*image.setColorArgb(x, y, color);
-                *///?}
+                /*image.setColor(x, y, color);
+                *///?} else {
+                image.setColorArgb(x, y, color);
+                //?}
             }
         }
 
@@ -149,10 +149,10 @@ public class OptimizedColorPickerWidget extends ClickableWidget {
 
             for (int x = 0; x < HUE_BAR_WIDTH; x++) {
                 //? if =1.21.1 {
-                image.setColor(x, y, color);
-                //?} else {
-                /*image.setColorArgb(x, y, color);
-                *///?}
+                /*image.setColor(x, y, color);
+                *///?} else {
+                image.setColorArgb(x, y, color);
+                //?}
             }
         }
 
@@ -174,10 +174,12 @@ public class OptimizedColorPickerWidget extends ClickableWidget {
                 0xFF2A2A2A);
 
         // Draw main color picker using optimized texture
-        //? if <1.21.5 {
-        RenderSystem.setShaderTexture(0, pickerTextureId);
-        //?} else {
+        //? if >=1.21.6 {
+        RenderSystem.setShaderTexture(0, pickerTexture.getGlTextureView());
+        //?} elif >=1.21.5 && <1.21.6 {
         /*RenderSystem.setShaderTexture(0, pickerTexture.getGlTexture());
+        *///?} else {
+        /*RenderSystem.setShaderTexture(0, pickerTextureId);
         *///?}
         GuiAdapter.drawTexture(context,pickerTextureId, x, y, 0, 0, PICKER_SIZE, PICKER_SIZE, PICKER_SIZE, PICKER_SIZE);
 
@@ -188,10 +190,12 @@ public class OptimizedColorPickerWidget extends ClickableWidget {
                 0xFF2A2A2A);
 
         // Draw hue bar using optimized texture
-        //? if <1.21.5 {
-        RenderSystem.setShaderTexture(0, hueTextureId);
-        //?} else {
+        //? if >=1.21.6 {
+        RenderSystem.setShaderTexture(0, hueTexture.getGlTextureView());
+        //?} elif >=1.21.5 && <1.21.6 {
         /*RenderSystem.setShaderTexture(0, hueTexture.getGlTexture());
+        *///?} else {
+        /*RenderSystem.setShaderTexture(0, hueTextureId);
         *///?}
         GuiAdapter.drawTexture(context,hueTextureId, hueX, y, 0, 0, HUE_BAR_WIDTH, PICKER_SIZE, HUE_BAR_WIDTH, PICKER_SIZE);
 

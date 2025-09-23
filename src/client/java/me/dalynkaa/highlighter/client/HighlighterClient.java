@@ -25,7 +25,6 @@ public class HighlighterClient implements ClientModInitializer {
 	public static StorageManager STORAGE_MANAGER;
 	private static ServerEntry cachedServerEntry;
 	
-	// Флаги для отслеживания состояния подключения
 	private static boolean hasUpdatedServerConfig = false;
 	private static boolean hasAppliedServerConfig = false;
 	private static String currentServerIp = null;
@@ -46,20 +45,16 @@ public class HighlighterClient implements ClientModInitializer {
 		KeyBindManager.initKeysListeners();
 		new OnChatMessage();
 
-		// При подключении к серверу - обновляем конфигурацию сервера
 		ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
-			// Проверяем что это не локальный сервер (одиночная игра или LAN)
 			if (!HighlighterClient.isMultiplayerServer(client)) {
 				resetConnectionState();
 				Highlighter.LOGGER.debug("[HighlighterClient] Skipping backend configuration - not a multiplayer server");
 				return;
 			}
 			
-			// Кешируем сервер только для мультиплеерных серверов
 			cacheCurrentServer(client);
 			
-			// Получаем IP сервера и обновляем конфигурацию сервера
-			String serverIp = client.getCurrentServerEntry() != null ? 
+			String serverIp = client.getCurrentServerEntry() != null ?
 							 client.getCurrentServerEntry().address : null;
 			
 			if (serverIp != null && !serverIp.equals(currentServerIp)) {
@@ -70,32 +65,33 @@ public class HighlighterClient implements ClientModInitializer {
 				// Проверяем нужно ли показать диалог подтверждения
 				ServerEntry serverEntry = HighlighterClient.getServerEntry();
 				if (serverEntry != null && !serverEntry.isServerConfigDialogShown()) {
-					// Показываем диалог выбора использования серверной конфигурации
-					showServerConfigDialog(serverEntry, serverIp);
+					ConfigurationManager.updateServerConfiguration()
+						.thenAccept(success -> {
+							if (success) {
+								showServerConfigDialog(serverEntry, serverIp);
+							} else {
+								Highlighter.LOGGER.info("[HighlighterClient] No server configuration found, dialog will be shown when config appears");
+							}
+						});
 				} else {
-					// Диалог уже был показан, продолжаем стандартную логику
 					updateServerConfiguration(serverIp);
 				}
 			}
 		});
 
-		// При отключении - сбрасываем состояние
 		ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> {
 			resetConnectionState();
 		});
 
 		BackendConfigurationLoader.init();
 		
-		// Слушаем тики клиента для применения конфигурации после загрузки мира
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
-			// Применяем конфигурацию префиксов когда мир полностью загрузился
-			if (client.world != null && client.player != null && 
+			if (client.world != null && client.player != null &&
 				hasUpdatedServerConfig && !hasAppliedServerConfig &&
 				HighlighterClient.isMultiplayerServer(client)) {
 				
 				hasAppliedServerConfig = true;
 				
-				// Этап 2: Применяем только конфигурацию префиксов по слагу
 				ConfigurationManager.applyPrefixConfiguration()
 					.thenAccept(success -> {
 						if (success) {
@@ -138,22 +134,18 @@ public class HighlighterClient implements ClientModInitializer {
 	 * (исключает одиночную игру и локальные серверы)
 	 */
 	public static boolean isMultiplayerServer(MinecraftClient client) {
-		// Проверяем что есть интегрированный сервер (одиночная игра или Open to LAN)
 		if (client.getServer() != null) {
-			return false; // Это интегрированный сервер (одиночная игра или LAN)
+			return false;
 		}
 		
-		// Проверяем что есть информация о сервере
 		if (client.getCurrentServerEntry() == null) {
-			return false; // Нет информации о сервере
+			return false;
 		}
 		
-		// Проверяем что есть network handler (активное подключение)
 		if (client.getNetworkHandler() == null) {
-			return false; // Нет активного подключения
+			return false;
 		}
 		
-		// Проверяем что это не localhost или локальный IP
 		String address = client.getCurrentServerEntry().address;
 		if (address != null) {
 			String lowerAddress = address.toLowerCase();
@@ -162,11 +154,11 @@ public class HighlighterClient implements ClientModInitializer {
 				lowerAddress.startsWith("192.168.") ||
 				lowerAddress.startsWith("10.") ||
 				lowerAddress.startsWith("172.")) {
-				return false; // Локальный адрес
+				return false;
 			}
 		}
 		
-		return true; // Это настоящий мультиплеерный сервер
+		return true;
 	}
 	
 	/**
@@ -178,7 +170,6 @@ public class HighlighterClient implements ClientModInitializer {
 		
 		String serverName = serverEntry.getServerName() != null ? serverEntry.getServerName() : serverIp;
 		
-		// Показываем диалог в главном потоке
 		client.execute(() -> {
 			ServerConfigConfirmationScreen dialog = new ServerConfigConfirmationScreen(
 				client.currentScreen, 
@@ -187,20 +178,17 @@ public class HighlighterClient implements ClientModInitializer {
 					serverEntry.setServerConfigDialogShown(true);
 					
 					if (choice == null) {
-						// Пользователь выбрал "Спросить позже" - не делаем ничего
 						Highlighter.LOGGER.info("[HighlighterClient] User chose to ask later for server config");
-						serverEntry.setServerConfigDialogShown(false); // Спросим еще раз в следующий раз
+						serverEntry.setServerConfigDialogShown(false);
 					} else if (choice) {
-						// Пользователь согласился использовать серверную конфигурацию
 						Highlighter.LOGGER.info("[HighlighterClient] User agreed to use server configuration");
 						serverEntry.setUseServerSettings(true);
 						updateServerConfiguration(serverIp);
 					} else {
-						// Пользователь отказался от серверной конфигурации
 						Highlighter.LOGGER.info("[HighlighterClient] User declined server configuration");
 						serverEntry.setUseServerSettings(false);
-						serverEntry.setConfigurationSlug(null); // Очищаем слаг
-						hasUpdatedServerConfig = true; // Помечаем как обновленное, чтобы не ждать
+						serverEntry.setConfigurationSlug(null);
+						hasUpdatedServerConfig = true;
 					}
 					serverEntry.save();
 				}

@@ -386,8 +386,13 @@ public class ColorPickerFieldWidget extends TextFieldWidget {
             context.fill(x, y, x + POPUP_WIDTH, y + POPUP_HEIGHT, 0xF0202020);
             context.drawBorder(x, y, POPUP_WIDTH, POPUP_HEIGHT, 0xFF404040);
 
-            context.getMatrices().push();
+            //? if >=1.21.6 {
+            context.getMatrices().pushMatrix();
+            context.getMatrices().scale(SCALE_FACTOR, SCALE_FACTOR);
+            //?} else {
+            /*context.getMatrices().push();
             context.getMatrices().scale(SCALE_FACTOR, SCALE_FACTOR, 1.0f);
+            *///?}
 
             float scaledX = (x + 8) / SCALE_FACTOR;
             float scaledY = (y + 8) / SCALE_FACTOR;
@@ -396,7 +401,11 @@ public class ColorPickerFieldWidget extends TextFieldWidget {
 
             colorPicker.renderWidget(context, (int) scaledMouseX, (int) scaledMouseY, delta);
 
-            context.getMatrices().pop();
+            //? if >=1.21.6 {
+            context.getMatrices().popMatrix();
+            //?} else {
+            /*context.getMatrices().pop();
+            *///?}
 
             int presetsStartX = x + POPUP_WIDTH - PRESET_PANEL_WIDTH - 4;
             int presetsStartY = y + 8;

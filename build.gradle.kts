@@ -131,7 +131,9 @@ dependencies {
     }
     modApi("com.terraformersmc:modmenu:$modMenu")
 
-    modImplementation("io.wispforest:owo-lib:$owo")
+    modImplementation("io.wispforest:owo-lib:$owo") {
+        exclude(group = "net.fabricmc.fabric-api", module = "fabric-api")
+    }
     annotationProcessor("io.wispforest:owo-lib:$owo")
     include("io.wispforest:owo-lib:$owo")
 
