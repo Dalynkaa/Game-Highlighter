@@ -13,6 +13,8 @@
   "text.autoconfig.highlighter.option.backendSettings.manualSlug.@Tooltip": "Manual configuration slug to use globally (overrides server settings when enabled)",
   "text.autoconfig.highlighter.option.backendSettings.preferManualSlug": "Prefer Manual Slug",
   "text.autoconfig.highlighter.option.backendSettings.preferManualSlug.@Tooltip": "Use the manual slug instead of server-specific configurations",
+  "text.autoconfig.highlighter.option.backendSettings.enableTranslationDownloading": "Enable Translation Downloading",
+  "text.autoconfig.highlighter.option.backendSettings.enableTranslationDownloading.@Tooltip": "Automatically download updated translations from Weblate server when language is changed",
 
   "key.category.highlighter": "highlighter",
   "key.highlighter.tabkey": "Show highlighted tab",

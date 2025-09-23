@@ -96,7 +96,7 @@ public class HighlighterPrefixEditWidget extends FlowLayout {
         this.nameColorField = new ColorPickerFieldWidget(0, 0, width-16, nameColor, (color)->{
             currentNameColor = color;
         });
-        this.nameColorField.zIndex(1000);
+        this.nameColorField.zIndex(3000);
         this.nameColorField.onPopupOpenEvent((colorPicker) -> {
             if(currentColorField != null) {
                 currentColorField.closePopup();
@@ -121,7 +121,7 @@ public class HighlighterPrefixEditWidget extends FlowLayout {
         this.tagColorField = new ColorPickerFieldWidget(0, 0, width-16, tagColor, (color)->{
             this.currentTagColor = color;
         });
-        this.tagColorField.zIndex(999);
+        this.tagColorField.zIndex(2900);
         this.tagColorField.onPopupOpenEvent((colorPicker) -> {
             if(currentColorField != null) {
                 currentColorField.closePopup();
@@ -220,6 +220,7 @@ public class HighlighterPrefixEditWidget extends FlowLayout {
         int spacing = 32;
         int labelHeight = 10;
 
+
         this
                 .child(nameLayout.positioning(Positioning.absolute(startX, startY+labelHeight)).sizing(Sizing.fixed(width-14), Sizing.fixed(30)))
                 .child(tagLayout.positioning(Positioning.absolute(startX,startY+labelHeight+spacing)).sizing(Sizing.fixed(width-14), Sizing.fixed(30)))
@@ -232,17 +233,17 @@ public class HighlighterPrefixEditWidget extends FlowLayout {
 
     @Override
     public void draw(OwoUIDrawContext context, int mouseX, int mouseY, float partialTicks, float delta) {
-        super.draw(context, mouseX, mouseY, partialTicks, delta);
         renderBackground(context);
         int startX = this.x + 9;
         int startY = this.y + 9;
         int spacing = 32;
-        GuiAdapter.drawTextWithShadow(context,MinecraftClient.getInstance(),Text.translatable("gui.highlighter.menu.prefix_edit.form.prefix_name.label"), startX, startY, 0xFFFFFF);
-        GuiAdapter.drawTextWithShadow(context,MinecraftClient.getInstance(),Text.translatable("gui.highlighter.menu.prefix_edit.form.prefix_tag.label"), startX, startY+spacing, 0xFFFFFF);
-        GuiAdapter.drawTextWithShadow(context,MinecraftClient.getInstance(),Text.translatable("gui.highlighter.menu.prefix_edit.form.player_name_color.label"), startX, startY+spacing*2, 0xFFFFFF);
-        GuiAdapter.drawTextWithShadow(context,MinecraftClient.getInstance(),Text.translatable("gui.highlighter.menu.prefix_edit.form.prefix_color.label"), startX, startY+spacing*3, 0xFFFFFF);
-        GuiAdapter.drawTextWithShadow(context,MinecraftClient.getInstance(),Text.translatable("gui.highlighter.menu.prefix_edit.form.chat_sound.label"), startX, startY+spacing * 4, 0xFFFFFF);
-        GuiAdapter.drawTextWithShadow(context,MinecraftClient.getInstance(),Text.translatable("gui.highlighter.menu.prefix_edit.form.chat_pattern.label"), startX, startY+spacing*5, 0xFFFFFF);
+        GuiAdapter.drawTextWithShadow(context,MinecraftClient.getInstance(),Text.translatable("gui.highlighter.menu.prefix_edit.form.prefix_name.label"), startX, startY, 0xFFFFFFFF);
+        GuiAdapter.drawTextWithShadow(context,MinecraftClient.getInstance(),Text.translatable("gui.highlighter.menu.prefix_edit.form.prefix_tag.label"), startX, startY+spacing, 0xFFFFFFFF);
+        GuiAdapter.drawTextWithShadow(context,MinecraftClient.getInstance(),Text.translatable("gui.highlighter.menu.prefix_edit.form.player_name_color.label"), startX, startY+spacing*2, 0xFFFFFFFF);
+        GuiAdapter.drawTextWithShadow(context,MinecraftClient.getInstance(),Text.translatable("gui.highlighter.menu.prefix_edit.form.prefix_color.label"), startX, startY+spacing*3, 0xFFFFFFFF);
+        GuiAdapter.drawTextWithShadow(context,MinecraftClient.getInstance(),Text.translatable("gui.highlighter.menu.prefix_edit.form.chat_sound.label"), startX, startY+spacing * 4, 0xFFFFFFFF);
+        GuiAdapter.drawTextWithShadow(context,MinecraftClient.getInstance(),Text.translatable("gui.highlighter.menu.prefix_edit.form.chat_pattern.label"), startX, startY+spacing*5, 0xFFFFFFFF);
+        super.draw(context, mouseX, mouseY, partialTicks, delta);
     }
 
     private void renderBackground(DrawContext context) {

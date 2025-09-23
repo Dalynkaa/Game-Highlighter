@@ -124,8 +124,12 @@ public class OptimizedColorPickerWidget extends ClickableWidget {
                 float b = 1.0f - (float) y / (PICKER_SIZE - 1);
 
                 int[] rgb = hsbToRgb(hue, s, b);
+                if (image == null) {
+                    Highlighter.LOGGER.error("NativeImage for pickerTexture is null!");
+                    return;
+                }
 
-                int color = 0xFF000000 | (rgb[2] << 16) | (rgb[1] << 8) | rgb[0];
+                int color = 0xFF000000 | (rgb[0] << 16) | (rgb[1] << 8) | rgb[2];
                 //? if =1.21.1 {
                 /*image.setColor(x, y, color);
                 *///?} else {
@@ -144,8 +148,12 @@ public class OptimizedColorPickerWidget extends ClickableWidget {
             float h = (float) y / (PICKER_SIZE - 1);
 
             int[] rgb = hsbToRgb(h, 1.0f, 1.0f);
+            if (image == null) {
+                Highlighter.LOGGER.error("NativeImage for hueTexture is null!");
+                return;
+            }
 
-            int color = 0xFF000000 | (rgb[2] << 16) | (rgb[1] << 8) | rgb[0];
+            int color = 0xFF000000 | (rgb[0] << 16) | (rgb[1] << 8) | rgb[2];
 
             for (int x = 0; x < HUE_BAR_WIDTH; x++) {
                 //? if =1.21.1 {

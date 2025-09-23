@@ -1,6 +1,7 @@
 package me.dalynkaa.highlighter.client.adapters;
 
 import com.mojang.blaze3d.pipeline.RenderPipeline;
+import io.wispforest.owo.ui.core.OwoUIDrawContext;
 import me.dalynkaa.highlighter.Highlighter;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.RenderPipelines;
@@ -125,8 +126,8 @@ public class GuiAdapter {
     /**
      * Отрисовывает текст с тенью используя Text объект
      */
-    public static void drawTextWithShadow(DrawContext context, MinecraftClient client, Text text, int x, int y, int color) {
-        context.drawTextWithShadow(client.textRenderer, text, x, y, color);
+    public static void drawTextWithShadow(OwoUIDrawContext context, MinecraftClient client, Text text, int x, int y, int color) {
+        context.drawText(text, x, y, 1.0f, color);
     }
     
     /**

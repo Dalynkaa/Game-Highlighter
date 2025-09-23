@@ -85,10 +85,10 @@ public class HighlighterPlayerEditWidget extends FlowLayout {
 
     @Override
     public void draw(OwoUIDrawContext context, int mouseX, int mouseY, float partialTicks, float delta) {
-        super.draw(context, mouseX, mouseY, partialTicks, delta);
         renderBackground(context);
+
         String text = Text.translatable("gui.highlighter.menu.player_edit.title", highlightPlayer.name()).getString();
-        context.drawCenteredTextWithShadow(textRenderer, text, this.x + width/2, this.y - 12, 0xFFFFFF);
+        context.drawCenteredTextWithShadow(textRenderer, text, this.x + width/2, this.y - 12, 0xFFFFFFFF);
         context.fill(this.x + 8, this.y + 8, this.x + this.width - 8, this.y + 40, 0x80000000);
         context.drawHorizontalLine(this.x + 7, this.x + this.width - 8, this.y + 40, ColorAdapter.getArgb(255, 198, 198, 198));
 
@@ -96,8 +96,9 @@ public class HighlighterPlayerEditWidget extends FlowLayout {
         int j = y + 8 + 4;
         if (highlightPlayer != null) {
             PlayerSkinDrawer.draw(context, this.highlightPlayer.skinTexture(), i, j, 23);
-            context.drawText(textRenderer, this.highlightPlayer.name(), i + 24 + 4, j + 4, 0xFFFFFF, true);
+            context.drawText(textRenderer, this.highlightPlayer.name(), i + 24 + 4, j + 4, 0xFFFFFFFF, true);
         }
+        super.draw(context, mouseX, mouseY, partialTicks, delta);
     }
 
     private void renderBackground(DrawContext context) {

@@ -82,7 +82,7 @@ public class HighlighterDropdownComponent extends FlowLayout {
         dropdown.positioning(Positioning.absolute(xLocation, yLocation));
 
         // Установка очень высокого zIndex для отображения на переднем плане поверх всех элементов
-        dropdown.zIndex(9999);
+        dropdown.zIndex(3000);
 
         // Явно разрешаем переполнение для дропдауна и его элементов
         dropdown.allowOverflow(true);
@@ -243,7 +243,7 @@ public class HighlighterDropdownComponent extends FlowLayout {
                 case "nested" -> {
                     var text = entry.getAttribute("translate").equals("true")
                             ? Text.translatable(entry.getAttribute("name"))
-                            : Text.literal(entry.getAttribute("name"));
+                            : Text.literal(entry.getAttribute("name")).setStyle(net.minecraft.text.Style.EMPTY);
                     this.nested(text, Sizing.content(), dropdownComponent -> dropdownComponent.parseAndApplyEntries(entry));
                 }
             }
@@ -333,7 +333,7 @@ public class HighlighterDropdownComponent extends FlowLayout {
 
         @Override
         public boolean onMouseDown(double mouseX, double mouseY, int button) {
-            super.onMouseDown(mouseX, mouseY, button);
+            //super.onMouseDown(mouseX, mouseY, button);
 
             this.onClick.accept(this.parentDropdown);
             this.playInteractionSound();

@@ -47,6 +47,7 @@ public class HighlighterScrollDropdownComponent extends FlowLayout {
         expandableDropdown.alignment(HorizontalAlignment.CENTER, VerticalAlignment.CENTER);
         expandableDropdown.margins(Insets.top(-2));
         expandableDropdown.padding(Insets.of(0));
+        expandableDropdown.zIndex(5000);
 
 
         // Вычисляем высоту скролла для обеспечения оптимального отображения
@@ -55,13 +56,15 @@ public class HighlighterScrollDropdownComponent extends FlowLayout {
         } else {
             expandableDropdownScroll = Containers.verticalScroll(horizontalSizing, verticalSizing, expandableDropdown);
         }
+        expandableDropdownScroll.zIndex(4999);
+        expandableDropdownScroll.allowOverflow(true);
 
 
         titleDropdown = new HighlighterDropdownComponent(horizontalSizing);
-        titleDropdown.zIndex(110);
+        titleDropdown.zIndex(5100);
         titleDropdown.surface(Surface.flat(BG_COLOR));
         titleDropdown.horizontalSizing(horizontalSizing);
-        titleDropdown.button(Text.literal(title.getString() + "  "), (comp) -> {
+        titleDropdown.button(Text.literal(title.getString() + "  ").setStyle(net.minecraft.text.Style.EMPTY), (comp) -> {
             this.expanded = !this.expanded;
             updateExpandableDropdown();
         });
@@ -86,19 +89,20 @@ public class HighlighterScrollDropdownComponent extends FlowLayout {
         dropdownLayout.child(layout);
 
         // Arrow
-        arrowLabel = Components.label(Text.literal(""));
+        arrowLabel = Components.label(Text.literal("▼").setStyle(net.minecraft.text.Style.EMPTY));
         arrowLabel.positioning(Positioning.relative(95, 50));
-        arrowLabel.zIndex(110);
+        arrowLabel.zIndex(5200);
         titleDropdown.child(arrowLabel);
 
         contentLayout.child(titleDropdown);
         contentLayout.allowOverflow(true);
-        contentLayout.zIndex(105);
+        contentLayout.zIndex(2050);
 
         updateExpandableDropdown();
 
         super.child(contentLayout);
         super.allowOverflow(true);
+        super.zIndex(2025);
     }
 
     @Override
@@ -183,19 +187,62 @@ public class HighlighterScrollDropdownComponent extends FlowLayout {
             this.expandStateChangeListener.accept(expanded);
         }
         if (!expanded) {
+            // Remove from both local and root parent
             contentLayout.removeChild(expandableDropdownScroll);
+            removeFromRootParent();
         } else {
+            // Add to root parent instead of local layout for proper rendering order
+            addToRootParent();
+        }
+    }
+
+    private void addToRootParent() {
+        ParentComponent rootParent = findRootParent();
+        if (rootParent instanceof FlowLayout rootLayout) {
+            // Remove from local layout first
+            contentLayout.removeChild(expandableDropdownScroll);
+            
+            // Calculate absolute position
+            int absoluteX = this.x;
+            int absoluteY = this.y + this.height;
+            expandableDropdownScroll.positioning(Positioning.absolute(absoluteX, absoluteY));
+            expandableDropdownScroll.sizing(Sizing.fixed(this.width()), Sizing.fixed(MAX_VISIBLE_ITEMS * DEFAULT_ITEM_HEIGHT));
+            
+            // Add to root parent so it renders on top
+            rootLayout.child(expandableDropdownScroll);
+        } else {
+            // Fallback to local layout
             contentLayout.child(expandableDropdownScroll);
             expandableDropdownScroll.positioning(Positioning.layout());
         }
     }
 
+    private void removeFromRootParent() {
+        ParentComponent rootParent = findRootParent();
+        if (rootParent instanceof FlowLayout rootLayout) {
+            rootLayout.removeChild(expandableDropdownScroll);
+        }
+    }
+
+    private ParentComponent findRootParent() {
+        ParentComponent current = this.parent();
+        ParentComponent root = current;
+        
+        // Find the topmost parent
+        while (current != null) {
+            root = current;
+            current = current.parent();
+        }
+        
+        return root;
+    }
+
     @Override
     protected void drawChildren(OwoUIDrawContext context, int mouseX, int mouseY, float partialTicks, float delta, List<? extends Component> children) {
         if (!expanded) {
-            arrowLabel.text(Text.literal(UNEXPANDED_DROPDOWN_CHAR));
+            arrowLabel.text(Text.literal(UNEXPANDED_DROPDOWN_CHAR).setStyle(net.minecraft.text.Style.EMPTY));
         } else {
-            arrowLabel.text(Text.literal(EXPANDED_DROPDOWN_CHAR));
+            arrowLabel.text(Text.literal(EXPANDED_DROPDOWN_CHAR).setStyle(net.minecraft.text.Style.EMPTY));
         }
         super.drawChildren(context, mouseX, mouseY, partialTicks, delta, children);
     }

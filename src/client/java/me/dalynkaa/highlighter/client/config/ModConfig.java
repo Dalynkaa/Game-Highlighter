@@ -33,6 +33,9 @@ public class ModConfig implements ConfigData {
         
         @ConfigEntry.Gui.Tooltip
         public boolean preferManualSlug = false;
+        
+        @ConfigEntry.Gui.Tooltip
+        public boolean enableTranslationDownloading = false;
     }
 
     public Boolean hasTabEnable(){
