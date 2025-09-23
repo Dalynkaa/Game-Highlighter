@@ -215,13 +215,13 @@ public class PrefixConfiguration {
                     .append(Text.literal("§f[Копировать]")
                             .styled(style -> style.withColor(Formatting.AQUA)
                                     //? if >=1.21.6 {
-                                            .withClickEvent(new ClickEvent.CopyToClipboard(base64Config))
-                                            .withHoverEvent(new HoverEvent.ShowText(Text.literal("§7Нажмите, чтобы скопировать Base64")))
-                                    //?} else {
-                                    /*.withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, base64Config))
+                                    /*.withClickEvent(new ClickEvent.CopyToClipboard(base64Config))
+                                    .withHoverEvent(new HoverEvent.ShowText(Text.literal("§7Нажмите, чтобы скопировать Base64")))
+                                    *///?} else {
+                                    .withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, base64Config))
                                     .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
                                             Text.literal("§7Нажмите, чтобы скопировать Base64")))
-                                    *///?}
+                                    //?}
                                     ));
             client.player.sendMessage(base64Text, false);
 
@@ -230,7 +230,7 @@ public class PrefixConfiguration {
                     .append(Text.literal("§a[Открыть в браузере]")
                             .styled(style -> {
                                         //? if >=1.21.6 {
-                                        try {
+                                        /*try {
                                             return style.withColor(Formatting.GREEN)
                                                             .withClickEvent(new ClickEvent.OpenUrl(new URL(configUrl).toURI()))
                                                             .withHoverEvent(new HoverEvent.ShowText(Text.literal("§7Нажмите, чтобы открыть в браузере\n§8" + configUrl)));
@@ -239,14 +239,13 @@ public class PrefixConfiguration {
                                         } catch (MalformedURLException e) {
                                             throw new RuntimeException(e);
                                         }
-                                    }
-                                    //?} else {
-                                    /*style.withColor(Formatting.GREEN)
-                                    .withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, configUrl))
-                                    .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-                                            Text.literal("§7Нажмите, чтобы открыть в браузере\n§8" + configUrl)))
-                                    *///?}
-                                    ));
+                                        *///?} else {
+                                        return style.withColor(Formatting.GREEN)
+                                        .withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, configUrl))
+                                        .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+                                                Text.literal("§7Нажмите, чтобы открыть в браузере\n§8" + configUrl)));
+                                        //?}
+                                    }));
             client.player.sendMessage(urlText, false);
         }
     }

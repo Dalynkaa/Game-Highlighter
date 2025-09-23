@@ -134,7 +134,7 @@ public class HighlighterPrefixListEntry extends ElementListWidget.Entry<Highligh
         }
         
         //? if >=1.21.6 {
-        context.getMatrices().pushMatrix();
+        /*context.getMatrices().pushMatrix();
         context.getMatrices().translate(iconX, iconCenterY);
         context.getMatrices().scale(scale, scale);
         context.getMatrices().translate(-iconX / scale, -iconCenterY / scale);
@@ -142,8 +142,8 @@ public class HighlighterPrefixListEntry extends ElementListWidget.Entry<Highligh
                 (int)(iconX / scale), (int)(iconCenterY / scale)+1, prefixColor, false);
 
         context.getMatrices().popMatrix();
-        //?} else {
-        /*context.getMatrices().push();
+        *///?} else {
+        context.getMatrices().push();
         
         context.getMatrices().translate(iconX, iconCenterY, 0);
         context.getMatrices().scale(scale, scale, 1.0f);
@@ -153,7 +153,7 @@ public class HighlighterPrefixListEntry extends ElementListWidget.Entry<Highligh
             (int)(iconX / scale), (int)(iconCenterY / scale)+1, prefixColor, false);
             
         context.getMatrices().pop();
-        *///?}
+        //?}
         
 //        int nameX = iconX + 100;
 //        int nameY = y + (entryHeight - 8) / 2;

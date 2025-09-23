@@ -92,9 +92,9 @@ public class DynamicLanguageResourcePack implements ResourcePack {
     @Override
     public ResourcePackInfo getInfo() {
         //? if >=1.21.6 {
-        return new ResourcePackInfo("highlighter_dynamic_translations", null, null, null);
-        //?} else {
-        /*return new ResourcePackInfo("highlighter_dynamic_translations", null, null);*/
+        /*return new ResourcePackInfo("highlighter_dynamic_translations", null, null, null);
+        *///?} else {
+        return new ResourcePackInfo("highlighter_dynamic_translations", null, null);
         //?}
     }
     

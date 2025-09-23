@@ -72,10 +72,10 @@ public class HighlighterPrefixListWidget  extends ElementListWidget<HighlighterP
         this.filterPlayers();
         this.replaceEntries(this.prefixListEntries);
         //? <=1.21.2 {
-        /*this.setScrollAmount(scrollAmount);
-         *///?} else {
-        this.setScrollY(scrollAmount);
-        //?}
+        this.setScrollAmount(scrollAmount);
+         //?} else {
+        /*this.setScrollY(scrollAmount);
+        *///?}
     }
 
     private void filterPlayers() {
