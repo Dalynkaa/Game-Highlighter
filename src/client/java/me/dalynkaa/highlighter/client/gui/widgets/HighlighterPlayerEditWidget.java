@@ -45,6 +45,20 @@ public class HighlighterPlayerEditWidget extends FlowLayout {
 
     private HighlighterScrollDropdownComponent dropdown;
 
+    @Override
+    public boolean onMouseDown(double mouseX, double mouseY, int button) {
+        // First let child components handle their events naturally
+        if (super.onMouseDown(mouseX, mouseY, button)) {
+            return true;
+        }
+        
+        // Then handle dropdown click-outside detection if not handled by children
+        if (dropdown.handleGlobalMouseClick(mouseX, mouseY, button)) {
+            return true;
+        }
+        
+        return false;
+    }
 
     public HighlighterPlayerEditWidget(int x, int y, int width, int height, HighlightPlayer highlightPlayer) {
         super(Sizing.fixed(width), Sizing.fill(),Algorithm.VERTICAL);

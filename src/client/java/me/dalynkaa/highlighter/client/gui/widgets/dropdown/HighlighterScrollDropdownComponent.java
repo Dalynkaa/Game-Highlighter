@@ -181,6 +181,19 @@ public class HighlighterScrollDropdownComponent extends FlowLayout {
         }
     }
 
+    // Method to add callback when dropdown opens (for parent widgets to close other popups)
+    public void onDropdownOpenEvent(Consumer<HighlighterScrollDropdownComponent> callback) {
+        Consumer<Boolean> originalListener = this.expandStateChangeListener;
+        this.expandStateChangeListener = (expanded) -> {
+            if (originalListener != null) {
+                originalListener.accept(expanded);
+            }
+            if (expanded && callback != null) {
+                callback.accept(this);
+            }
+        };
+    }
+
     protected void updateExpandableDropdown() {
         expandableDropdown.horizontalSizing(Sizing.fixed(this.width()));
         if (this.expandStateChangeListener !=null){
@@ -255,6 +268,25 @@ public class HighlighterScrollDropdownComponent extends FlowLayout {
      * @return true если dropdown активен и должен захватить все клики
      */
     public boolean shouldCaptureAllInputs() {
+        return expanded;
+    }
+
+    // Global mouse event handling for click-outside detection
+    public boolean handleGlobalMouseClick(double mouseX, double mouseY, int button) {
+        if (expanded && button == 0) {
+            // Если клик по dropdown или его содержимому, НЕ закрываем
+            if (isInBoundingBox(mouseX, mouseY)) {
+                return false; // Не обрабатываем глобально, пусть обработает сам виджет
+            }
+            // Только если клик вне dropdown - закрываем
+            expanded(false);
+            return true;
+        }
+        return false;
+    }
+
+    // Method to check if dropdown is expanded for parent containers
+    public boolean isExpanded() {
         return expanded;
     }
 

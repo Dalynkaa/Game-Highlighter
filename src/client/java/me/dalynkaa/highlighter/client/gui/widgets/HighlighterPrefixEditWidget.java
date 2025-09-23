@@ -102,6 +102,11 @@ public class HighlighterPrefixEditWidget extends FlowLayout {
                 currentColorField.closePopup();
             }
             this.currentColorField = colorPicker;
+            
+            // Close dropdown when color picker opens
+            if (isDropdownExpanded) {
+                this.chatSoundDropdown.expanded(false);
+            }
         });
         this.nameColorField.onPopupClosedEvent((colorPicker) -> {
             if (this.currentColorField != null && this.currentColorField == colorPicker) {
@@ -127,6 +132,11 @@ public class HighlighterPrefixEditWidget extends FlowLayout {
                 currentColorField.closePopup();
             }
             this.currentColorField = colorPicker;
+            
+            // Close dropdown when color picker opens
+            if (isDropdownExpanded) {
+                this.chatSoundDropdown.expanded(false);
+            }
         });
         this.tagColorField.onPopupClosedEvent((colorPicker) -> {
             if (this.currentColorField != null && this.currentColorField == colorPicker) {
@@ -145,6 +155,26 @@ public class HighlighterPrefixEditWidget extends FlowLayout {
             this.isDropdownExpanded = expanded;
             this.saveButton.active = !expanded;
             this.chatPattern.active = !expanded;
+            
+            // Close color picker popups when dropdown expands
+            if (expanded) {
+                if (nameColorField.isPopupOpen()) {
+                    nameColorField.closePopup();
+                }
+                if (tagColorField.isPopupOpen()) {
+                    tagColorField.closePopup();
+                }
+            }
+        });
+
+        // Add additional callback for when dropdown opens to close color pickers
+        this.chatSoundDropdown.onDropdownOpenEvent((dropdown) -> {
+            if (nameColorField.isPopupOpen()) {
+                nameColorField.closePopup();
+            }
+            if (tagColorField.isPopupOpen()) {
+                tagColorField.closePopup();
+            }
         });
         if (prefix!=null && prefix.getChatSound()!= null) {
             this.mainChatSound = prefix.getChatSound();
@@ -254,10 +284,23 @@ public class HighlighterPrefixEditWidget extends FlowLayout {
 
     @Override
     public boolean onMouseDown(double mouseX, double mouseY, int button) {
-        if (isDropdownExpanded && isMouseOverDropdown(mouseX, mouseY)) {
-            return super.onMouseDown(mouseX, mouseY, button);
+        // First let child components handle their events naturally
+        if (super.onMouseDown(mouseX, mouseY, button)) {
+            return true;
         }
-        return super.onMouseDown(mouseX, mouseY, button);
+        
+        // Then handle color picker and dropdown click-outside detection if not handled by children
+        if (nameColorField.handleGlobalMouseClick(mouseX, mouseY, button)) {
+            return true;
+        }
+        if (tagColorField.handleGlobalMouseClick(mouseX, mouseY, button)) {
+            return true;
+        }
+        if (chatSoundDropdown.handleGlobalMouseClick(mouseX, mouseY, button)) {
+            return true;
+        }
+        
+        return false;
     }
 
     @Override

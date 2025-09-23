@@ -53,6 +53,20 @@ public class ColorPickerFieldWidget extends TextFieldWidget {
         return super.isInBoundingBox(x, y);
     }
 
+    // Global mouse event handling for click-outside detection
+    public boolean handleGlobalMouseClick(double mouseX, double mouseY, int button) {
+        if (popupOpen && button == 0) {
+            // Если клик по попапу или полю, НЕ закрываем
+            if (popup.isMouseOver(mouseX, mouseY) || isMouseOverField(mouseX, mouseY)) {
+                return false; // Не обрабатываем глобально, пусть обработает сам виджет
+            }
+            // Только если клик вне попапа и поля - закрываем
+            closePopup();
+            return true;
+        }
+        return false;
+    }
+
     public String getText() {
         return ColorAdapter.rgbToHex(selectedColor);
     }
@@ -121,14 +135,12 @@ public class ColorPickerFieldWidget extends TextFieldWidget {
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (popup != null && popupOpen) {
-            if (!popup.isMouseOver(mouseX, mouseY)) {
-                closePopup();
-                return true;
-            }
-            if (popup.mouseClicked(mouseX, mouseY, button)) {
-                return true;
+            // Если клик по попапу, обрабатываем его
+            if (popup.isMouseOver(mouseX, mouseY)) {
+                return popup.mouseClicked(mouseX, mouseY, button);
             }
         }
+        
         if (button == 0) {
             int relativeX = (int) (mouseX - getX());
             if (relativeX >= getWidth() - COLOR_PREVIEW_SIZE - PADDING ||
@@ -144,6 +156,11 @@ public class ColorPickerFieldWidget extends TextFieldWidget {
 
         // Возвращаем управление родительскому классу только для обработки клика по текстовому полю
         return super.mouseClicked(mouseX, mouseY, button);
+    }
+
+    private boolean isMouseOverField(double mouseX, double mouseY) {
+        return mouseX >= getX() && mouseX <= getX() + getWidth() &&
+               mouseY >= getY() && mouseY <= getY() + getHeight();
     }
 
     @Override
@@ -234,6 +251,11 @@ public class ColorPickerFieldWidget extends TextFieldWidget {
         boolean result = super.keyPressed(keyCode, scanCode, modifiers);
         textChangedByUser = false;
         return result;
+    }
+
+    // Method to check if popup is open for parent containers
+    public boolean isPopupOpen() {
+        return popupOpen;
     }
 
     public void openPopup() {
