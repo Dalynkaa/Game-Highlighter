@@ -11,8 +11,6 @@ import me.dalynkaa.highlighter.client.listeners.OnChatMessage;
 import me.dalynkaa.highlighter.client.utilities.KeyBindManager;
 import me.dalynkaa.highlighter.client.config.ModConfig;
 import me.dalynkaa.highlighter.client.gui.ServerConfigConfirmationScreen;
-import me.dalynkaa.highlighter.client.translations.DynamicTranslationManager;
-import me.dalynkaa.highlighter.client.translations.LanguageChangeListener;
 import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.serializer.GsonConfigSerializer;
 import net.fabricmc.api.ClientModInitializer;
@@ -87,21 +85,8 @@ public class HighlighterClient implements ClientModInitializer {
 
 		BackendConfigurationLoader.init();
 		
-		// Инициализируем систему динамических переводов
-		DynamicTranslationManager.initialize();
-		LanguageChangeListener.startMonitoring();
-		
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
-			// Пытаемся инициализировать переводы если еще не готовы
-			if (!DynamicTranslationManager.isInitialized() && client.getLanguageManager() != null) {
-				DynamicTranslationManager.initialize();
-				LanguageChangeListener.startMonitoring();
-			}
-			
-			// Проверяем изменение языка
-			LanguageChangeListener.checkLanguageChange();
-			
-			if (client.world != null && client.player != null &&
+            if (client.world != null && client.player != null &&
 				hasUpdatedServerConfig && !hasAppliedServerConfig &&
 				HighlighterClient.isMultiplayerServer(client)) {
 				

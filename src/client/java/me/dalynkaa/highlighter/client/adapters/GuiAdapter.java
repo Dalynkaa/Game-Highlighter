@@ -1,10 +1,12 @@
 package me.dalynkaa.highlighter.client.adapters;
 
-import com.mojang.blaze3d.pipeline.RenderPipeline;
+//? if >=1.21.6 {
+/*import com.mojang.blaze3d.pipeline.RenderPipeline;
+import net.minecraft.client.gl.RenderPipelines;
+*///?}
 import io.wispforest.owo.ui.core.OwoUIDrawContext;
 import me.dalynkaa.highlighter.Highlighter;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.Screen;
