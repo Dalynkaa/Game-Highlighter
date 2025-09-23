@@ -23,7 +23,7 @@ public class ModConfig implements ConfigData {
 
     public static class BackendSettings {
         @ConfigEntry.Gui.Tooltip
-        public String apiBaseUrl = "https://your-api-domain.com/api/v1";
+        public String apiBaseUrl = "https://nexbit.dev/";
         
         @ConfigEntry.Gui.Tooltip
         public boolean autoLoadEnabled = true;

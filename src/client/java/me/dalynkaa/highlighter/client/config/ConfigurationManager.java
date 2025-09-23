@@ -54,7 +54,6 @@ public class ConfigurationManager {
         
         // Проверяем приоритет: ручной слаг > слаг сервера
         if (settings.preferManualSlug && !settings.manualSlug.trim().isEmpty()) {
-            // Ручная загрузка по глобальному слагу из настроек
             Highlighter.LOGGER.info("[ConfigurationManager] Applying manual prefix configuration: {}", 
                                   settings.manualSlug.trim());
             return BackendConfigurationLoader.loadConfigurationBySlug(settings.manualSlug.trim());

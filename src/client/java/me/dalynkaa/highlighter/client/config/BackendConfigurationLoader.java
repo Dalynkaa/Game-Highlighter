@@ -38,7 +38,7 @@ public class BackendConfigurationLoader {
     private static final Executor NETWORK_EXECUTOR = Executors.newSingleThreadExecutor();
     
     // Базовый URL API (может быть настроен в конфиге)
-    private static String baseApiUrl = "http://localhost:4000";
+    private static String baseApiUrl = HighlighterClient.CONFIG.backendSettings.apiBaseUrl;
     
     // Кеш последней загруженной конфигурации
     private static String lastServerIp = null;
