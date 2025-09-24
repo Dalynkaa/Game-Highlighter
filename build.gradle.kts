@@ -121,9 +121,7 @@ dependencies {
     val modMenu = deps["mod_menu_version"]
     val owo = deps["owo_version"]
 
-
     modImplementation("net.fabricmc.fabric-api:fabric-api:$fapi")
-
 
     modImplementation(include("net.kyori:adventure-platform-fabric:$miniMessage")!!)
     modApi("me.shedaniel.cloth:cloth-config-fabric:$clothConfig") {
@@ -132,7 +130,7 @@ dependencies {
     modApi("com.terraformersmc:modmenu:$modMenu")
 
     modImplementation("io.wispforest:owo-lib:$owo") {
-        exclude(group = "net.fabricmc.fabric-api", module = "fabric-api")
+        exclude(group = "net.fabricmc.fabric-api")
     }
     annotationProcessor("io.wispforest:owo-lib:$owo")
     include("io.wispforest:owo-lib:$owo")

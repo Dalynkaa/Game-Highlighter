@@ -74,3 +74,5 @@ Highlighter is a Minecraft Fabric mod for highlighting chat messages and players
 - Java 21 target compatibility
 - Uses Lombok annotations for boilerplate reduction
 - Custom event system for internal communication
+
+1.21.1 - сломано

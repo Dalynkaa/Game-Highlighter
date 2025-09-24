@@ -16,6 +16,7 @@ import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.MathHelper;
 
 import java.util.function.Consumer;
@@ -129,11 +130,13 @@ public class OptimizedColorPickerWidget extends ClickableWidget {
                     return;
                 }
 
-                int color = 0xFF000000 | (rgb[0] << 16) | (rgb[1] << 8) | rgb[2];
+
                 //? if =1.21.1 {
+                int color = ColorAdapter.getArgb(255, rgb[2], rgb[1], rgb[0]);
                 image.setColor(x, y, color);
                 //?} else {
-                /*image.setColorArgb(x, y, color);
+                /*int color = ColorAdapter.getArgb(255, rgb[0], rgb[1], rgb[2]);
+                image.setColorArgb(x, y, color);
                 *///?}
             }
         }
@@ -153,13 +156,17 @@ public class OptimizedColorPickerWidget extends ClickableWidget {
                 return;
             }
 
-            int color = 0xFF000000 | (rgb[0] << 16) | (rgb[1] << 8) | rgb[2];
+            // NativeImage использует ABGR формат, поэтому передаем в обратном порядке
+
+
 
             for (int x = 0; x < HUE_BAR_WIDTH; x++) {
                 //? if =1.21.1 {
+                int color = ColorAdapter.getArgb(255, rgb[2], rgb[1], rgb[0]);
                 image.setColor(x, y, color);
                 //?} else {
-                /*image.setColorArgb(x, y, color);
+                /*int color = ColorAdapter.getArgb(255, rgb[0], rgb[1], rgb[2]);
+                image.setColorArgb(x, y, color);
                 *///?}
             }
         }
